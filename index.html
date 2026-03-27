@@ -3,115 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sustantivos con tilde</title>
+<title>Palabras con tilde</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: #f5f5f3; padding: 2rem 1rem; }
-  .container { max-width: 640px; margin: 0 auto; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f3; padding: 2rem 1rem; min-height: 100vh; }
+  .container { max-width: 600px; margin: 0 auto; }
   h1 { font-size: 17px; font-weight: 500; color: #333; margin-bottom: 0.3rem; }
   .subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+  .info-box { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 0.9rem 1.1rem; margin-bottom: 1.5rem; font-size: 13px; color: #555; line-height: 1.7; }
   .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .voice-bar label { font-size: 12px; color: #888; }
-  select { font-size: 12px; padding: 5px 8px; border-radius: 7px; border: 0.5px solid #ccc; background: #fff; color: #333; max-width: 220px; cursor: pointer; }
+  select { font-size: 12px; padding: 5px 8px; border-radius: 7px; border: 0.5px solid #ccc; background: #fff; color: #333; cursor: pointer; max-width: 220px; }
   .speed-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 0.5px solid #ccc; background: transparent; color: #666; cursor: pointer; }
   .speed-btn.active { background: #444; color: #fff; border-color: #444; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.6rem; }
-  .card { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 0.9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; cursor: pointer; transition: background 0.12s; }
-  .card:hover { background: #fafaf8; }
-  .card.playing { border-color: #333; background: #f7f7f5; }
-  .word { font-size: 18px; font-weight: 500; color: #222; }
+  .card { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 14px; padding: 1.25rem 1.25rem; margin-bottom: 0.65rem; }
+  .card-top { display: flex; align-items: center; gap: 1rem; }
+  .word-block { flex: 1; }
+  .word { font-size: 26px; font-weight: 500; color: #222; margin-bottom: 0.15rem; }
   .tonic { color: #c0392b; }
-  .play-btn { width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid #e0e0e0; background: #f5f5f3; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.12s; pointer-events: none; }
-  .card.playing .play-btn { background: #333; border-color: #333; }
-  .play-btn svg { width: 14px; height: 14px; fill: #777; }
-  .card.playing .play-btn svg { fill: #fff; }
-  .global-controls { display: flex; gap: 10px; margin-top: 1.5rem; align-items: center; }
+  .translation { font-size: 13px; color: #aaa; }
+  .syllables { font-size: 12px; color: #ccc; font-style: italic; margin-top: 1px; }
+  .btn-group { display: flex; gap: 8px; align-items: center; }
+  .icon-btn { width: 42px; height: 42px; border-radius: 50%; border: 0.5px solid #ddd; background: #f9f9f7; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+  .icon-btn:hover { background: #eee; }
+  .icon-btn svg { width: 18px; height: 18px; fill: #555; }
+  .icon-btn.playing { background: #333; border-color: #333; }
+  .icon-btn.playing svg { fill: #fff; }
+  .icon-btn.recording { background: #c0392b; border-color: #c0392b; }
+  .icon-btn.recording svg { fill: #fff; }
+  .icon-btn.success { background: #27ae60; border-color: #27ae60; }
+  .icon-btn.success svg { fill: #fff; }
+  .icon-btn:disabled { opacity: 0.3; cursor: default; }
+  .ram-area { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 0.5px solid #f0f0ee; display: none; }
+  .ram-area.visible { display: block; }
+  .ram-status { font-size: 12px; color: #aaa; margin-bottom: 0.4rem; }
+  .ram-status.listening { color: #c0392b; }
+  .ram-status.done { color: #27ae60; }
+  .waveform { height: 32px; display: flex; align-items: center; gap: 2px; }
+  .bar { width: 3px; border-radius: 2px; background: #ddd; transition: height 0.1s; }
+  .bar.active { background: #c0392b; }
+  .global-controls { display: flex; gap: 10px; margin-top: 1.5rem; }
   .action-btn { font-size: 13px; padding: 8px 18px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; color: #333; cursor: pointer; }
-  .action-btn:hover { background: #efefed; }
-  .count { font-size: 12px; color: #bbb; margin-left: auto; }
+  .action-btn:hover { background: #f0f0ee; }
+  .no-support { background: #fff8e1; border: 0.5px solid #ffe082; border-radius: 10px; padding: 0.75rem 1rem; font-size: 13px; color: #795548; margin-bottom: 1rem; display: none; }
+  .category-tag { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>Sustantivos con tilde</h1>
-  <p class="subtitle">Pulsa cualquier palabra para escuchar su pronunciación.</p>
+  <h1>Palabras con tilde</h1>
+  <p class="subtitle">Escucha, repite y practica la sílaba tónica marcada en rojo.</p>
+
+  <div class="info-box">
+    La tilde ( ´ ) marca la sílaba que se pronuncia con más fuerza. Ejemplo: <em>ca<span style="color:#c0392b">fé</span></em> → ca-<strong>FÉ</strong>.
+  </div>
+
+  <div class="no-support" id="noSupport">Tu navegador no soporta síntesis de voz. Prueba con Chrome o Edge.</div>
 
   <div class="voice-bar">
     <label>Voz:</label>
-    <select id="voiceSelect"></select>
+    <select id="voiceSelect" onchange="setVoice()"></select>
     <label style="margin-left:6px;">Velocidad:</label>
     <button class="speed-btn active" id="slow-btn" onclick="setSpeed(0.75,'slow-btn')">lenta</button>
     <button class="speed-btn" id="norm-btn" onclick="setSpeed(1,'norm-btn')">normal</button>
   </div>
 
-  <div class="grid" id="grid"></div>
+  <div id="wordList"></div>
 
   <div class="global-controls">
     <button class="action-btn" onclick="playAll()">▶ Escuchar todas</button>
     <button class="action-btn" onclick="stopAll()">◼ Parar</button>
-    <span class="count" id="countLabel"></span>
   </div>
 </div>
 
 <script>
 const words = [
-  { word: "café",       tonic: "fé" },
-  { word: "jamón",      tonic: "món" },
-  { word: "limón",      tonic: "món" },
-  { word: "plátano",    tonic: "plá" },
-  { word: "azúcar",     tonic: "zú" },
-  { word: "sándwich",   tonic: "sán" },
-  { word: "autobús",    tonic: "bús" },
-  { word: "habitación", tonic: "ción" },
-  { word: "estación",   tonic: "ción" },
-  { word: "jardín",     tonic: "dín" },
-  { word: "país",       tonic: "ís" },
-  { word: "música",     tonic: "mú" },
-  { word: "teléfono",   tonic: "lé" },
-  { word: "médico",     tonic: "mé" },
-  { word: "mamá",       tonic: "má" },
-  { word: "papá",       tonic: "pá" },
-  { word: "tío",        tonic: "tí" },
-  { word: "tía",        tonic: "tí" },
-  { word: "bebé",       tonic: "bé" },
-  { word: "sofá",       tonic: "fá" },
-  { word: "menú",       tonic: "nú" },
-  { word: "canción",    tonic: "ción" },
-  { word: "dirección",  tonic: "ción" },
-  { word: "televisión", tonic: "ión" },
-  { word: "lección",    tonic: "ción" },
-  { word: "bolígrafo",  tonic: "lí" },
-  { word: "miércoles",  tonic: "miér" },
-  { word: "sábado",     tonic: "sá" },
-  { word: "número",     tonic: "nú" },
-  { word: "árbol",      tonic: "ár" },
-  { word: "fútbol",     tonic: "fút" },
-  { word: "película",   tonic: "lí" },
-  { word: "cámara",     tonic: "cá" },
-  { word: "océano",     tonic: "cé" },
-  { word: "avión",      tonic: "ión" },
+  { word:"café",        tonic:"fé",    syllables:"ca·fé",          translation:"coffee",           cat:"cotidiano" },
+  { word:"médico",      tonic:"mé",    syllables:"mé·di·co",       translation:"doctor",           cat:"cotidiano" },
+  { word:"teléfono",    tonic:"lé",    syllables:"te·lé·fo·no",    translation:"telephone",        cat:"cotidiano" },
+  { word:"música",      tonic:"mú",    syllables:"mú·si·ca",       translation:"music",            cat:"cotidiano" },
+  { word:"fútbol",      tonic:"fút",   syllables:"fút·bol",        translation:"football",         cat:"cotidiano" },
+  { word:"fácil",       tonic:"fá",    syllables:"fá·cil",         translation:"easy",             cat:"cotidiano" },
+  { word:"difícil",     tonic:"fí",    syllables:"di·fí·cil",      translation:"difficult",        cat:"cotidiano" },
+  { word:"rápido",      tonic:"rá",    syllables:"rá·pi·do",       translation:"fast",             cat:"cotidiano" },
+  { word:"mamá",        tonic:"má",    syllables:"ma·má",          translation:"mum",              cat:"familia" },
+  { word:"papá",        tonic:"pá",    syllables:"pa·pá",          translation:"dad",              cat:"familia" },
+  { word:"tío",         tonic:"tí",    syllables:"tí·o",           translation:"uncle",            cat:"familia" },
+  { word:"tía",         tonic:"tí",    syllables:"tí·a",           translation:"aunt",             cat:"familia" },
+  { word:"bebé",        tonic:"bé",    syllables:"be·bé",          translation:"baby",             cat:"familia" },
+  { word:"jamón",       tonic:"món",   syllables:"ja·món",         translation:"ham",              cat:"comida" },
+  { word:"limón",       tonic:"món",   syllables:"li·món",         translation:"lemon",            cat:"comida" },
+  { word:"plátano",     tonic:"plá",   syllables:"plá·ta·no",      translation:"banana",           cat:"comida" },
+  { word:"azúcar",      tonic:"zú",    syllables:"a·zú·car",       translation:"sugar",            cat:"comida" },
+  { word:"sándwich",    tonic:"sán",   syllables:"sán·dwich",      translation:"sandwich",         cat:"comida" },
+  { word:"estación",    tonic:"ción",  syllables:"es·ta·ción",     translation:"station",          cat:"lugares" },
+  { word:"autobús",     tonic:"bús",   syllables:"au·to·bús",      translation:"bus",              cat:"lugares" },
+  { word:"jardín",      tonic:"dín",   syllables:"jar·dín",        translation:"garden",           cat:"lugares" },
+  { word:"país",        tonic:"ís",    syllables:"pa·ís",          translation:"country",          cat:"lugares" },
+  { word:"habitación",  tonic:"ción",  syllables:"ha·bi·ta·ción",  translation:"room",             cat:"lugares" },
+  { word:"español",     tonic:"ñol",   syllables:"es·pa·ñol",      translation:"Spanish (masc.)",  cat:"nacio." },
+  { word:"alemán",      tonic:"mán",   syllables:"a·le·mán",       translation:"German (masc.)",   cat:"nacio." },
+  { word:"francés",     tonic:"cés",   syllables:"fran·cés",       translation:"French (masc.)",   cat:"nacio." },
+  { word:"japonés",     tonic:"nés",   syllables:"ja·po·nés",      translation:"Japanese (masc.)", cat:"nacio." },
+  { word:"portugués",   tonic:"gués",  syllables:"por·tu·gués",    translation:"Portuguese (m.)",  cat:"nacio." },
+  { word:"marroquí",    tonic:"quí",   syllables:"ma·rro·quí",     translation:"Moroccan",         cat:"nacio." },
+  { word:"bosnio",      tonic:"bos",   syllables:"bos·nio",        translation:"Bosnian (masc.)",  cat:"nacio." },
 ];
 
 let selectedVoice = null;
 let speechRate = 0.75;
 let playAllTimer = null;
-let currentCard = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let activeRamIndex = null;
+let animFrame = null;
+let analyser = null;
 
-function hl(word, tonic) {
+function highlight(word, tonic) {
   const i = word.indexOf(tonic);
   if (i === -1) return word;
   return word.slice(0,i) + `<span class="tonic">${tonic}</span>` + word.slice(i+tonic.length);
 }
 
 function render() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = words.map((w,i) => `
-    <div class="card" id="card-${i}" onclick="speak('${w.word}',${i})">
-      <div class="word">${hl(w.word, w.tonic)}</div>
-      <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+  document.getElementById('wordList').innerHTML = words.map((w,i) => `
+    <div class="card" id="card-${i}">
+      <div class="card-top">
+        <div class="word-block">
+          <div class="category-tag">${w.cat}</div>
+          <div class="word">${highlight(w.word, w.tonic)}</div>
+          <div class="translation">${w.translation}</div>
+          <div class="syllables">${w.syllables}</div>
+        </div>
+        <div class="btn-group">
+          <button class="icon-btn" id="play-${i}" onclick="speak('${w.word}',${i})" title="Escuchar">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="icon-btn" id="rec-${i}" onclick="toggleRam(${i})" title="Repetir">
+            <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 15 6.7 12H5c0 3.41 2.72 6.23 6 6.72V21h2v-2.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ram-area" id="ram-${i}">
+        <div class="ram-status" id="ramst-${i}">Pulsa el micrófono para repetir la palabra</div>
+        <div class="waveform" id="wave-${i}">${Array(20).fill('<div class="bar" style="height:4px"></div>').join('')}</div>
+      </div>
     </div>
   `).join('');
-  document.getElementById('countLabel').textContent = `${words.length} palabras`;
 }
 
 function loadVoices() {
@@ -119,6 +157,8 @@ function loadVoices() {
   const sel = document.getElementById('voiceSelect');
   const esVoices = voices.filter(v => v.lang.startsWith('es'));
   if (!esVoices.length) return;
+
+  // Priority: es-ES natives, then any es-*
   const preferred = ['Mónica','Monica','Paulina','Jorge','Diego','Conchita','Luciana','Elena','Esperanza'];
   esVoices.sort((a,b) => {
     const ai = preferred.findIndex(n => a.name.includes(n));
@@ -130,10 +170,14 @@ function loadVoices() {
     if (b.lang==='es-ES' && a.lang!=='es-ES') return 1;
     return 0;
   });
+
   sel.innerHTML = esVoices.map((v,i) => `<option value="${i}">${v.name} (${v.lang})</option>`).join('');
   selectedVoice = esVoices[0];
+
   sel.onchange = () => { selectedVoice = esVoices[parseInt(sel.value)]; };
 }
+
+function setVoice() {}
 
 function speak(word, idx) {
   if (!window.speechSynthesis) return;
@@ -142,17 +186,16 @@ function speak(word, idx) {
   utt.lang = 'es-ES';
   utt.rate = speechRate;
   if (selectedVoice) utt.voice = selectedVoice;
-  const card = document.getElementById(`card-${idx}`);
-  if (card) { card.classList.add('playing'); currentCard = card; }
-  utt.onend = () => { if (card) card.classList.remove('playing'); currentCard = null; };
+  const btn = document.getElementById(`play-${idx}`);
+  if (btn) btn.classList.add('playing');
+  utt.onend = () => { if (btn) btn.classList.remove('playing'); };
   window.speechSynthesis.speak(utt);
 }
 
 function stopAll() {
-  window.speechSynthesis.cancel();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
   if (playAllTimer) { clearTimeout(playAllTimer); playAllTimer = null; }
-  document.querySelectorAll('.card.playing').forEach(c => c.classList.remove('playing'));
-  currentCard = null;
+  document.querySelectorAll('.icon-btn.playing').forEach(b => b.classList.remove('playing'));
 }
 
 function playAll() {
@@ -172,6 +215,101 @@ function setSpeed(rate, btnId) {
   document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(btnId).classList.add('active');
 }
+
+// --- Repeat after me ---
+async function toggleRam(idx) {
+  const ramArea = document.getElementById(`ram-${idx}`);
+  const recBtn = document.getElementById(`rec-${idx}`);
+  const status = document.getElementById(`ramst-${idx}`);
+
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+
+  if (activeRamIndex !== null && activeRamIndex !== idx) {
+    closeRam(activeRamIndex);
+  }
+
+  ramArea.classList.add('visible');
+  activeRamIndex = idx;
+
+  if (!navigator.mediaDevices) {
+    status.textContent = 'Micrófono no disponible en este navegador.';
+    return;
+  }
+
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e) {
+    status.textContent = 'No se pudo acceder al micrófono.';
+    return;
+  }
+
+  // Waveform analyser
+  const ctx = new AudioContext();
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 64;
+  const src = ctx.createMediaStreamSource(stream);
+  src.connect(analyser);
+
+  const bars = document.getElementById(`wave-${idx}`).querySelectorAll('.bar');
+  function drawWave() {
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    bars.forEach((bar, i) => {
+      const val = data[i % data.length];
+      bar.style.height = Math.max(4, val / 4) + 'px';
+      bar.classList.toggle('active', val > 20);
+    });
+    animFrame = requestAnimationFrame(drawWave);
+  }
+
+  audioChunks = [];
+  mediaRecorder = new MediaRecorder(stream);
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.onstart = () => {
+    recBtn.classList.add('recording');
+    status.className = 'ram-status listening';
+    status.textContent = '🔴 Grabando… pulsa de nuevo para parar';
+    drawWave();
+  };
+  mediaRecorder.onstop = () => {
+    cancelAnimationFrame(animFrame);
+    bars.forEach(b => { b.style.height = '4px'; b.classList.remove('active'); });
+    recBtn.classList.remove('recording');
+    recBtn.classList.add('success');
+    status.className = 'ram-status done';
+    status.textContent = '✓ Grabado — reproduciendo tu voz…';
+    stream.getTracks().forEach(t => t.stop());
+    ctx.close();
+
+    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onended = () => {
+      recBtn.classList.remove('success');
+      status.className = 'ram-status';
+      status.textContent = 'Pulsa el micrófono para repetir otra vez';
+      URL.revokeObjectURL(url);
+    };
+    audio.play();
+    mediaRecorder = null;
+  };
+  mediaRecorder.start();
+}
+
+function closeRam(idx) {
+  const ramArea = document.getElementById(`ram-${idx}`);
+  const recBtn = document.getElementById(`rec-${idx}`);
+  if (ramArea) ramArea.classList.remove('visible');
+  if (recBtn) { recBtn.classList.remove('recording','success'); }
+  if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+  if (animFrame) cancelAnimationFrame(animFrame);
+}
+
+if (!window.speechSynthesis) document.getElementById('noSupport').style.display = 'block';
 
 window.speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
