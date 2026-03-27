@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustantivos con tilde</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f3; padding: 2rem 1rem; }
+  .container { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 17px; font-weight: 500; color: #333; margin-bottom: 0.3rem; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+  .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .voice-bar label { font-size: 12px; color: #888; }
+  select { font-size: 12px; padding: 5px 8px; border-radius: 7px; border: 0.5px solid #ccc; background: #fff; color: #333; max-width: 220px; cursor: pointer; }
+  .speed-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 0.5px solid #ccc; background: transparent; color: #666; cursor: pointer; }
+  .speed-btn.active { background: #444; color: #fff; border-color: #444; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.6rem; }
+  .card { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 0.9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; cursor: pointer; transition: background 0.12s; }
+  .card:hover { background: #fafaf8; }
+  .card.playing { border-color: #333; background: #f7f7f5; }
+  .word { font-size: 18px; font-weight: 500; color: #222; }
+  .tonic { color: #c0392b; }
+  .play-btn { width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid #e0e0e0; background: #f5f5f3; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.12s; pointer-events: none; }
+  .card.playing .play-btn { background: #333; border-color: #333; }
+  .play-btn svg { width: 14px; height: 14px; fill: #777; }
+  .card.playing .play-btn svg { fill: #fff; }
+  .global-controls { display: flex; gap: 10px; margin-top: 1.5rem; align-items: center; }
+  .action-btn { font-size: 13px; padding: 8px 18px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; color: #333; cursor: pointer; }
+  .action-btn:hover { background: #efefed; }
+  .count { font-size: 12px; color: #bbb; margin-left: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Sustantivos con tilde</h1>
+  <p class="subtitle">Pulsa cualquier palabra para escuchar su pronunciación.</p>
+
+  <div class="voice-bar">
+    <label>Voz:</label>
+    <select id="voiceSelect"></select>
+    <label style="margin-left:6px;">Velocidad:</label>
+    <button class="speed-btn active" id="slow-btn" onclick="setSpeed(0.75,'slow-btn')">lenta</button>
+    <button class="speed-btn" id="norm-btn" onclick="setSpeed(1,'norm-btn')">normal</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="global-controls">
+    <button class="action-btn" onclick="playAll()">▶ Escuchar todas</button>
+    <button class="action-btn" onclick="stopAll()">◼ Parar</button>
+    <span class="count" id="countLabel"></span>
+  </div>
+</div>
+
+<script>
+const words = [
+  { word: "café",       tonic: "fé" },
+  { word: "jamón",      tonic: "món" },
+  { word: "limón",      tonic: "món" },
+  { word: "plátano",    tonic: "plá" },
+  { word: "azúcar",     tonic: "zú" },
+  { word: "sándwich",   tonic: "sán" },
+  { word: "autobús",    tonic: "bús" },
+  { word: "habitación", tonic: "ción" },
+  { word: "estación",   tonic: "ción" },
+  { word: "jardín",     tonic: "dín" },
+  { word: "país",       tonic: "ís" },
+  { word: "música",     tonic: "mú" },
+  { word: "teléfono",   tonic: "lé" },
+  { word: "médico",     tonic: "mé" },
+  { word: "mamá",       tonic: "má" },
+  { word: "papá",       tonic: "pá" },
+  { word: "tío",        tonic: "tí" },
+  { word: "tía",        tonic: "tí" },
+  { word: "bebé",       tonic: "bé" },
+  { word: "sofá",       tonic: "fá" },
+  { word: "menú",       tonic: "nú" },
+  { word: "canción",    tonic: "ción" },
+  { word: "dirección",  tonic: "ción" },
+  { word: "televisión", tonic: "ión" },
+  { word: "lección",    tonic: "ción" },
+  { word: "bolígrafo",  tonic: "lí" },
+  { word: "miércoles",  tonic: "miér" },
+  { word: "sábado",     tonic: "sá" },
+  { word: "número",     tonic: "nú" },
+  { word: "árbol",      tonic: "ár" },
+  { word: "fútbol",     tonic: "fút" },
+  { word: "película",   tonic: "lí" },
+  { word: "cámara",     tonic: "cá" },
+  { word: "océano",     tonic: "cé" },
+  { word: "avión",      tonic: "ión" },
+];
+
+let selectedVoice = null;
+let speechRate = 0.75;
+let playAllTimer = null;
+let currentCard = null;
+
+function hl(word, tonic) {
+  const i = word.indexOf(tonic);
+  if (i === -1) return word;
+  return word.slice(0,i) + `<span class="tonic">${tonic}</span>` + word.slice(i+tonic.length);
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = words.map((w,i) => `
+    <div class="card" id="card-${i}" onclick="speak('${w.word}',${i})">
+      <div class="word">${hl(w.word, w.tonic)}</div>
+      <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>
+  `).join('');
+  document.getElementById('countLabel').textContent = `${words.length} palabras`;
+}
+
+function loadVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  const sel = document.getElementById('voiceSelect');
+  const esVoices = voices.filter(v => v.lang.startsWith('es'));
+  if (!esVoices.length) return;
+  const preferred = ['Mónica','Monica','Paulina','Jorge','Diego','Conchita','Luciana','Elena','Esperanza'];
+  esVoices.sort((a,b) => {
+    const ai = preferred.findIndex(n => a.name.includes(n));
+    const bi = preferred.findIndex(n => b.name.includes(n));
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    if (a.lang==='es-ES' && b.lang!=='es-ES') return -1;
+    if (b.lang==='es-ES' && a.lang!=='es-ES') return 1;
+    return 0;
+  });
+  sel.innerHTML = esVoices.map((v,i) => `<option value="${i}">${v.name} (${v.lang})</option>`).join('');
+  selectedVoice = esVoices[0];
+  sel.onchange = () => { selectedVoice = esVoices[parseInt(sel.value)]; };
+}
+
+function speak(word, idx) {
+  if (!window.speechSynthesis) return;
+  stopAll();
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.lang = 'es-ES';
+  utt.rate = speechRate;
+  if (selectedVoice) utt.voice = selectedVoice;
+  const card = document.getElementById(`card-${idx}`);
+  if (card) { card.classList.add('playing'); currentCard = card; }
+  utt.onend = () => { if (card) card.classList.remove('playing'); currentCard = null; };
+  window.speechSynthesis.speak(utt);
+}
+
+function stopAll() {
+  window.speechSynthesis.cancel();
+  if (playAllTimer) { clearTimeout(playAllTimer); playAllTimer = null; }
+  document.querySelectorAll('.card.playing').forEach(c => c.classList.remove('playing'));
+  currentCard = null;
+}
+
+function playAll() {
+  stopAll();
+  let i = 0;
+  function next() {
+    if (i >= words.length) return;
+    speak(words[i].word, i);
+    i++;
+    playAllTimer = setTimeout(next, speechRate < 0.9 ? 2400 : 1700);
+  }
+  next();
+}
+
+function setSpeed(rate, btnId) {
+  speechRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(btnId).classList.add('active');
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+render();
+</script>
+</body>
+</html>
