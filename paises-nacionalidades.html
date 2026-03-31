@@ -6,38 +6,43 @@
 <title>Países y Nacionalidades</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: #f5f5f3; display: flex; justify-content: center; padding: 2rem 1rem; min-height: 100vh; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem; }
   .deck { width: 100%; max-width: 520px; }
-  h1 { font-size: 17px; font-weight: 500; color: #333; text-align: center; margin-bottom: 1.5rem; }
-  .progress { font-size: 13px; color: #888; margin-bottom: 0.75rem; text-align: center; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .progress { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; text-align: center; }
   .dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: #ddd; transition: background 0.2s; }
-  .dot.seen { background: #aaa; }
-  .dot.active { background: #333; }
-  .card-wrap { perspective: 1000px; width: 100%; height: 260px; margin: 0 auto 1.5rem; cursor: pointer; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.2s; }
+  .dot.seen { background: rgba(255,255,255,0.55); }
+  .dot.active { background: #fff; }
+  .card-wrap { perspective: 1000px; width: 100%; height: 280px; margin: 0 auto 1.5rem; cursor: pointer; }
   .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s ease; }
   .card-inner.flipped { transform: rotateY(180deg); }
-  .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 14px; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; }
+  .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; -webkit-transform: translateZ(0); transform: translateZ(0); }
   .back { transform: rotateY(180deg); }
   .flag { font-size: 72px; line-height: 1; margin-bottom: 0.5rem; }
-  .country-name { font-size: 16px; color: #555; }
+  .country-name { font-size: 18px; font-weight: 600; color: #1a1a1a; }
   .hint { font-size: 12px; color: #aaa; margin-top: 0.75rem; }
-  .back-title { font-size: 18px; font-weight: 500; color: #222; margin-bottom: 0.85rem; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; width: 100%; }
+  .back-title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 0.85rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; width: 100%; text-align: center; }
   .row { display: flex; flex-direction: column; }
-  .label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.04em; }
-  .val { font-size: 14px; color: #222; font-weight: 500; }
-  .idioma-row { margin-top: 10px; text-align: center; }
-  .controls { display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .nav-btn { font-size: 13px; padding: 7px 18px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; color: #333; cursor: pointer; }
-  .nav-btn:hover { background: #f0f0ee; }
+  .label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; }
+  .val { font-size: 15px; color: #222; font-weight: 500; }
+  .idioma-row { margin-top: 12px; text-align: center; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .nav-btn { font-size: 13px; padding: 8px 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.3); }
   .nav-btn:disabled { opacity: 0.3; cursor: default; }
-  .shuffle-btn { font-size: 12px; color: #888; background: transparent; border: none; padding: 0 4px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  .shuffle-btn { font-size: 12px; color: rgba(255,255,255,0.6); background: transparent; border: none; text-decoration: underline; cursor: pointer; }
 </style>
 </head>
 <body>
 <div class="deck">
-  <h1>Países y Nacionalidades</h1>
+  <div class="header">
+    <h1>🇪🇸 Países y Nacionalidades</h1>
+    <p>Toca la tarjeta para ver la nacionalidad</p>
+  </div>
   <div class="dots" id="dots"></div>
   <div class="progress" id="progress"></div>
   <div class="card-wrap" id="cardWrap" onclick="flipCard()">
@@ -91,10 +96,7 @@ let order = [...Array(cards.length).keys()];
 let cur = 0, seen = new Set(), isFlipped = false;
 
 function shuffle() {
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
+  for (let i = order.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
   cur = 0; seen = new Set(); isFlipped = false;
   document.getElementById('cardInner').classList.remove('flipped');
   render();
@@ -103,7 +105,7 @@ function shuffle() {
 function render() {
   seen.add(cur);
   const c = cards[order[cur]];
-  document.getElementById('progress').textContent = `${cur + 1} / ${cards.length}`;
+  document.getElementById('progress').textContent = `${cur+1} / ${cards.length}`;
   document.getElementById('front').innerHTML = `
     <div class="flag">${c.flag}</div>
     <div class="country-name">${c.pais}</div>
@@ -120,9 +122,9 @@ function render() {
     <div class="idioma-row"><span class="label">idioma: </span><span class="val" style="font-size:13px;">${c.idioma}</span></div>
   `;
   const dots = document.getElementById('dots');
-  dots.innerHTML = order.map((_, i) => `<div class="dot${i === cur ? ' active' : seen.has(i) ? ' seen' : ''}"></div>`).join('');
+  dots.innerHTML = order.map((_,i) => `<div class="dot${i===cur?' active':seen.has(i)?' seen':''}"></div>`).join('');
   document.getElementById('prevBtn').disabled = cur === 0;
-  document.getElementById('nextBtn').disabled = cur === cards.length - 1;
+  document.getElementById('nextBtn').disabled = cur === cards.length-1;
 }
 
 function flipCard() {
@@ -131,7 +133,7 @@ function flipCard() {
 }
 
 function navigate(dir) {
-  cur = Math.max(0, Math.min(cards.length - 1, cur + dir));
+  cur = Math.max(0, Math.min(cards.length-1, cur+dir));
   isFlipped = false;
   document.getElementById('cardInner').classList.remove('flipped');
   render();
