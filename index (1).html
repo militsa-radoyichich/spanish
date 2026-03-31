@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Español – Lekcije i vježbanje</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 1.5rem;
+    background-color: #c8102e;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%),
+      radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .flag-banner {
+    font-size: 52px;
+    margin-bottom: 0.8rem;
+    letter-spacing: 6px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .section {
+    margin-bottom: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.7rem;
+    margin-left: 2px;
+  }
+
+  .card-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255,255,255,0.97);
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: #222;
+    margin-bottom: 10px;
+    transition: transform 0.15s, background 0.15s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+
+  .card-link:hover {
+    transform: translateY(-2px);
+    background: #fff;
+  }
+
+  .icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #fef3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .icon-wrap.blue { background: #dbeafe; }
+  .icon-wrap.green { background: #dcfce7; }
+
+  .info { display: flex; flex-direction: column; gap: 3px; }
+
+  .name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .desc {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .arrow {
+    margin-left: auto;
+    font-size: 18px;
+    color: #ccc;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="flag-banner">🇪🇸</div>
+    <h1>Español</h1>
+    <p class="subtitle">Lekcije i vježbanje</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Flash kartice</div>
+    <a class="card-link" href="paises-nacionalidades.html">
+      <div class="icon-wrap">🌍</div>
+      <div class="info">
+        <span class="name">Países y Nacionalidades</span>
+        <span class="desc">Zemlje i nacionalnosti · 30 kartica</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Vježbanje</div>
+    <a class="card-link" href="palabras-con-tilde.html">
+      <div class="icon-wrap blue">✍️</div>
+      <div class="info">
+        <span class="name">Palabras con Tilde</span>
+        <span class="desc">Naglašene riječi · vježbanje</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+</div>
+</body>
+</html>
