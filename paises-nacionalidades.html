@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Países y Nacionalidades</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f3; display: flex; justify-content: center; padding: 2rem 1rem; min-height: 100vh; }
+  .deck { width: 100%; max-width: 520px; }
+  h1 { font-size: 17px; font-weight: 500; color: #333; text-align: center; margin-bottom: 1.5rem; }
+  .progress { font-size: 13px; color: #888; margin-bottom: 0.75rem; text-align: center; }
+  .dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #ddd; transition: background 0.2s; }
+  .dot.seen { background: #aaa; }
+  .dot.active { background: #333; }
+  .card-wrap { perspective: 1000px; width: 100%; height: 260px; margin: 0 auto 1.5rem; cursor: pointer; }
+  .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s ease; }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 14px; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; }
+  .back { transform: rotateY(180deg); }
+  .flag { font-size: 72px; line-height: 1; margin-bottom: 0.5rem; }
+  .country-name { font-size: 16px; color: #555; }
+  .hint { font-size: 12px; color: #aaa; margin-top: 0.75rem; }
+  .back-title { font-size: 18px; font-weight: 500; color: #222; margin-bottom: 0.85rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; width: 100%; }
+  .row { display: flex; flex-direction: column; }
+  .label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.04em; }
+  .val { font-size: 14px; color: #222; font-weight: 500; }
+  .idioma-row { margin-top: 10px; text-align: center; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .nav-btn { font-size: 13px; padding: 7px 18px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; color: #333; cursor: pointer; }
+  .nav-btn:hover { background: #f0f0ee; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .shuffle-btn { font-size: 12px; color: #888; background: transparent; border: none; padding: 0 4px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="deck">
+  <h1>Países y Nacionalidades</h1>
+  <div class="dots" id="dots"></div>
+  <div class="progress" id="progress"></div>
+  <div class="card-wrap" id="cardWrap" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="face front" id="front"></div>
+      <div class="face back" id="back"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Anterior</button>
+    <button class="shuffle-btn" onclick="shuffle()">barajar</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Siguiente →</button>
+  </div>
+</div>
+
+<script>
+const cards = [
+  { flag: "🇪🇸", pais: "España",          masc: "español",        fem: "española",        plMasc: "españoles",        plFem: "españolas",        idioma: "español" },
+  { flag: "🇫🇷", pais: "Francia",         masc: "francés",        fem: "francesa",        plMasc: "franceses",        plFem: "francesas",        idioma: "francés" },
+  { flag: "🇩🇪", pais: "Alemania",        masc: "alemán",         fem: "alemana",         plMasc: "alemanes",         plFem: "alemanas",         idioma: "alemán" },
+  { flag: "🇮🇹", pais: "Italia",          masc: "italiano",       fem: "italiana",        plMasc: "italianos",        plFem: "italianas",        idioma: "italiano" },
+  { flag: "🇵🇹", pais: "Portugal",        masc: "portugués",      fem: "portuguesa",      plMasc: "portugueses",      plFem: "portuguesas",      idioma: "portugués" },
+  { flag: "🇬🇧", pais: "Reino Unido",     masc: "británico",      fem: "británica",       plMasc: "británicos",       plFem: "británicas",       idioma: "inglés" },
+  { flag: "🇺🇸", pais: "Estados Unidos",  masc: "estadounidense", fem: "estadounidense",  plMasc: "estadounidenses",  plFem: "estadounidenses",  idioma: "inglés" },
+  { flag: "🇲🇽", pais: "México",          masc: "mexicano",       fem: "mexicana",        plMasc: "mexicanos",        plFem: "mexicanas",        idioma: "español" },
+  { flag: "🇦🇷", pais: "Argentina",       masc: "argentino",      fem: "argentina",       plMasc: "argentinos",       plFem: "argentinas",       idioma: "español" },
+  { flag: "🇧🇷", pais: "Brasil",          masc: "brasileño",      fem: "brasileña",       plMasc: "brasileños",       plFem: "brasileñas",       idioma: "portugués" },
+  { flag: "🇨🇳", pais: "China",           masc: "chino",          fem: "china",           plMasc: "chinos",           plFem: "chinas",           idioma: "chino (mandarín)" },
+  { flag: "🇯🇵", pais: "Japón",           masc: "japonés",        fem: "japonesa",        plMasc: "japoneses",        plFem: "japonesas",        idioma: "japonés" },
+  { flag: "🇷🇺", pais: "Rusia",           masc: "ruso",           fem: "rusa",            plMasc: "rusos",            plFem: "rusas",            idioma: "ruso" },
+  { flag: "🇲🇦", pais: "Marruecos",       masc: "marroquí",       fem: "marroquí",        plMasc: "marroquíes",       plFem: "marroquíes",       idioma: "árabe" },
+  { flag: "🇨🇴", pais: "Colombia",        masc: "colombiano",     fem: "colombiana",      plMasc: "colombianos",      plFem: "colombianas",      idioma: "español" },
+  { flag: "🇨🇱", pais: "Chile",           masc: "chileno",        fem: "chilena",         plMasc: "chilenos",         plFem: "chilenas",         idioma: "español" },
+  { flag: "🇵🇪", pais: "Perú",            masc: "peruano",        fem: "peruana",         plMasc: "peruanos",         plFem: "peruanas",         idioma: "español" },
+  { flag: "🇬🇷", pais: "Grecia",          masc: "griego",         fem: "griega",          plMasc: "griegos",          plFem: "griegas",          idioma: "griego" },
+  { flag: "🇵🇱", pais: "Polonia",         masc: "polaco",         fem: "polaca",          plMasc: "polacos",          plFem: "polacas",          idioma: "polaco" },
+  { flag: "🇳🇱", pais: "Países Bajos",    masc: "holandés",       fem: "holandesa",       plMasc: "holandeses",       plFem: "holandesas",       idioma: "neerlandés" },
+  { flag: "🇧🇦", pais: "Bosnia",          masc: "bosnio",         fem: "bosnia",          plMasc: "bosnios",          plFem: "bosnias",          idioma: "bosnio" },
+  { flag: "🇷🇸", pais: "Serbia",          masc: "serbio",         fem: "serbia",          plMasc: "serbios",          plFem: "serbias",          idioma: "serbio" },
+  { flag: "🇦🇹", pais: "Austria",         masc: "austriaco",      fem: "austriaca",       plMasc: "austriacos",       plFem: "austriacas",       idioma: "alemán" },
+  { flag: "🇹🇷", pais: "Turquía",         masc: "turco",          fem: "turca",           plMasc: "turcos",           plFem: "turcas",           idioma: "turco" },
+  { flag: "🇸🇪", pais: "Suecia",          masc: "sueco",          fem: "sueca",           plMasc: "suecos",           plFem: "suecas",           idioma: "sueco" },
+  { flag: "🇳🇴", pais: "Noruega",         masc: "noruego",        fem: "noruega",         plMasc: "noruegos",         plFem: "noruegas",         idioma: "noruego" },
+  { flag: "🇨🇿", pais: "República Checa", masc: "checo",          fem: "checa",           plMasc: "checos",           plFem: "checas",           idioma: "checo" },
+  { flag: "🇭🇺", pais: "Hungría",         masc: "húngaro",        fem: "húngara",         plMasc: "húngaros",         plFem: "húngaras",         idioma: "húngaro" },
+  { flag: "🇷🇴", pais: "Rumanía",         masc: "rumano",         fem: "rumana",          plMasc: "rumanos",          plFem: "rumanas",          idioma: "rumano" },
+  { flag: "🇺🇦", pais: "Ucrania",         masc: "ucraniano",      fem: "ucraniana",       plMasc: "ucranianos",       plFem: "ucranianas",       idioma: "ucraniano" },
+];
+
+let order = [...Array(cards.length).keys()];
+let cur = 0, seen = new Set(), isFlipped = false;
+
+function shuffle() {
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  cur = 0; seen = new Set(); isFlipped = false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  render();
+}
+
+function render() {
+  seen.add(cur);
+  const c = cards[order[cur]];
+  document.getElementById('progress').textContent = `${cur + 1} / ${cards.length}`;
+  document.getElementById('front').innerHTML = `
+    <div class="flag">${c.flag}</div>
+    <div class="country-name">${c.pais}</div>
+    <div class="hint">toca para ver la nacionalidad</div>
+  `;
+  document.getElementById('back').innerHTML = `
+    <div class="back-title">${c.pais}</div>
+    <div class="grid">
+      <div class="row"><span class="label">masculino</span><span class="val">${c.masc}</span></div>
+      <div class="row"><span class="label">femenino</span><span class="val">${c.fem}</span></div>
+      <div class="row"><span class="label">plural masc.</span><span class="val">${c.plMasc}</span></div>
+      <div class="row"><span class="label">plural fem.</span><span class="val">${c.plFem}</span></div>
+    </div>
+    <div class="idioma-row"><span class="label">idioma: </span><span class="val" style="font-size:13px;">${c.idioma}</span></div>
+  `;
+  const dots = document.getElementById('dots');
+  dots.innerHTML = order.map((_, i) => `<div class="dot${i === cur ? ' active' : seen.has(i) ? ' seen' : ''}"></div>`).join('');
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === cards.length - 1;
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('cardInner').classList.toggle('flipped', isFlipped);
+}
+
+function navigate(dir) {
+  cur = Math.max(0, Math.min(cards.length - 1, cur + dir));
+  isFlipped = false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
