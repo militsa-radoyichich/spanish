@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presente Regular – Ejercicios</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 580px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .section { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .ex-title { font-size: 13px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: #f5f5f3; }
+  .feedback-msg { margin-top: 0.6rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+
+  /* conjugation table */
+  .conj-table-wrap { overflow-x: auto; }
+  .conj-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .conj-table th { background: #f5f5f3; padding: 7px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #888; text-align: left; }
+  .conj-table td { padding: 7px 10px; border-top: 0.5px solid #f0f0ee; color: #333; vertical-align: middle; }
+  .conj-table td:first-child { color: #888; font-size: 13px; width: 110px; }
+  .conj-input { border: none; border-bottom: 2px solid #ccc; font-size: 14px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; width: 120px; }
+  .conj-input.correct { border-color: #22c55e; color: #16a34a; }
+  .conj-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .verb-group { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+  .ar { background: #dbeafe; color: #1e40af; }
+  .er { background: #dcfce7; color: #166534; }
+  .ir { background: #fce7f3; color: #9d174d; }
+
+  /* blank */
+  .blank-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .blank-item { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: #333; flex-wrap: wrap; line-height: 1.8; }
+  .blank-input { min-width: 100px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; text-align: center; }
+  .blank-input.correct { border-color: #22c55e; color: #16a34a; }
+  .blank-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .hint-tag { font-size: 11px; color: #bbb; font-style: italic; }
+
+  /* multiple choice */
+  .mc-list { display: flex; flex-direction: column; gap: 14px; }
+  .mc-item { font-size: 14px; color: #333; }
+  .mc-q { margin-bottom: 6px; font-weight: 500; line-height: 1.5; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mc-btn:hover { background: #eee; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+
+  /* classify by group */
+  .classify-wrap { display: flex; gap: 8px; margin-bottom: 0.8rem; }
+  .classify-col { flex: 1; border-radius: 12px; padding: 10px; min-height: 60px; }
+  .classify-col.ar { background: #dbeafe; }
+  .classify-col.er { background: #dcfce7; }
+  .classify-col.ir { background: #fce7f3; }
+  .classify-col h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .classify-col.ar h3 { color: #1e40af; }
+  .classify-col.er h3 { color: #166534; }
+  .classify-col.ir h3 { color: #9d174d; }
+  .classify-col .dropped { display: flex; flex-wrap: wrap; gap: 5px; min-height: 28px; }
+  .drag-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0.8rem; }
+  .drag-chip { background: #f5f5f3; border: 1.5px solid #ddd; border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .drag-chip:hover { background: #eee; }
+  .drag-chip.placed { opacity: 0.3; pointer-events: none; }
+  .placed-chip { background: #fff; border: 1.5px solid #ccc; border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .placed-chip.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .placed-chip.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+
+  /* odd one out */
+  .odd-list { display: flex; flex-direction: column; gap: 14px; }
+  .odd-item { font-size: 14px; color: #333; }
+  .odd-q { margin-bottom: 6px; color: #888; font-size: 12px; }
+  .odd-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .odd-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+  .odd-btn:hover { background: #eee; }
+  .odd-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .odd-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .odd-btn:disabled { cursor: default; }
+
+  .verb-tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .vtab { border: 1.5px solid #e0e0e0; background: #f5f5f3; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; }
+  .vtab.active.ar { background: #dbeafe; border-color: #93c5fd; color: #1e40af; font-weight: 600; }
+  .vtab.active.er { background: #dcfce7; border-color: #86efac; color: #166534; font-weight: 600; }
+  .vtab.active.ir { background: #fce7f3; border-color: #f9a8d4; color: #9d174d; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🇪🇸 Presente de Indicativo</h1>
+    <p>Glagoli -AR, -ER, -IR · ejercicios interactivos</p>
+  </div>
+
+  <!-- EX 1: KONJUGACIJSKA TABELA -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 1 — Konjugiraj glagol</div>
+    <div class="ex-desc">Odaberi glagol i popuni sva lica u prezentu.</div>
+    <div class="verb-tabs" id="verbTabs"></div>
+    <div class="conj-table-wrap">
+      <table class="conj-table" id="conjTable"></table>
+    </div>
+    <button class="check-btn" onclick="checkConj()">Provjeri</button>
+    <button class="reset-btn" onclick="resetConj()">Reset</button>
+    <div class="feedback-msg" id="conjFb"></div>
+  </div>
+
+  <!-- EX 2: POPUNI PRAZNINU -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 2 — Popuni prazninu</div>
+    <div class="ex-desc">Upiši tačan oblik glagola u zagradi.</div>
+    <ul class="blank-list" id="blankList"></ul>
+    <button class="check-btn" onclick="checkBlanks()">Provjeri</button>
+    <button class="reset-btn" onclick="resetBlanks()">Reset</button>
+    <div class="feedback-msg" id="blankFb"></div>
+  </div>
+
+  <!-- EX 3: VIŠESTRUKI IZBOR -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 3 — Odaberi tačan oblik</div>
+    <div class="ex-desc">Klikni na tačan odgovor.</div>
+    <div class="mc-list" id="mcList"></div>
+    <div class="feedback-msg" id="mcFb" style="margin-top:0.8rem;"></div>
+  </div>
+
+  <!-- EX 4: RAZVRSTAJ PO GRUPI -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 4 — Razvrstaj glagole po grupi</div>
+    <div class="ex-desc">Klikni na glagol da ga dodaš u -AR, -ER ili -IR kolonu.</div>
+    <div class="drag-bank" id="dragBank"></div>
+    <div class="classify-wrap">
+      <div class="classify-col ar"><h3>-AR</h3><div class="dropped" id="dropAR"></div></div>
+      <div class="classify-col er"><h3>-ER</h3><div class="dropped" id="dropER"></div></div>
+      <div class="classify-col ir"><h3>-IR</h3><div class="dropped" id="dropIR"></div></div>
+    </div>
+    <button class="check-btn" onclick="checkClassify()">Provjeri</button>
+    <button class="reset-btn" onclick="resetClassify()">Reset</button>
+    <div class="feedback-msg" id="classifyFb"></div>
+  </div>
+
+  <!-- EX 5: ODD ONE OUT -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 5 — Uljez! Koji oblik ne pripada?</div>
+    <div class="ex-desc">Jedan oblik nije tačan za dato lice. Pronađi ga.</div>
+    <div class="odd-list" id="oddList"></div>
+    <div class="feedback-msg" id="oddFb" style="margin-top:0.8rem;"></div>
+  </div>
+
+</div>
+<script>
+// ======= EX 1: KONJUGACIJA =======
+const pronouns = ["yo","tú","él/ella","nosotros","vosotros","ellos/ellas"];
+const verbs = [
+  { inf:"hablar", group:"ar", forms:["hablo","hablas","habla","hablamos","habláis","hablan"] },
+  { inf:"trabajar", group:"ar", forms:["trabajo","trabajas","trabaja","trabajamos","trabajáis","trabajan"] },
+  { inf:"escuchar", group:"ar", forms:["escucho","escuchas","escucha","escuchamos","escucháis","escuchan"] },
+  { inf:"llamar", group:"ar", forms:["llamo","llamas","llama","llamamos","llamáis","llaman"] },
+  { inf:"comprar", group:"ar", forms:["compro","compras","compra","compramos","compráis","compran"] },
+  { inf:"comer", group:"er", forms:["como","comes","come","comemos","coméis","comen"] },
+  { inf:"beber", group:"er", forms:["bebo","bebes","bebe","bebemos","bebéis","beben"] },
+  { inf:"leer", group:"er", forms:["leo","lees","lee","leemos","leéis","leen"] },
+  { inf:"correr", group:"er", forms:["corro","corres","corre","corremos","corréis","corren"] },
+  { inf:"vivir", group:"ir", forms:["vivo","vives","vive","vivimos","vivís","viven"] },
+  { inf:"escribir", group:"ir", forms:["escribo","escribes","escribe","escribimos","escribís","escriben"] },
+  { inf:"abrir", group:"ir", forms:["abro","abres","abre","abrimos","abrís","abren"] },
+];
+let activeVerb = 0;
+
+function renderVerbTabs() {
+  document.getElementById('verbTabs').innerHTML = verbs.map((v,i)=>`
+    <button class="vtab${i===activeVerb?' active '+v.group:''}" onclick="selectVerb(${i})">${v.inf} <span class="verb-group ${v.group}">-${v.group.toUpperCase()}</span></button>
+  `).join('');
+}
+function selectVerb(i) { activeVerb=i; renderVerbTabs(); renderConjTable(); document.getElementById('conjFb').textContent=''; }
+function renderConjTable() {
+  const v=verbs[activeVerb];
+  document.getElementById('conjTable').innerHTML=`
+    <tr><th>Lice</th><th>${v.inf} <span class="verb-group ${v.group}">-${v.group.toUpperCase()}</span></th></tr>
+    ${pronouns.map((p,i)=>`<tr><td>${p}</td><td><input class="conj-input" id="ci-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"></td></tr>`).join('')}`;
+}
+function checkConj() {
+  const v=verbs[activeVerb]; let ok=0;
+  pronouns.forEach((_,i)=>{
+    const inp=document.getElementById(`ci-${i}`);
+    if(inp.value.trim().toLowerCase()===v.forms[i]){inp.className='conj-input correct';ok++;}
+    else{inp.className='conj-input wrong';inp.placeholder=v.forms[i];}
+  });
+  const fb=document.getElementById('conjFb');
+  fb.textContent=`${ok} / ${pronouns.length} tačno`;
+  fb.className=ok===pronouns.length?'feedback-msg ok':'feedback-msg bad';
+}
+function resetConj() {
+  pronouns.forEach((_,i)=>{const inp=document.getElementById(`ci-${i}`);inp.value='';inp.className='conj-input';inp.placeholder='?';});
+  document.getElementById('conjFb').textContent='';
+}
+renderVerbTabs(); renderConjTable();
+
+// ======= EX 2: POPUNI PRAZNINU =======
+const blanks = [
+  {pre:"Yo",post:"en Madrid. (vivir)",ans:"vivo"},
+  {pre:"Ella",post:"mucho café. (beber)",ans:"bebe"},
+  {pre:"Nosotros",post:"español en clase. (hablar)",ans:"hablamos"},
+  {pre:"¿Tú",post:"el periódico? (leer)",ans:"lees"},
+  {pre:"Ellos",post:"en una oficina. (trabajar)",ans:"trabajan"},
+  {pre:"Vosotros",post:"demasiado. (comer)",ans:"coméis"},
+  {pre:"Yo",post:"una carta. (escribir)",ans:"escribo"},
+  {pre:"Él",post:"la puerta. (abrir)",ans:"abre"},
+  {pre:"¿Usted",post:"inglés? (hablar)",ans:"habla"},
+  {pre:"Nosotros",post:"agua. (beber)",ans:"bebemos"},
+  {pre:"Yo",post:"música todos los días. (escuchar)",ans:"escucho"},
+  {pre:"Tú",post:"muy rápido. (correr)",ans:"corres"},
+  {pre:"Ellas",post:"libros en la biblioteca. (leer)",ans:"leen"},
+  {pre:"Vosotros",post:"en Barcelona. (vivir)",ans:"vivís"},
+  {pre:"Él",post:"pan en la tienda. (comprar)",ans:"compra"},
+  {pre:"Yo",post:"a mi madre todos los días. (llamar)",ans:"llamo"},
+  {pre:"¿Tú",post:"la ventana? (abrir)",ans:"abres"},
+  {pre:"Nosotros",post:"una carta. (escribir)",ans:"escribimos"},
+  {pre:"Ellos",post:"fútbol. (escuchar → mirar)", ans:"miran", pre2:""},
+  {pre:"Ella",post:"mucho en el trabajo. (trabajar)",ans:"trabaja"},
+];
+function renderBlanks() {
+  document.getElementById('blankList').innerHTML=blanks.map((b,i)=>`
+    <li class="blank-item">
+      <span>${b.pre}</span>
+      <input class="blank-input" id="bi-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false">
+      <span>${b.post}</span>
+    </li>`).join('');
+}
+function checkBlanks() {
+  let ok=0;
+  blanks.forEach((b,i)=>{
+    const inp=document.getElementById(`bi-${i}`);
+    if(inp.value.trim().toLowerCase()===b.ans.toLowerCase()){inp.className='blank-input correct';ok++;}
+    else{inp.className='blank-input wrong';inp.placeholder=b.ans;}
+  });
+  const fb=document.getElementById('blankFb');
+  fb.textContent=`${ok} / ${blanks.length} tačno`;
+  fb.className=ok===blanks.length?'feedback-msg ok':'feedback-msg bad';
+}
+function resetBlanks() {
+  blanks.forEach((_,i)=>{const inp=document.getElementById(`bi-${i}`);inp.value='';inp.className='blank-input';inp.placeholder='?';});
+  document.getElementById('blankFb').textContent='';
+}
+renderBlanks();
+
+// ======= EX 3: VIŠESTRUKI IZBOR =======
+const mcItems = [
+  {q:"Yo ___ en casa. (comer)",opts:["como","comes","come","comemos"],ans:"como"},
+  {q:"Tú ___ mucho. (hablar)",opts:["hablo","hablas","habla","habláis"],ans:"hablas"},
+  {q:"Nosotros ___ agua. (beber)",opts:["bebo","beben","bebemos","bebéis"],ans:"bebemos"},
+  {q:"Ellos ___ en Madrid. (vivir)",opts:["vivo","vivís","vive","viven"],ans:"viven"},
+  {q:"Vosotros ___ el libro. (leer)",opts:["lees","leéis","leen","leemos"],ans:"leéis"},
+  {q:"Ella ___ una carta. (escribir)",opts:["escribo","escribes","escribe","escriben"],ans:"escribe"},
+  {q:"Yo ___ la puerta. (abrir)",opts:["abres","abre","abro","abrimos"],ans:"abro"},
+  {q:"Tú ___ en la oficina. (trabajar)",opts:["trabajo","trabajas","trabaja","trabajáis"],ans:"trabajas"},
+  {q:"Él ___ mucho café. (beber)",opts:["bebo","bebes","bebe","bebemos"],ans:"bebe"},
+  {q:"Nosotros ___ español. (hablar)",opts:["hablo","hablan","habláis","hablamos"],ans:"hablamos"},
+  {q:"Vosotros ___ rápido. (correr)",opts:["corréis","corremos","corren","corro"],ans:"corréis"},
+  {q:"Ellas ___ música. (escuchar)",opts:["escucho","escucha","escuchan","escucháis"],ans:"escuchan"},
+];
+let mcDone=new Array(mcItems.length).fill(false);
+function renderMc() {
+  document.getElementById('mcList').innerHTML=mcItems.map((item,i)=>`
+    <div class="mc-item">
+      <div class="mc-q">${item.q}</div>
+      <div class="mc-opts">${item.opts.map(o=>`
+        <button class="mc-btn" id="mc-${i}-${o}" onclick="pickMc(${i},'${o}')">${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function pickMc(i,chosen) {
+  if(mcDone[i]) return; mcDone[i]=true;
+  const item=mcItems[i];
+  item.opts.forEach(o=>{
+    const btn=document.getElementById(`mc-${i}-${o}`); btn.disabled=true;
+    if(o===item.ans) btn.className='mc-btn reveal';
+    if(o===chosen&&chosen!==item.ans) btn.className='mc-btn wrong';
+    if(o===chosen&&chosen===item.ans) btn.className='mc-btn correct';
+  });
+  if(mcDone.every(Boolean)){
+    const ok=mcItems.filter((it,idx)=>document.getElementById(`mc-${idx}-${it.ans}`).classList.contains('correct')).length;
+    const fb=document.getElementById('mcFb');
+    fb.textContent=`${ok} / ${mcItems.length} tačno`;
+    fb.className=ok===mcItems.length?'feedback-msg ok':'feedback-msg bad';
+  }
+}
+renderMc();
+
+// ======= EX 4: KLASIFIKACIJA =======
+const classWords = [
+  {w:"hablar",g:"AR"},{w:"comer",g:"ER"},{w:"vivir",g:"IR"},
+  {w:"trabajar",g:"AR"},{w:"beber",g:"ER"},{w:"escribir",g:"IR"},
+  {w:"escuchar",g:"AR"},{w:"leer",g:"ER"},{w:"abrir",g:"IR"},
+  {w:"llamar",g:"AR"},{w:"correr",g:"ER"},{w:"recibir",g:"IR"},
+  {w:"comprar",g:"AR"},{w:"vender",g:"ER"},{w:"subir",g:"IR"},
+  {w:"mirar",g:"AR"},{w:"responder",g:"ER"},{w:"partir",g:"IR"},
+];
+let classPlaced={}, classNext='AR';
+const groups=['AR','ER','IR'];
+function renderClassify() {
+  document.getElementById('dragBank').innerHTML=classWords.map(w=>`
+    <div class="drag-chip${classPlaced[w.w]?' placed':''}" id="chip-${w.w}" onclick="placeChip('${w.w}')">${w.w}</div>`).join('');
+  groups.forEach(g=>{
+    document.getElementById(`drop${g}`).innerHTML=
+      classWords.filter(w=>classPlaced[w.w]===g).map(w=>`
+        <div class="placed-chip" id="placed-${w.w}" onclick="unplaceChip('${w.w}')">${w.w}</div>`).join('');
+  });
+}
+function placeChip(word) {
+  if(classPlaced[word]) return;
+  classPlaced[word]=classNext;
+  const idx=groups.indexOf(classNext);
+  classNext=groups[(idx+1)%3];
+  renderClassify(); document.getElementById('classifyFb').textContent='';
+}
+function unplaceChip(word) { classPlaced[word]=null; renderClassify(); }
+function checkClassify() {
+  let ok=0,total=0;
+  classWords.forEach(w=>{
+    if(!classPlaced[w.w]) return; total++;
+    const el=document.getElementById(`placed-${w.w}`);
+    if(classPlaced[w.w]===w.g){el.className='placed-chip correct';ok++;}
+    else el.className='placed-chip wrong';
+  });
+  const fb=document.getElementById('classifyFb');
+  if(total<classWords.length){fb.textContent=`Rasporedi sve! (${total}/${classWords.length})`;fb.className='feedback-msg bad';return;}
+  fb.textContent=`${ok} / ${total} tačno`;
+  fb.className=ok===total?'feedback-msg ok':'feedback-msg bad';
+}
+function resetClassify() { classPlaced={}; classNext='AR'; document.getElementById('classifyFb').textContent=''; renderClassify(); }
+renderClassify();
+
+// ======= EX 5: ODD ONE OUT =======
+const oddItems = [
+  {q:"Koji oblik NE pripada glagolu HABLAR?", words:["hablo","hablas","hable","habla"], odd:"hable"},
+  {q:"Koji oblik NE pripada glagolu COMER?", words:["como","comes","comamos","come"], odd:"comamos"},
+  {q:"Koji oblik NE pripada glagolu VIVIR?", words:["vivo","vives","vivimos","vivemos"], odd:"vivemos"},
+  {q:"Koji oblik NE pripada glagolu BEBER?", words:["bebo","bebes","bebís","bebe"], odd:"bebís"},
+  {q:"Koji oblik NE pripada glagolu ESCRIBIR?", words:["escribo","escribes","escribimos","escribamos"], odd:"escribamos"},
+  {q:"Koji oblik NE pripada glagolu TRABAJAR?", words:["trabajo","trabajas","trabajáis","trabajéis"], odd:"trabajéis"},
+  {q:"Koji oblik NE pripada glagolu CORRER?", words:["corro","corres","corremos","corrimos"], odd:"corrimos"},
+  {q:"Koji oblik NE pripada glagolu ABRIR?", words:["abro","abres","abrimos","abremos"], odd:"abremos"},
+];
+let oddDone=new Array(oddItems.length).fill(false);
+function renderOdd() {
+  document.getElementById('oddList').innerHTML=oddItems.map((item,i)=>`
+    <div class="odd-item">
+      <div class="odd-q">${item.q}</div>
+      <div class="odd-opts">${item.words.map(w=>`
+        <button class="odd-btn" id="odd-${i}-${w}" onclick="pickOdd(${i},'${w}')">${w}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function pickOdd(i,chosen) {
+  if(oddDone[i]) return; oddDone[i]=true;
+  const item=oddItems[i];
+  item.words.forEach(w=>{
+    const btn=document.getElementById(`odd-${i}-${w}`); btn.disabled=true;
+    if(w===item.odd) btn.className='odd-btn reveal';
+    if(w===chosen&&chosen!==item.odd) btn.className='odd-btn wrong';
+    if(w===chosen&&chosen===item.odd) btn.className='odd-btn correct';
+  });
+  if(oddDone.every(Boolean)){
+    const ok=oddItems.filter((it,idx)=>document.getElementById(`odd-${idx}-${it.odd}`).classList.contains('correct')).length;
+    const fb=document.getElementById('oddFb');
+    fb.textContent=`${ok} / ${oddItems.length} tačno`;
+    fb.className=ok===oddItems.length?'feedback-msg ok':'feedback-msg bad';
+  }
+}
+renderOdd();
+</script>
+</body>
+</html>
