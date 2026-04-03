@@ -99,7 +99,7 @@
   <!-- EX 1: EL ILI LA -->
   <div class="section">
     <div class="ex-title">Ejercicio 1 — El o La</div>
-    <div class="ex-desc">Klikni na svaku riječ da dodaš el ili la, zatim provjeri.</div>
+    <div class="ex-desc">Klikni na svaku reč da dodaš el ili la, zatim proveri.</div>
     <div class="pills-grid" id="ellaGrid"></div>
     <button class="check-btn" onclick="checkElLa()">Provjeri</button>
     <button class="reset-btn" onclick="resetElLa()">Reset</button>
@@ -111,7 +111,7 @@
     <div class="ex-title">Ejercicio 2 — Popuni član</div>
     <div class="ex-desc">Upiši el, la, un ili una.</div>
     <ul class="blank-list" id="blankList"></ul>
-    <button class="check-btn" onclick="checkBlanks()">Provjeri</button>
+    <button class="check-btn" onclick="checkBlanks()">Proveri</button>
     <button class="reset-btn" onclick="resetBlanks()">Reset</button>
     <div class="feedback-msg" id="blankFb"></div>
   </div>
@@ -127,23 +127,23 @@
   <!-- EX 4: KLASIFIKACIJA -->
   <div class="section">
     <div class="ex-title">Ejercicio 4 — Razvrstaj imenice</div>
-    <div class="ex-desc">Klikni na riječ da je dodaš u kolonu, pa na nju opet da je vratiš.</div>
+    <div class="ex-desc">Klikni na reč da je dodaš u kolonu, pa na nju opet da je vratiš.</div>
     <div class="drag-bank" id="dragBank"></div>
     <div class="classify-wrap">
       <div class="classify-col masc"><h3>🔵 Masculino</h3><div class="dropped" id="dropMasc"></div></div>
       <div class="classify-col fem"><h3>🔴 Femenino</h3><div class="dropped" id="dropFem"></div></div>
     </div>
-    <button class="check-btn" onclick="checkClassify()">Provjeri</button>
+    <button class="check-btn" onclick="checkClassify()">Proveri</button>
     <button class="reset-btn" onclick="resetClassify()">Reset</button>
     <div class="feedback-msg" id="classifyFb"></div>
   </div>
 
-  <!-- EX 5: PROMJENA RODA -->
+  <!-- EX 5: PROMENA RODA -->
   <div class="section">
     <div class="ex-title">Ejercicio 5 — Napiši ženski oblik</div>
-    <div class="ex-desc">Upiši ženski rod imenice ili pridjeva.</div>
+    <div class="ex-desc">Upiši ženski rod imenice ili prideva.</div>
     <div class="transform-list" id="transformList"></div>
-    <button class="check-btn" onclick="checkTransform()">Provjeri</button>
+    <button class="check-btn" onclick="checkTransform()">Proveri</button>
     <button class="reset-btn" onclick="resetTransform()">Reset</button>
     <div class="feedback-msg" id="transformFb"></div>
   </div>
@@ -337,7 +337,7 @@ function checkClassify() {
 function resetClassify() { classifyPlaced={}; classifyNextDrop='masc'; document.getElementById('classifyFb').textContent=''; renderClassify(); }
 renderClassify();
 
-// ======= EX 5: PROMJENA RODA =======
+// ======= EX 5: PROMENA RODA =======
 const transforms = [
   {masc:"el chico",fem:"la chica"},{masc:"el doctor",fem:"la doctora"},
   {masc:"el gato",fem:"la gata"},{masc:"el actor",fem:"la actriz"},
