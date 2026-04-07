@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Género y Número – Ejercicios</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 580px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .section { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .ex-title { font-size: 13px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: #f5f5f3; }
+  .feedback-msg { margin-top: 0.6rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+  .pills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .word-pill { display: inline-flex; align-items: center; gap: 6px; background: #f5f5f3; border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 6px 14px; font-size: 14px; cursor: pointer; user-select: none; transition: all 0.15s; }
+  .word-pill .art { font-size: 12px; font-weight: 700; min-width: 22px; color: #aaa; }
+  .word-pill.correct { background: #dcfce7; border-color: #22c55e; }
+  .word-pill.correct .art { color: #16a34a; }
+  .word-pill.wrong { background: #fee2e2; border-color: #ef4444; }
+  .word-pill.wrong .art { color: #dc2626; }
+  .blank-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .blank-item { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: #333; flex-wrap: wrap; line-height: 1.8; }
+  .blank-input { min-width: 68px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; text-align: center; }
+  .blank-input.correct { border-color: #22c55e; color: #16a34a; }
+  .blank-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .transform-list { display: flex; flex-direction: column; gap: 10px; }
+  .transform-item { display: flex; align-items: center; gap: 8px; font-size: 15px; flex-wrap: wrap; }
+  .from-word { font-weight: 600; color: #1e40af; min-width: 130px; }
+  .arrow { color: #bbb; }
+  .transform-input { min-width: 150px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; }
+  .transform-input.correct { border-color: #22c55e; color: #16a34a; }
+  .transform-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .mc-list { display: flex; flex-direction: column; gap: 14px; }
+  .mc-item .mc-q { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 6px; line-height: 1.5; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mc-btn:hover { background: #eee; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+  .classify-wrap { display: flex; gap: 8px; margin-bottom: 0.8rem; flex-wrap: wrap; }
+  .classify-col { flex: 1; min-width: 110px; border-radius: 12px; padding: 10px; min-height: 60px; }
+  .classify-col.el { background: #dbeafe; }
+  .classify-col.la { background: #fce7f3; }
+  .classify-col.los { background: #e0f2fe; }
+  .classify-col.las { background: #fdf4ff; }
+  .classify-col h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .classify-col.el h3 { color: #1e40af; }
+  .classify-col.la h3 { color: #9d174d; }
+  .classify-col.los h3 { color: #0369a1; }
+  .classify-col.las h3 { color: #7e22ce; }
+  .classify-col .dropped { display: flex; flex-wrap: wrap; gap: 5px; min-height: 28px; }
+  .drag-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0.8rem; }
+  .drag-chip { background: #f5f5f3; border: 1.5px solid #ddd; border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .drag-chip:hover { background: #eee; }
+  .drag-chip.placed { opacity: 0.3; pointer-events: none; }
+  .placed-chip { background: #fff; border: 1.5px solid #ccc; border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .placed-chip.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .placed-chip.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-list { display: flex; flex-direction: column; gap: 14px; }
+  .odd-item .odd-q { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .odd-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .odd-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+  .odd-btn:hover { background: #eee; }
+  .odd-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .odd-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .odd-btn:disabled { cursor: default; }
+  .sb-list { display: flex; flex-direction: column; gap: 16px; }
+  .sb-item { font-size: 14px; color: #555; }
+  .sb-q { margin-bottom: 8px; font-style: italic; color: #888; font-size: 13px; }
+  .sb-words { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .sb-word { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 12px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+  .sb-word:hover { background: #eee; }
+  .sb-word.used { opacity: 0.3; pointer-events: none; }
+  .sb-answer { min-height: 36px; border-bottom: 2px solid #e0e0e0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-bottom: 4px; }
+  .sb-placed { border: 1.5px solid #ccc; background: #fff; border-radius: 8px; padding: 4px 10px; font-size: 14px; cursor: pointer; }
+  .sb-placed:hover { background: #fee2e2; border-color: #ef4444; }
+  .sb-result { font-size: 12px; margin-top: 4px; font-weight: 500; }
+  .sb-result.ok { color: #16a34a; }
+  .sb-result.bad { color: #dc2626; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🇪🇸 Género y Número</h1>
+    <p>El artículo · singular y plural · ejercicios interactivos</p>
+  </div>
+
+  <!-- EX 1 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 1 — El, La, Los ili Las?</div>
+    <div class="ex-desc">Klikni na svaku imenicu da promijeniš član, zatim provjeri.</div>
+    <div class="pills-grid" id="artGrid"></div>
+    <button class="check-btn" onclick="checkArt()">Provjeri</button>
+    <button class="reset-btn" onclick="resetArt()">Reset</button>
+    <div class="feedback-msg" id="artFb"></div>
+  </div>
+
+  <!-- EX 2 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 2 — Napiši množinu (s članom)</div>
+    <div class="ex-desc">Pretvori iz jednine u množinu. Npr: el libro → los libros</div>
+    <div class="transform-list" id="pluralList"></div>
+    <button class="check-btn" onclick="checkPlural()">Provjeri</button>
+    <button class="reset-btn" onclick="resetPlural()">Reset</button>
+    <div class="feedback-msg" id="pluralFb"></div>
+  </div>
+
+  <!-- EX 3 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 3 — Popuni član</div>
+    <div class="ex-desc">Upiši el, la, los ili las.</div>
+    <ul class="blank-list" id="blankList"></ul>
+    <button class="check-btn" onclick="checkBlanks()">Provjeri</button>
+    <button class="reset-btn" onclick="resetBlanks()">Reset</button>
+    <div class="feedback-msg" id="blankFb"></div>
+  </div>
+
+  <!-- EX 4 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 4 — Odaberi tačan oblik</div>
+    <div class="ex-desc">Klikni na tačan odgovor.</div>
+    <div class="mc-list" id="mcList"></div>
+    <div class="feedback-msg" id="mcFb" style="margin-top:0.8rem;"></div>
+  </div>
+
+  <!-- EX 5 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 5 — Razvrstaj imenice po članu</div>
+    <div class="ex-desc">Klikni na imenicu da je dodaš u odgovarajuću kolonu.</div>
+    <div class="drag-bank" id="dragBank"></div>
+    <div class="classify-wrap">
+      <div class="classify-col el"><h3>EL</h3><div class="dropped" id="dropEl"></div></div>
+      <div class="classify-col la"><h3>LA</h3><div class="dropped" id="dropLa"></div></div>
+      <div class="classify-col los"><h3>LOS</h3><div class="dropped" id="dropLos"></div></div>
+      <div class="classify-col las"><h3>LAS</h3><div class="dropped" id="dropLas"></div></div>
+    </div>
+    <button class="check-btn" onclick="checkClassify()">Provjeri</button>
+    <button class="reset-btn" onclick="resetClassify()">Reset</button>
+    <div class="feedback-msg" id="classifyFb"></div>
+  </div>
+
+  <!-- EX 6 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 6 — Uljez!</div>
+    <div class="ex-desc">Jedan oblik ne odgovara ostalima. Pronađi ga.</div>
+    <div class="odd-list" id="oddList"></div>
+    <div class="feedback-msg" id="oddFb" style="margin-top:0.8rem;"></div>
+  </div>
+
+  <!-- EX 7 -->
+  <div class="section">
+    <div class="ex-title">Ejercicio 7 — Složi rečenicu</div>
+    <div class="ex-desc">Klikni na riječi redom da složiš tačnu rečenicu. Klikni na složenu riječ da je vratiš.</div>
+    <div class="sb-list" id="sbList"></div>
+  </div>
+
+</div>
+<script>
+// EX 1
+const artWords = [
+  {w:"perro",ans:"el"},{w:"ventana",ans:"la"},{w:"zapatos",ans:"los"},{w:"flores",ans:"las"},
+  {w:"hospital",ans:"el"},{w:"leche",ans:"la"},{w:"bolígrafos",ans:"los"},{w:"sillas",ans:"las"},
+  {w:"trabajo",ans:"el"},{w:"tarde",ans:"la"},{w:"coches",ans:"los"},{w:"noches",ans:"las"},
+  {w:"nombre",ans:"el"},{w:"semana",ans:"la"},{w:"profesores",ans:"los"},{w:"amigas",ans:"las"},
+  {w:"tiempo",ans:"el"},{w:"verdad",ans:"la"},{w:"niños",ans:"los"},{w:"palabras",ans:"las"},
+  {w:"color",ans:"el"},{w:"música",ans:"la"},{w:"ejercicios",ans:"los"},{w:"fotos",ans:"las"},
+];
+const artCycle=["—","el","la","los","las"];
+let artState=artWords.map(()=>0);
+function renderArt() {
+  document.getElementById('artGrid').innerHTML=artWords.map((w,i)=>`
+    <div class="word-pill" id="ap-${i}" onclick="cycleArt(${i})">
+      <span class="art" id="aa-${i}">${artCycle[artState[i]]}</span>
+      <span>${w.w}</span>
+    </div>`).join('');
+}
+function cycleArt(i){artState[i]=(artState[i]+1)%artCycle.length;document.getElementById(`aa-${i}`).textContent=artCycle[artState[i]];document.getElementById(`ap-${i}`).className='word-pill';document.getElementById('artFb').textContent='';}
+function checkArt(){let ok=0;artWords.forEach((w,i)=>{const pill=document.getElementById(`ap-${i}`);const chosen=artCycle[artState[i]];pill.className='word-pill '+(chosen===w.ans?'correct':'wrong');if(chosen===w.ans)ok++;});const fb=document.getElementById('artFb');fb.textContent=`${ok} / ${artWords.length} tačno`;fb.className=ok===artWords.length?'feedback-msg ok':'feedback-msg bad';}
+function resetArt(){artState=artWords.map(()=>0);document.getElementById('artFb').textContent='';renderArt();}
+renderArt();
+
+// EX 2
+const plurals = [
+  {sg:"el perro",pl:"los perros"},{sg:"la ventana",pl:"las ventanas"},
+  {sg:"el hospital",pl:"los hospitales"},{sg:"la ciudad",pl:"las ciudades"},
+  {sg:"el color",pl:"los colores"},{sg:"la habitación",pl:"las habitaciones"},
+  {sg:"el examen",pl:"los exámenes"},{sg:"la imagen",pl:"las imágenes"},
+  {sg:"el lunes",pl:"los lunes"},{sg:"la crisis",pl:"las crisis"},
+  {sg:"el joven",pl:"los jóvenes"},{sg:"la vez",pl:"las veces"},
+  {sg:"el autobús",pl:"los autobuses"},{sg:"la conversación",pl:"las conversaciones"},
+  {sg:"el jersey",pl:"los jerséis"},{sg:"la luz",pl:"las luces"},
+];
+function renderPlural(){document.getElementById('pluralList').innerHTML=plurals.map((p,i)=>`<div class="transform-item"><span class="from-word">${p.sg}</span><span class="arrow">→</span><input class="transform-input" id="pi-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"></div>`).join('');}
+function checkPlural(){let ok=0;plurals.forEach((p,i)=>{const inp=document.getElementById(`pi-${i}`);if(inp.value.trim().toLowerCase()===p.pl.toLowerCase()){inp.className='transform-input correct';ok++;}else{inp.className='transform-input wrong';inp.placeholder=p.pl;}});const fb=document.getElementById('pluralFb');fb.textContent=`${ok} / ${plurals.length} tačno`;fb.className=ok===plurals.length?'feedback-msg ok':'feedback-msg bad';}
+function resetPlural(){plurals.forEach((_,i)=>{const inp=document.getElementById(`pi-${i}`);inp.value='';inp.className='transform-input';inp.placeholder='?';});document.getElementById('pluralFb').textContent='';}
+renderPlural();
+
+// EX 3
+const blanks = [
+  {pre:"",post:"profesores son muy buenos.",ans:"Los"},
+  {pre:"Necesito",post:"bolígrafo para escribir.",ans:"un"},
+  {pre:"",post:"tarde es muy tranquila.",ans:"La"},
+  {pre:"",post:"hospitales están llenos.",ans:"Los"},
+  {pre:"Tengo",post:"hambre.",ans:"—", ans2:""},
+  {pre:"",post:"ventanas de mi casa son grandes.",ans:"Las"},
+  {pre:"Busco",post:"zapatos nuevos.",ans:"unos"},
+  {pre:"",post:"tiempo es bueno hoy.",ans:"El"},
+  {pre:"",post:"fotos son muy bonitas.",ans:"Las"},
+  {pre:"Hay",post:"conversación interesante.",ans:"una"},
+  {pre:"",post:"exámenes son difíciles.",ans:"Los"},
+  {pre:"",post:"habitación es pequeña.",ans:"La"},
+  {pre:"",post:"lunes tengo clase de español.",ans:"El"},
+  {pre:"",post:"luces de la ciudad son bonitas.",ans:"Las"},
+  {pre:"Quiero",post:"jersey azul.",ans:"un"},
+  {pre:"",post:"imagen es muy clara.",ans:"La"},
+];
+// fix: remove the "hambre" one since it's special, replace
+const blanks2 = blanks.filter(b=>b.ans!=='—');
+function renderBlanks(){document.getElementById('blankList').innerHTML=blanks2.map((b,i)=>`<li class="blank-item">${b.pre?`<span>${b.pre}</span>`:''}<input class="blank-input" id="bi-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>${b.post}</span></li>`).join('');}
+function checkBlanks(){let ok=0;blanks2.forEach((b,i)=>{const inp=document.getElementById(`bi-${i}`);if(inp.value.trim().toLowerCase()===b.ans.toLowerCase()){inp.className='blank-input correct';ok++;}else{inp.className='blank-input wrong';inp.placeholder=b.ans;}});const fb=document.getElementById('blankFb');fb.textContent=`${ok} / ${blanks2.length} tačno`;fb.className=ok===blanks2.length?'feedback-msg ok':'feedback-msg bad';}
+function resetBlanks(){blanks2.forEach((_,i)=>{const inp=document.getElementById(`bi-${i}`);inp.value='';inp.className='blank-input';inp.placeholder='?';});document.getElementById('blankFb').textContent='';}
+renderBlanks();
+
+// EX 4
+const mcItems = [
+  {q:"___ autobuses salen a las ocho.",opts:["El","La","Los","Las"],ans:"Los"},
+  {q:"___ habitación es muy pequeña.",opts:["El","La","Los","Las"],ans:"La"},
+  {q:"___ jersey es de lana.",opts:["El","La","Los","Las"],ans:"El"},
+  {q:"___ conversaciones son interesantes.",opts:["El","La","Los","Las"],ans:"Las"},
+  {q:"___ exámenes son el viernes.",opts:["El","La","Los","Las"],ans:"Los"},
+  {q:"___ vez que te veo me alegro.",opts:["El","La","Los","Las"],ans:"La"},
+  {q:"___ colores del arco iris son bonitos.",opts:["El","La","Los","Las"],ans:"Los"},
+  {q:"___ imagen es muy bonita.",opts:["El","La","Los","Las"],ans:"La"},
+  {q:"___ lunes es el primer día de la semana.",opts:["El","La","Los","Las"],ans:"El"},
+  {q:"___ luces de navidad son preciosas.",opts:["El","La","Los","Las"],ans:"Las"},
+  {q:"___ jóvenes estudian mucho.",opts:["El","La","Los","Las"],ans:"Los"},
+  {q:"___ verdad es importante.",opts:["El","La","Los","Las"],ans:"La"},
+];
+let mcDone=new Array(mcItems.length).fill(false);
+function renderMc(){document.getElementById('mcList').innerHTML=mcItems.map((item,i)=>`<div class="mc-item"><div class="mc-q">${item.q}</div><div class="mc-opts">${item.opts.map(o=>`<button class="mc-btn" id="mc-${i}-${o}" onclick="pickMc(${i},'${o}')">${o}</button>`).join('')}</div></div>`).join('');}
+function pickMc(i,chosen){if(mcDone[i])return;mcDone[i]=true;const item=mcItems[i];item.opts.forEach(o=>{const btn=document.getElementById(`mc-${i}-${o}`);btn.disabled=true;if(o===item.ans)btn.className='mc-btn reveal';if(o===chosen&&chosen!==item.ans)btn.className='mc-btn wrong';if(o===chosen&&chosen===item.ans)btn.className='mc-btn correct';});if(mcDone.every(Boolean)){const ok=mcItems.filter((it,idx)=>document.getElementById(`mc-${idx}-${it.ans}`).classList.contains('correct')).length;const fb=document.getElementById('mcFb');fb.textContent=`${ok} / ${mcItems.length} tačno`;fb.className=ok===mcItems.length?'feedback-msg ok':'feedback-msg bad';}}
+renderMc();
+
+// EX 5
+const classWords = [
+  {w:"perro",g:"El"},{w:"tarde",g:"La"},{w:"zapatos",g:"Los"},{w:"ventanas",g:"Las"},
+  {w:"trabajo",g:"El"},{w:"leche",g:"La"},{w:"colores",g:"Los"},{w:"noches",g:"Las"},
+  {w:"nombre",g:"El"},{w:"semana",g:"La"},{w:"hospitales",g:"Los"},{w:"habitaciones",g:"Las"},
+  {w:"tiempo",g:"El"},{w:"verdad",g:"La"},{w:"bolígrafos",g:"Los"},{w:"fotos",g:"Las"},
+];
+const groupCols=["El","La","Los","Las"];
+let classPlaced={},classNext=0;
+function renderClassify(){document.getElementById('dragBank').innerHTML=classWords.map(w=>`<div class="drag-chip${classPlaced[w.w]?' placed':''}" id="chip-${w.w}" onclick="placeChip('${w.w}')">${w.w}</div>`).join('');groupCols.forEach(g=>{document.getElementById(`drop${g}`).innerHTML=classWords.filter(w=>classPlaced[w.w]===g).map(w=>`<div class="placed-chip" id="placed-${w.w}" onclick="unplaceChip('${w.w}')">${w.w}</div>`).join('');});}
+function placeChip(word){if(classPlaced[word])return;classPlaced[word]=groupCols[classNext%4];classNext++;renderClassify();document.getElementById('classifyFb').textContent='';}
+function unplaceChip(word){classPlaced[word]=null;renderClassify();}
+function checkClassify(){let ok=0,total=0;classWords.forEach(w=>{if(!classPlaced[w.w])return;total++;const el=document.getElementById(`placed-${w.w}`);if(classPlaced[w.w]===w.g){el.className='placed-chip correct';ok++;}else el.className='placed-chip wrong';});const fb=document.getElementById('classifyFb');if(total<classWords.length){fb.textContent=`Rasporedi sve! (${total}/${classWords.length})`;fb.className='feedback-msg bad';return;}fb.textContent=`${ok} / ${total} tačno`;fb.className=ok===total?'feedback-msg ok':'feedback-msg bad';}
+function resetClassify(){classPlaced={};classNext=0;document.getElementById('classifyFb').textContent='';renderClassify();}
+renderClassify();
+
+// EX 6
+const oddItems = [
+  {q:"Koji član NE odgovara imenici 'trabajo'?", words:["el","un","los","la"], odd:"la"},
+  {q:"Koji oblik množine je NETAČAN?", words:["los autobuses","las habitaciones","los luces","los colores"], odd:"los luces"},
+  {q:"Koji član NE odgovara imenici 'leche'?", words:["la","una","las","el"], odd:"el"},
+  {q:"Koji oblik množine je NETAČAN?", words:["los exámenes","las veces","los jerseys","las imágenes"], odd:"los jerseys"},
+  {q:"Koji član NE odgovara imenici 'tarde'?", words:["la","una","las","el"], odd:"el"},
+  {q:"Koji oblik množine je NETAČAN?", words:["los jóvenes","las conversaciones","los crisis","los hospitales"], odd:"los crisis"},
+  {q:"Koji oblik množine je NETAČAN?", words:["las verdades","los nombres","las tiempos","los trabajos"], odd:"las tiempos"},
+  {q:"Koji član NE odgovara imenici 'nombre'?", words:["el","un","los","la"], odd:"la"},
+];
+let oddDone=new Array(oddItems.length).fill(false);
+function renderOdd(){document.getElementById('oddList').innerHTML=oddItems.map((item,i)=>`<div class="odd-item"><div class="odd-q">${item.q}</div><div class="odd-opts">${item.words.map(w=>`<button class="odd-btn" id="odd-${i}-${CSS.escape(w)}" onclick="pickOdd(${i},${JSON.stringify(w)})">${w}</button>`).join('')}</div></div>`).join('');}
+function pickOdd(i,chosen){if(oddDone[i])return;oddDone[i]=true;const item=oddItems[i];item.words.forEach(w=>{const btn=document.getElementById(`odd-${i}-${CSS.escape(w)}`);btn.disabled=true;if(w===item.odd)btn.className='odd-btn reveal';if(w===chosen&&chosen!==item.odd)btn.className='odd-btn wrong';if(w===chosen&&chosen===item.odd)btn.className='odd-btn correct';});if(oddDone.every(Boolean)){const ok=oddItems.filter((it,idx)=>document.getElementById(`odd-${idx}-${CSS.escape(it.odd)}`).classList.contains('correct')).length;const fb=document.getElementById('oddFb');fb.textContent=`${ok} / ${oddItems.length} tačno`;fb.className=ok===oddItems.length?'feedback-msg ok':'feedback-msg bad';}}
+renderOdd();
+
+// EX 7
+const sentences=[
+  {words:["Los","zapatos","nuevos","son","muy","cómodos."],hint:"Nove cipele su vrlo udobne."},
+  {words:["La","tarde","es","perfecta","para","pasear."],hint:"Poslijepodne je savršeno za šetnju."},
+  {words:["Los","hospitales","de","la","ciudad","son","modernos."],hint:"Bolnice u gradu su moderne."},
+  {words:["Las","conversaciones","en","español","son","útiles."],hint:"Razgovori na španskom su korisni."},
+  {words:["El","trabajo","de","mi","padre","es","interesante."],hint:"Posao mog oca je zanimljiv."},
+  {words:["Las","habitaciones","del","hotel","son","grandes."],hint:"Sobe u hotelu su velike."},
+  {words:["Los","exámenes","de","la","semana","son","difíciles."],hint:"Ispiti ove sedmice su teški."},
+  {words:["La","verdad","es","que","no","entiendo."],hint:"Istina je da ne razumijem."},
+];
+const sbData=sentences.map(s=>({shuffled:[...s.words].map((w,i)=>({w,i})).sort(()=>Math.random()-0.5),placed:[]}));
+function renderSbFull(){document.getElementById('sbList').innerHTML=sentences.map((s,si)=>`<div class="sb-item"><div class="sb-q">${s.hint}</div><div class="sb-words" id="sbBank-${si}"></div><div class="sb-answer" id="sbAns-${si}"></div><div class="sb-result" id="sbRes-${si}"></div></div>`).join('');sentences.forEach((_,si)=>renderSbSentence(si));}
+function renderSbSentence(si){const d=sbData[si];document.getElementById(`sbBank-${si}`).innerHTML=d.shuffled.map(wobj=>`<div class="sb-word${d.placed.find(p=>p.i===wobj.i)?' used':''}" onclick="sbPlace(${si},${wobj.i})">${wobj.w}</div>`).join('');document.getElementById(`sbAns-${si}`).innerHTML=d.placed.map(p=>`<div class="sb-placed" onclick="sbRemove(${si},${p.i})">${p.w}</div>`).join('');}
+function sbPlace(si,wi){const d=sbData[si];if(d.placed.find(p=>p.i===wi))return;d.placed.push(d.shuffled.find(w=>w.i===wi));document.getElementById(`sbRes-${si}`).textContent='';renderSbSentence(si);if(d.placed.length===sentences[si].words.length)checkSb(si);}
+function sbRemove(si,wi){sbData[si].placed=sbData[si].placed.filter(p=>p.i!==wi);document.getElementById(`sbRes-${si}`).textContent='';renderSbSentence(si);}
+function checkSb(si){const result=sbData[si].placed.map(p=>p.w).join(' ');const correct=sentences[si].words.join(' ');const res=document.getElementById(`sbRes-${si}`);if(result===correct){res.textContent='✓ Tačno!';res.className='sb-result ok';}else{res.textContent=`✗ Tačan redosljed: ${correct}`;res.className='sb-result bad';}}
+renderSbFull();
+</script>
+</body>
+</html>
