@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Acento – 150 palabras</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem; }
+  .deck { width: 100%; max-width: 520px; }
+  .header { text-align: center; margin-bottom: 1.2rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 1rem; }
+  .filter-btn { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; transition: all 0.15s; }
+  .filter-btn.active { background: #fff; color: #c8102e; font-weight: 600; }
+  .progress-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+  .progress { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .score { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .dots { display: flex; gap: 4px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.2s; }
+  .dot.seen { background: rgba(255,255,255,0.55); }
+  .dot.active { background: #fff; }
+  .card { background: #fff; border-radius: 16px; padding: 1.8rem 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem; }
+  .cat-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; }
+  .word { font-size: 34px; font-weight: 700; color: #1a1a1a; text-align: center; }
+  .rule-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .rule1 { background: #fef3c7; color: #92400e; }
+  .rule2 { background: #dbeafe; color: #1e40af; }
+  .rule3 { background: #dcfce7; color: #166534; }
+  .syl-label { font-size: 12px; color: #aaa; }
+  .syllables { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .syl-btn { font-size: 19px; font-weight: 600; padding: 7px 15px; border-radius: 10px; border: 2px solid #e0e0e0; background: #f9f9f9; color: #333; cursor: pointer; transition: all 0.15s; }
+  .syl-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .syl-btn.selected-correct { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+  .syl-btn.selected-wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .syl-btn.reveal-correct { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+  .feedback { font-size: 14px; font-weight: 500; min-height: 20px; text-align: center; }
+  .feedback.correct { color: #16a34a; }
+  .feedback.wrong { color: #dc2626; }
+  .sound-btn { background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 8px 18px; font-size: 13px; cursor: pointer; }
+  .sound-btn:hover { background: #a50d26; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 0.3rem; }
+  .nav-btn { font-size: 13px; padding: 8px 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.3); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .shuffle-btn { font-size: 12px; color: rgba(255,255,255,0.6); background: transparent; border: none; text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="header">
+    <h1>🇪🇸 El Acento</h1>
+    <p>Klikni na slog gdje pada naglasak · 150 palabras</p>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="progress-wrap">
+    <div class="progress" id="progress"></div>
+    <div class="score" id="scoreDisplay"></div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="card" id="card">
+    <div class="cat-tag" id="catTag"></div>
+    <div class="word" id="word"></div>
+    <span class="rule-badge" id="ruleBadge"></span>
+    <div><div class="syl-label" style="text-align:center;margin-bottom:6px;">¿Cuál sílaba se acentúa?</div>
+    <div class="syllables" id="syllables"></div></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="sound-btn" onclick="speak()">🔊 Escuchar</button>
+  </div>
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Anterior</button>
+    <button class="shuffle-btn" onclick="shuffleCards()">barajar</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Siguiente →</button>
+  </div>
+</div>
+<script>
+const all = [
+  // escuela
+  {word:"lápiz",syls:["lá","piz"],stress:0,cat:"escuela",rule:1},
+  {word:"libro",syls:["li","bro"],stress:0,cat:"escuela",rule:3},
+  {word:"clase",syls:["cla","se"],stress:0,cat:"escuela",rule:3},
+  {word:"examen",syls:["e","xa","men"],stress:1,cat:"escuela",rule:3},
+  {word:"número",syls:["nú","me","ro"],stress:0,cat:"escuela",rule:1},
+  {word:"difícil",syls:["di","fí","cil"],stress:1,cat:"escuela",rule:1},
+  {word:"papel",syls:["pa","pel"],stress:1,cat:"escuela",rule:2},
+  {word:"bolígrafo",syls:["bo","lí","gra","fo"],stress:1,cat:"escuela",rule:1},
+  {word:"pizarra",syls:["pi","za","rra"],stress:1,cat:"escuela",rule:3},
+  {word:"cuaderno",syls:["cua","der","no"],stress:1,cat:"escuela",rule:3},
+  {word:"ejercicio",syls:["e","jer","ci","cio"],stress:2,cat:"escuela",rule:3},
+  {word:"vocabulario",syls:["vo","ca","bu","la","rio"],stress:3,cat:"escuela",rule:3},
+  {word:"gramática",syls:["gra","má","ti","ca"],stress:1,cat:"escuela",rule:1},
+  {word:"profesor",syls:["pro","fe","sor"],stress:2,cat:"escuela",rule:2},
+  {word:"alumno",syls:["a","lum","no"],stress:1,cat:"escuela",rule:3},
+  // comida
+  {word:"café",syls:["ca","fé"],stress:1,cat:"comida",rule:1},
+  {word:"jamón",syls:["ja","món"],stress:1,cat:"comida",rule:1},
+  {word:"limón",syls:["li","món"],stress:1,cat:"comida",rule:1},
+  {word:"plátano",syls:["plá","ta","no"],stress:0,cat:"comida",rule:1},
+  {word:"azúcar",syls:["a","zú","car"],stress:1,cat:"comida",rule:1},
+  {word:"naranja",syls:["na","ran","ja"],stress:1,cat:"comida",rule:3},
+  {word:"tomate",syls:["to","ma","te"],stress:1,cat:"comida",rule:3},
+  {word:"leche",syls:["le","che"],stress:0,cat:"comida",rule:3},
+  {word:"pescado",syls:["pes","ca","do"],stress:1,cat:"comida",rule:3},
+  {word:"verdura",syls:["ver","du","ra"],stress:1,cat:"comida",rule:3},
+  {word:"pimienta",syls:["pi","mien","ta"],stress:1,cat:"comida",rule:3},
+  {word:"mantequilla",syls:["man","te","qui","lla"],stress:2,cat:"comida",rule:3},
+  {word:"mermelada",syls:["mer","me","la","da"],stress:2,cat:"comida",rule:3},
+  {word:"espárragos",syls:["es","pá","rra","gos"],stress:1,cat:"comida",rule:1},
+  {word:"brócoli",syls:["bró","co","li"],stress:0,cat:"comida",rule:1},
+  // profesión
+  {word:"médico",syls:["mé","di","co"],stress:0,cat:"profesión",rule:1},
+  {word:"doctor",syls:["doc","tor"],stress:1,cat:"profesión",rule:2},
+  {word:"enfermera",syls:["en","fer","me","ra"],stress:2,cat:"profesión",rule:3},
+  {word:"cocinero",syls:["co","ci","ne","ro"],stress:2,cat:"profesión",rule:3},
+  {word:"dentista",syls:["den","tis","ta"],stress:1,cat:"profesión",rule:3},
+  {word:"policía",syls:["po","li","cí","a"],stress:2,cat:"profesión",rule:1},
+  {word:"mecánico",syls:["me","cá","ni","co"],stress:1,cat:"profesión",rule:1},
+  {word:"periodista",syls:["pe","rio","dis","ta"],stress:2,cat:"profesión",rule:3},
+  {word:"arquitecto",syls:["ar","qui","tec","to"],stress:2,cat:"profesión",rule:3},
+  {word:"ingeniero",syls:["in","ge","nie","ro"],stress:2,cat:"profesión",rule:3},
+  {word:"fotógrafo",syls:["fo","tó","gra","fo"],stress:1,cat:"profesión",rule:1},
+  {word:"abogado",syls:["a","bo","ga","do"],stress:2,cat:"profesión",rule:3},
+  {word:"músico",syls:["mú","si","co"],stress:0,cat:"profesión",rule:1},
+  {word:"pintor",syls:["pin","tor"],stress:1,cat:"profesión",rule:2},
+  {word:"taxista",syls:["ta","xis","ta"],stress:1,cat:"profesión",rule:3},
+  // nacionalidad
+  {word:"español",syls:["es","pa","ñol"],stress:2,cat:"nacio.",rule:2},
+  {word:"francesa",syls:["fran","ce","sa"],stress:1,cat:"nacio.",rule:3},
+  {word:"alemán",syls:["a","le","mán"],stress:2,cat:"nacio.",rule:1},
+  {word:"italiana",syls:["i","ta","lia","na"],stress:2,cat:"nacio.",rule:3},
+  {word:"japonés",syls:["ja","po","nés"],stress:2,cat:"nacio.",rule:1},
+  {word:"mexicano",syls:["me","xi","ca","no"],stress:2,cat:"nacio.",rule:3},
+  {word:"brasileño",syls:["bra","si","le","ño"],stress:2,cat:"nacio.",rule:3},
+  {word:"británico",syls:["bri","tá","ni","co"],stress:1,cat:"nacio.",rule:1},
+  {word:"portugués",syls:["por","tu","gués"],stress:2,cat:"nacio.",rule:1},
+  {word:"ucraniano",syls:["u","cra","nia","no"],stress:2,cat:"nacio.",rule:3},
+  {word:"turco",syls:["tur","co"],stress:0,cat:"nacio.",rule:3},
+  {word:"polaco",syls:["po","la","co"],stress:1,cat:"nacio.",rule:3},
+  {word:"holandés",syls:["ho","lan","dés"],stress:2,cat:"nacio.",rule:1},
+  {word:"húngaro",syls:["hún","ga","ro"],stress:0,cat:"nacio.",rule:1},
+  {word:"austriaco",syls:["aus","tria","co"],stress:1,cat:"nacio.",rule:3},
+  // ropa
+  {word:"camisa",syls:["ca","mi","sa"],stress:1,cat:"ropa",rule:3},
+  {word:"zapato",syls:["za","pa","to"],stress:1,cat:"ropa",rule:3},
+  {word:"pantalón",syls:["pan","ta","lón"],stress:2,cat:"ropa",rule:1},
+  {word:"chaqueta",syls:["cha","que","ta"],stress:1,cat:"ropa",rule:3},
+  {word:"calcetín",syls:["cal","ce","tín"],stress:2,cat:"ropa",rule:1},
+  {word:"bufanda",syls:["bu","fan","da"],stress:1,cat:"ropa",rule:3},
+  {word:"cinturón",syls:["cin","tu","rón"],stress:2,cat:"ropa",rule:1},
+  {word:"vestido",syls:["ves","ti","do"],stress:1,cat:"ropa",rule:3},
+  {word:"abrigo",syls:["a","bri","go"],stress:1,cat:"ropa",rule:3},
+  {word:"pijama",syls:["pi","ja","ma"],stress:1,cat:"ropa",rule:3},
+  {word:"camiseta",syls:["ca","mi","se","ta"],stress:2,cat:"ropa",rule:3},
+  {word:"jersey",syls:["jer","sey"],stress:0,cat:"ropa",rule:2},
+  {word:"paraguas",syls:["pa","ra","guas"],stress:1,cat:"ropa",rule:3},
+  {word:"bolso",syls:["bol","so"],stress:0,cat:"ropa",rule:3},
+  {word:"pañuelo",syls:["pa","ñue","lo"],stress:1,cat:"ropa",rule:3},
+  // cuerpo
+  {word:"cabeza",syls:["ca","be","za"],stress:1,cat:"cuerpo",rule:3},
+  {word:"rodilla",syls:["ro","di","lla"],stress:1,cat:"cuerpo",rule:3},
+  {word:"hombro",syls:["hom","bro"],stress:0,cat:"cuerpo",rule:3},
+  {word:"estómago",syls:["es","tó","ma","go"],stress:1,cat:"cuerpo",rule:1},
+  {word:"tobillo",syls:["to","bi","llo"],stress:1,cat:"cuerpo",rule:3},
+  {word:"muñeca",syls:["mu","ñe","ca"],stress:1,cat:"cuerpo",rule:3},
+  {word:"párpado",syls:["pár","pa","do"],stress:0,cat:"cuerpo",rule:1},
+  {word:"mejilla",syls:["me","ji","lla"],stress:1,cat:"cuerpo",rule:3},
+  {word:"corazón",syls:["co","ra","zón"],stress:2,cat:"cuerpo",rule:1},
+  {word:"espalda",syls:["es","pal","da"],stress:1,cat:"cuerpo",rule:3},
+  {word:"codo",syls:["co","do"],stress:0,cat:"cuerpo",rule:3},
+  {word:"pómulo",syls:["pó","mu","lo"],stress:0,cat:"cuerpo",rule:1},
+  {word:"ombligo",syls:["om","bli","go"],stress:1,cat:"cuerpo",rule:3},
+  {word:"pulmón",syls:["pul","món"],stress:1,cat:"cuerpo",rule:1},
+  {word:"riñón",syls:["ri","ñón"],stress:1,cat:"cuerpo",rule:1},
+  // casa
+  {word:"ventana",syls:["ven","ta","na"],stress:1,cat:"casa",rule:3},
+  {word:"cocina",syls:["co","ci","na"],stress:1,cat:"casa",rule:3},
+  {word:"jardín",syls:["jar","dín"],stress:1,cat:"casa",rule:1},
+  {word:"sótano",syls:["só","ta","no"],stress:0,cat:"casa",rule:1},
+  {word:"armario",syls:["ar","ma","rio"],stress:1,cat:"casa",rule:3},
+  {word:"lámpara",syls:["lám","pa","ra"],stress:0,cat:"casa",rule:1},
+  {word:"escalera",syls:["es","ca","le","ra"],stress:2,cat:"casa",rule:3},
+  {word:"sofá",syls:["so","fá"],stress:1,cat:"casa",rule:1},
+  {word:"tejado",syls:["te","ja","do"],stress:1,cat:"casa",rule:3},
+  {word:"habitación",syls:["ha","bi","ta","ción"],stress:3,cat:"casa",rule:1},
+  {word:"pasillo",syls:["pa","si","llo"],stress:1,cat:"casa",rule:3},
+  {word:"nevera",syls:["ne","ve","ra"],stress:1,cat:"casa",rule:3},
+  {word:"microondas",syls:["mi","cro","on","das"],stress:2,cat:"casa",rule:3},
+  {word:"chimenea",syls:["chi","me","ne","a"],stress:2,cat:"casa",rule:3},
+  {word:"bañera",syls:["ba","ñe","ra"],stress:1,cat:"casa",rule:3},
+  // naturaleza
+  {word:"árbol",syls:["ár","bol"],stress:0,cat:"naturaleza",rule:1},
+  {word:"montaña",syls:["mon","ta","ña"],stress:1,cat:"naturaleza",rule:3},
+  {word:"océano",syls:["o","cé","a","no"],stress:1,cat:"naturaleza",rule:1},
+  {word:"volcán",syls:["vol","cán"],stress:1,cat:"naturaleza",rule:1},
+  {word:"desierto",syls:["de","sier","to"],stress:1,cat:"naturaleza",rule:3},
+  {word:"cascada",syls:["cas","ca","da"],stress:1,cat:"naturaleza",rule:3},
+  {word:"bosque",syls:["bos","que"],stress:0,cat:"naturaleza",rule:3},
+  {word:"relámpago",syls:["re","lám","pa","go"],stress:1,cat:"naturaleza",rule:1},
+  {word:"huracán",syls:["hu","ra","cán"],stress:2,cat:"naturaleza",rule:1},
+  {word:"terremoto",syls:["te","rre","mo","to"],stress:2,cat:"naturaleza",rule:3},
+  {word:"mariposa",syls:["ma","ri","po","sa"],stress:2,cat:"naturaleza",rule:3},
+  {word:"murciélago",syls:["mur","cié","la","go"],stress:1,cat:"naturaleza",rule:1},
+  {word:"cóndor",syls:["cón","dor"],stress:0,cat:"naturaleza",rule:1},
+  {word:"cocodrilo",syls:["co","co","dri","lo"],stress:2,cat:"naturaleza",rule:3},
+  {word:"tortuga",syls:["tor","tu","ga"],stress:1,cat:"naturaleza",rule:3},
+  // transporte
+  {word:"autobús",syls:["au","to","bús"],stress:2,cat:"transporte",rule:1},
+  {word:"avión",syls:["a","vión"],stress:1,cat:"transporte",rule:1},
+  {word:"bicicleta",syls:["bi","ci","cle","ta"],stress:2,cat:"transporte",rule:3},
+  {word:"helicóptero",syls:["he","li","cóp","te","ro"],stress:2,cat:"transporte",rule:1},
+  {word:"motocicleta",syls:["mo","to","ci","cle","ta"],stress:3,cat:"transporte",rule:3},
+  {word:"camión",syls:["ca","mión"],stress:1,cat:"transporte",rule:1},
+  {word:"aeropuerto",syls:["a","e","ro","puer","to"],stress:3,cat:"transporte",rule:3},
+  {word:"autopista",syls:["au","to","pis","ta"],stress:2,cat:"transporte",rule:3},
+  {word:"semáforo",syls:["se","má","fo","ro"],stress:1,cat:"transporte",rule:1},
+  {word:"carretera",syls:["ca","rre","te","ra"],stress:2,cat:"transporte",rule:3},
+  // tiempo / clima
+  {word:"lluvia",syls:["llu","via"],stress:0,cat:"clima",rule:3},
+  {word:"tormenta",syls:["tor","men","ta"],stress:1,cat:"clima",rule:3},
+  {word:"nublado",syls:["nu","bla","do"],stress:1,cat:"clima",rule:3},
+  {word:"húmedo",syls:["hú","me","do"],stress:0,cat:"clima",rule:1},
+  {word:"helada",syls:["he","la","da"],stress:1,cat:"clima",rule:3},
+  {word:"ventisca",syls:["ven","tis","ca"],stress:1,cat:"clima",rule:3},
+  {word:"granizo",syls:["gra","ni","zo"],stress:1,cat:"clima",rule:3},
+  {word:"niebla",syls:["nie","bla"],stress:0,cat:"clima",rule:3},
+  {word:"sequía",syls:["se","quí","a"],stress:1,cat:"clima",rule:1},
+  {word:"temperatura",syls:["tem","pe","ra","tu","ra"],stress:3,cat:"clima",rule:3},
+  // familia
+  {word:"família",syls:["fa","mi","lia"],stress:1,cat:"familia",rule:3},
+  {word:"abuelo",syls:["a","bue","lo"],stress:1,cat:"familia",rule:3},
+  {word:"sobrino",syls:["so","bri","no"],stress:1,cat:"familia",rule:3},
+  {word:"cuñado",syls:["cu","ña","do"],stress:1,cat:"familia",rule:3},
+  {word:"suegra",syls:["sue","gra"],stress:0,cat:"familia",rule:3},
+  {word:"bisabuelo",syls:["bi","sa","bue","lo"],stress:2,cat:"familia",rule:3},
+  {word:"gemelos",syls:["ge","me","los"],stress:1,cat:"familia",rule:3},
+  {word:"madrina",syls:["ma","dri","na"],stress:1,cat:"familia",rule:3},
+  {word:"padrino",syls:["pa","dri","no"],stress:1,cat:"familia",rule:3},
+  {word:"nuera",syls:["nue","ra"],stress:0,cat:"familia",rule:3},
+];
+
+const cats=["todas",...[...new Set(all.map(c=>c.cat))]];
+const ruleLabels={1:"Regla 1 – tilde",2:"Regla 2 – consonante",3:"Regla 3 – vocal/n/s"};
+const ruleClass={1:"rule1",2:"rule2",3:"rule3"};
+const catLabels={escuela:"🏫 Escuela",comida:"🍽️ Comida","profesión":"💼 Profesión","nacio.":"🌍 Nacio.",ropa:"👕 Ropa",cuerpo:"🫀 Cuerpo",casa:"🏠 Casa",naturaleza:"🌿 Naturaleza",transporte:"🚌 Transporte",clima:"🌦️ Clima",familia:"👨‍👩‍👧 Familia"};
+
+let activeCat="todas";
+let data=all.slice();
+let order=[...Array(data.length).keys()];
+let cur=0,seen=new Set(),answered=false,correct=0,total=0;
+
+function getFiltered(){return activeCat==="todas"?all:all.filter(c=>c.cat===activeCat);}
+
+function renderFilters(){
+  document.getElementById('filters').innerHTML=cats.map(c=>`
+    <button class="filter-btn${c===activeCat?' active':''}" onclick="setFilter('${c}')">${c==="todas"?"✦ todas":catLabels[c]||c}</button>`).join('');
+}
+
+function setFilter(cat){
+  activeCat=cat; data=getFiltered();
+  order=[...Array(data.length).keys()];
+  cur=0;seen=new Set();answered=false;correct=0;total=0;
+  renderFilters(); render();
+}
+
+function shuffleCards(){
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  cur=0;seen=new Set();answered=false;correct=0;total=0; render();
+}
+
+function render(){
+  seen.add(cur);answered=false;
+  const c=data[order[cur]];
+  document.getElementById('progress').textContent=`${cur+1} / ${data.length}`;
+  document.getElementById('scoreDisplay').textContent=total>0?`✓ ${correct}/${total}`:'';
+  document.getElementById('catTag').textContent=catLabels[c.cat]||c.cat;
+  document.getElementById('word').textContent=c.word;
+  const badge=document.getElementById('ruleBadge');
+  badge.textContent=ruleLabels[c.rule]; badge.className='rule-badge '+ruleClass[c.rule];
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('syllables').innerHTML=c.syls.map((s,i)=>`
+    <button class="syl-btn" onclick="checkAnswer(${i})">${s}</button>`).join('');
+  const dots=document.getElementById('dots');
+  dots.innerHTML=order.map((_,i)=>`<div class="dot${i===cur?' active':seen.has(i)?' seen':''}"></div>`).join('');
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===data.length-1;
+}
+
+function checkAnswer(idx){
+  if(answered)return; answered=true; total++;
+  const c=data[order[cur]];
+  const btns=document.querySelectorAll('.syl-btn');
+  const fb=document.getElementById('feedback');
+  if(idx===c.stress){correct++;btns[idx].classList.add('selected-correct');fb.textContent='✓ ¡Correcto!';fb.className='feedback correct';}
+  else{btns[idx].classList.add('selected-wrong');btns[c.stress].classList.add('reveal-correct');fb.textContent=`✗ El acento cae en "${c.syls[c.stress]}"`;fb.className='feedback wrong';}
+  document.getElementById('scoreDisplay').textContent=`✓ ${correct}/${total}`;
+}
+
+function speak(){
+  const c=data[order[cur]];
+  const u=new SpeechSynthesisUtterance(c.word);
+  u.lang='es-US'; u.rate=0.85;
+  const v=speechSynthesis.getVoices().find(x=>x.name==='Google español de Estados Unidos')||speechSynthesis.getVoices().find(x=>x.lang==='es-US')||speechSynthesis.getVoices().find(x=>x.lang.startsWith('es'));
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+
+function navigate(dir){
+  cur=Math.max(0,Math.min(data.length-1,cur+dir));
+  answered=false; render();
+}
+
+speechSynthesis.onvoiceschanged=()=>{};
+renderFilters(); render();
+</script>
+</body>
+</html>
