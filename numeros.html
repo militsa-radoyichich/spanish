@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Números 0–100</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 560px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .section { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .ex-title { font-size: 13px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .sound-btn { background: rgba(200,16,46,0.08); color: #c8102e; border: 1.5px solid #c8102e; border-radius: 10px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+  .sound-btn:hover { background: rgba(200,16,46,0.15); }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: #f5f5f3; }
+  .next-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #555; border: 1.5px solid #ccc; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .next-btn:hover { background: #f5f5f3; }
+  .feedback-msg { margin-top: 0.7rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+  .big-num { font-size: 64px; font-weight: 800; color: #c8102e; text-align: center; line-height: 1; margin: 0.5rem 0; }
+  .big-word { font-size: 26px; font-weight: 700; color: #1a1a1a; text-align: center; line-height: 1.3; margin: 0.5rem 0; }
+  .main-input { font-size: 20px; text-align: center; border: 2px solid #e0e0e0; border-radius: 12px; padding: 10px 16px; width: 100%; outline: none; color: #1a1a1a; margin-top: 0.5rem; }
+  .main-input:focus { border-color: #c8102e; }
+  .main-input.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+  .main-input.wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+  .ans-hint { font-size: 13px; color: #c8102e; font-weight: 500; margin-top: 6px; min-height: 18px; text-align: center; }
+  .mc-grid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 0.8rem; }
+  .mc-btn { flex: 1; min-width: 90px; max-width: 130px; border: 2px solid #e0e0e0; background: #f9f9f9; border-radius: 10px; padding: 10px 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .mc-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+  .blank-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .blank-item { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: #333; flex-wrap: wrap; line-height: 1.8; }
+  .blank-input { min-width: 110px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; text-align: center; }
+  .blank-input.correct { border-color: #22c55e; color: #16a34a; }
+  .blank-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .phone-inputs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 0.8rem 0; }
+  .phone-inp { width: 46px; font-size: 20px; text-align: center; border: 2px solid #e0e0e0; border-radius: 8px; padding: 8px 4px; outline: none; font-weight: 700; }
+  .phone-inp:focus { border-color: #c8102e; }
+  .phone-inp.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+  .phone-inp.wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+  .seq-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .seq-box { width: 54px; height: 54px; border: 2px solid #e0e0e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #333; cursor: pointer; background: #f9f9f9; transition: all 0.15s; }
+  .seq-box:hover { border-color: #c8102e; background: #fff5f5; }
+  .seq-box.selected { background: #c8102e; border-color: #c8102e; color: #fff; }
+  .seq-box.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .seq-box.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .seq-box.missed { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+  .math-item { display: flex; align-items: center; gap: 8px; font-size: 17px; color: #333; margin-bottom: 10px; flex-wrap: wrap; }
+  .math-input { width: 130px; border: none; border-bottom: 2px solid #ccc; font-size: 16px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 6px; text-align: center; }
+  .math-input.correct { border-color: #22c55e; color: #16a34a; }
+  .math-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .order-bank { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.8rem; }
+  .order-chip { border: 2px solid #e0e0e0; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .order-chip:hover { border-color: #c8102e; background: #fff5f5; }
+  .order-chip.placed { opacity: 0.3; pointer-events: none; }
+  .order-slots { display: flex; gap: 8px; flex-wrap: wrap; min-height: 42px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 6px; }
+  .order-placed { border: 2px solid #ccc; background: #fff; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .order-placed:hover { background: #fee2e2; border-color: #ef4444; }
+  .order-result { font-size: 12px; font-weight: 500; min-height: 16px; }
+  .order-result.ok { color: #16a34a; }
+  .order-result.bad { color: #dc2626; }
+  .dict-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .dict-num-inp { width: 70px; font-size: 18px; text-align: center; border: 2px solid #e0e0e0; border-radius: 8px; padding: 7px; outline: none; font-weight: 700; }
+  .dict-num-inp:focus { border-color: #c8102e; }
+  .dict-num-inp.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+  .dict-num-inp.wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+  .row-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🇪🇸 Los Números 0–100</h1>
+    <p>10 vježbi interaktivnih</p>
+  </div>
+
+  <!-- 1 -->
+  <div class="section">
+    <div class="ex-title">1 — Cifra → Español</div>
+    <div class="ex-desc">Vidiš broj, upiši kako se kaže na španskom.</div>
+    <div style="text-align:center;">
+      <div class="big-num" id="e1num"></div>
+      <input class="main-input" id="e1inp" type="text" placeholder="escribe en español..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="ans-hint" id="e1hint"></div>
+    </div>
+    <div class="row-btns">
+      <button class="sound-btn" onclick="e1speak()">Escuchar</button>
+      <button class="check-btn" style="margin:0;" onclick="e1check()">Provjeri</button>
+      <button class="next-btn" style="margin:0;" onclick="e1next()">Sljedeći →</button>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section">
+    <div class="ex-title">2 — Español → Cifra</div>
+    <div class="ex-desc">Vidiš napisani broj, klikni na tačnu cifru.</div>
+    <div style="text-align:center;">
+      <div class="big-word" id="e2word"></div>
+      <div class="mc-grid" id="e2opts"></div>
+      <div class="ans-hint" id="e2hint"></div>
+    </div>
+    <div class="row-btns">
+      <button class="sound-btn" onclick="e2speak()">Escuchar</button>
+      <button class="next-btn" style="margin:0;" onclick="e2next()">Sljedeći →</button>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section">
+    <div class="ex-title">3 — Diktat: čuj i upiši cifru</div>
+    <div class="ex-desc">Klikni na dugme pored broja da ga čuješ, zatim upiši cifru.</div>
+    <div id="e3area"></div>
+    <div class="row-btns">
+      <button class="sound-btn" onclick="e3playAll()">Reprodukuj sve</button>
+      <button class="check-btn" style="margin:0;" onclick="e3check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e3init()">Reset</button>
+    </div>
+    <div class="feedback-msg" id="e3fb"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section">
+    <div class="ex-title">4 — Broj telefona</div>
+    <div class="ex-desc">Klikni "Reprodukuj" da čuješ broj cifru po cifru, pa upiši svaku. Broj se ne prikazuje na ekranu!</div>
+    <div style="text-align:center;">
+      <div class="phone-inputs" id="e4inputs"></div>
+      <div class="ans-hint" id="e4hint"></div>
+    </div>
+    <div class="row-btns">
+      <button class="sound-btn" onclick="e4play()">Reprodukuj broj</button>
+      <button class="check-btn" style="margin:0;" onclick="e4check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e4init()">Novi broj</button>
+    </div>
+    <div class="feedback-msg" id="e4fb"></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section">
+    <div class="ex-title">5 — Označi brojeve koje čuješ</div>
+    <div class="ex-desc">Klikni "Reprodukuj", zatim klikni na sve brojeve koje si čuo/la.</div>
+    <div style="margin-bottom:0.8rem;">
+      <button class="sound-btn" onclick="e5play()">Reprodukuj</button>
+    </div>
+    <div class="seq-grid" id="e5grid"></div>
+    <div class="row-btns">
+      <button class="check-btn" style="margin:0;" onclick="e5check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e5init()">Novi set</button>
+    </div>
+    <div class="feedback-msg" id="e5fb"></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="section">
+    <div class="ex-title">6 — Matematika na španskom</div>
+    <div class="ex-desc">Izrazi su na španskom. Upiši rezultat brojevima ili slovima.</div>
+    <div id="e6list"></div>
+    <div class="row-btns">
+      <button class="check-btn" style="margin:0;" onclick="e6check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e6init()">Novi set</button>
+    </div>
+    <div class="feedback-msg" id="e6fb"></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="section">
+    <div class="ex-title">7 — Popuni prazninu</div>
+    <div class="ex-desc">Upiši broj slovima na španskom.</div>
+    <ul class="blank-list" id="e7list"></ul>
+    <div class="row-btns">
+      <button class="check-btn" style="margin:0;" onclick="e7check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e7init()">Reset</button>
+    </div>
+    <div class="feedback-msg" id="e7fb"></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="section">
+    <div class="ex-title">8 — Poredaj od najmanjeg</div>
+    <div class="ex-desc">Klikni na španske nazive redom od najmanjeg do najvećeg. Klikni na složeni da ga vratiš.</div>
+    <div id="e8sets"></div>
+    <div class="row-btns">
+      <button class="reset-btn" style="margin:0;" onclick="e8init()">Novi set</button>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="section">
+    <div class="ex-title">9 — Koji broj nedostaje?</div>
+    <div class="ex-desc">Upiši španski naziv broja koji nedostaje u nizu.</div>
+    <div id="e9list" style="display:flex;flex-direction:column;gap:14px;"></div>
+    <div class="row-btns">
+      <button class="check-btn" style="margin:0;" onclick="e9check()">Provjeri</button>
+      <button class="reset-btn" style="margin:0;" onclick="e9init()">Novi set</button>
+    </div>
+    <div class="feedback-msg" id="e9fb"></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="section">
+    <div class="ex-title">10 — Čuj i odaberi</div>
+    <div class="ex-desc">Klikni "Reprodukuj" da čuješ broj, zatim klikni na tačnu cifru.</div>
+    <div style="text-align:center;">
+      <button class="sound-btn" onclick="e10play()">Reprodukuj</button>
+      <div class="mc-grid" id="e10opts" style="margin-top:1rem;"></div>
+      <div class="ans-hint" id="e10hint"></div>
+    </div>
+    <div class="row-btns">
+      <button class="next-btn" style="margin:0;" onclick="e10next()">Sljedeći →</button>
+    </div>
+    <div class="feedback-msg" id="e10fb"></div>
+  </div>
+
+</div>
+<script>
+const nums={0:"cero",1:"uno",2:"dos",3:"tres",4:"cuatro",5:"cinco",6:"seis",7:"siete",8:"ocho",9:"nueve",10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve",20:"veinte",21:"veintiuno",22:"veintidós",23:"veintitrés",24:"veinticuatro",25:"veinticinco",26:"veintiséis",27:"veintisiete",28:"veintiocho",29:"veintinueve",30:"treinta",31:"treinta y uno",32:"treinta y dos",33:"treinta y tres",34:"treinta y cuatro",35:"treinta y cinco",36:"treinta y seis",37:"treinta y siete",38:"treinta y ocho",39:"treinta y nueve",40:"cuarenta",41:"cuarenta y uno",42:"cuarenta y dos",43:"cuarenta y tres",44:"cuarenta y cuatro",45:"cuarenta y cinco",46:"cuarenta y seis",47:"cuarenta y siete",48:"cuarenta y ocho",49:"cuarenta y nueve",50:"cincuenta",51:"cincuenta y uno",52:"cincuenta y dos",53:"cincuenta y tres",54:"cincuenta y cuatro",55:"cincuenta y cinco",56:"cincuenta y seis",57:"cincuenta y siete",58:"cincuenta y ocho",59:"cincuenta y nueve",60:"sesenta",61:"sesenta y uno",62:"sesenta y dos",63:"sesenta y tres",64:"sesenta y cuatro",65:"sesenta y cinco",66:"sesenta y seis",67:"sesenta y siete",68:"sesenta y ocho",69:"sesenta y nueve",70:"setenta",71:"setenta y uno",72:"setenta y dos",73:"setenta y tres",74:"setenta y cuatro",75:"setenta y cinco",76:"setenta y seis",77:"setenta y siete",78:"setenta y ocho",79:"setenta y nueve",80:"ochenta",81:"ochenta y uno",82:"ochenta y dos",83:"ochenta y tres",84:"ochenta y cuatro",85:"ochenta y cinco",86:"ochenta y seis",87:"ochenta y siete",88:"ochenta y ocho",89:"ochenta y nueve",90:"noventa",91:"noventa y uno",92:"noventa y dos",93:"noventa y tres",94:"noventa y cuatro",95:"noventa y cinco",96:"noventa y seis",97:"noventa y siete",98:"noventa y ocho",99:"noventa y nueve",100:"cien"};
+const allNums=Object.keys(nums).map(Number);
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(arr,n){const s=[...arr];for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}return s.slice(0,n);}
+
+let voice=null;
+function getVoice(){if(voice)return voice;const v=speechSynthesis.getVoices().find(x=>x.name==='Google español de Estados Unidos')||speechSynthesis.getVoices().find(x=>x.lang==='es-US')||speechSynthesis.getVoices().find(x=>x.lang.startsWith('es'));voice=v;return v;}
+function speak(text,cb){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='es-US';u.rate=0.82;const v=getVoice();if(v)u.voice=v;if(cb)u.onend=cb;speechSynthesis.speak(u);}
+function speakNum(n,cb){speak(nums[n],cb);}
+
+// ===== EX 1 =====
+let e1cur=rnd(0,100);
+function e1render(){document.getElementById('e1num').textContent=e1cur;document.getElementById('e1inp').value='';document.getElementById('e1inp').className='main-input';document.getElementById('e1hint').textContent='';}
+function e1check(){const v=document.getElementById('e1inp').value.trim().toLowerCase().replace(/\s+/g,' ');const a=nums[e1cur];document.getElementById('e1inp').className='main-input '+(v===a?'correct':'wrong');document.getElementById('e1hint').textContent=v===a?'✓ ¡Correcto!':'Tačno: '+a;}
+function e1next(){e1cur=rnd(0,100);e1render();}
+function e1speak(){speakNum(e1cur);}
+document.getElementById('e1inp').addEventListener('keydown',e=>{if(e.key==='Enter')e1check();});
+e1render();
+
+// ===== EX 2 =====
+let e2cur=rnd(0,100);
+function e2render(){
+  document.getElementById('e2word').textContent=nums[e2cur];
+  document.getElementById('e2hint').textContent='';
+  const opts=pick([e2cur,...pick(allNums.filter(x=>x!==e2cur),3)],4);
+  document.getElementById('e2opts').innerHTML=opts.map(o=>`<button class="mc-btn" onclick="e2pick(${o})">${o}</button>`).join('');
+}
+function e2pick(chosen){
+  document.querySelectorAll('#e2opts .mc-btn').forEach(b=>{b.disabled=true;if(parseInt(b.textContent)===e2cur)b.className='mc-btn reveal';});
+  const btn=[...document.querySelectorAll('#e2opts .mc-btn')].find(b=>parseInt(b.textContent)===chosen);
+  btn.className='mc-btn '+(chosen===e2cur?'correct':'wrong');
+  document.getElementById('e2hint').textContent=chosen===e2cur?'✓ ¡Correcto!':'Tačno: '+e2cur;
+}
+function e2next(){e2cur=rnd(0,100);e2render();}
+function e2speak(){speakNum(e2cur);}
+e2render();
+
+// ===== EX 3 =====
+let e3nums=[];
+function e3init(){
+  e3nums=pick(allNums,8);
+  document.getElementById('e3area').innerHTML=e3nums.map((n,i)=>`
+    <div class="dict-item">
+      <button class="sound-btn" style="padding:6px 12px;font-size:12px;" onclick="speakNum(${n})">▶ ${i+1}.</button>
+      <input class="dict-num-inp" id="d3-${i}" type="text" inputmode="numeric" placeholder="?" autocomplete="off">
+    </div>`).join('');
+  document.getElementById('e3fb').textContent='';
+}
+function e3playAll(){let i=0;function next(){if(i>=e3nums.length)return;speakNum(e3nums[i],()=>{i++;setTimeout(next,600);});}next();}
+function e3check(){let ok=0;e3nums.forEach((n,i)=>{const inp=document.getElementById(`d3-${i}`);if(inp.value.trim()===String(n)){inp.className='dict-num-inp correct';ok++;}else{inp.className='dict-num-inp wrong';inp.placeholder=n;}});const fb=document.getElementById('e3fb');fb.textContent=`${ok} / ${e3nums.length} tačno`;fb.className=ok===e3nums.length?'feedback-msg ok':'feedback-msg bad';}
+e3init();
+
+// ===== EX 4: BROJ TELEFONA - ne prikazuje broj =====
+let e4phone=[];
+function e4init(){
+  e4phone=Array.from({length:9},()=>rnd(0,9));
+  document.getElementById('e4inputs').innerHTML=e4phone.map((_,i)=>`<input class="phone-inp" id="p4-${i}" type="text" inputmode="numeric" maxlength="1" placeholder="?" autocomplete="off">`).join('');
+  document.getElementById('e4hint').textContent='';
+  document.getElementById('e4fb').textContent='';
+  document.querySelectorAll('.phone-inp').forEach((inp,i)=>{inp.addEventListener('input',()=>{if(inp.value.length===1&&i<8)document.getElementById(`p4-${i+1}`).focus();});});
+}
+function e4play(){
+  let i=0;
+  function next(){if(i>=e4phone.length)return;speakNum(e4phone[i],()=>{i++;setTimeout(next,500);});}
+  next();
+}
+function e4check(){
+  let ok=0;
+  e4phone.forEach((n,i)=>{const inp=document.getElementById(`p4-${i}`);if(parseInt(inp.value)===n){inp.className='phone-inp correct';ok++;}else{inp.className='phone-inp wrong';inp.placeholder=n;}});
+  const fb=document.getElementById('e4fb');
+  if(ok<e4phone.length){document.getElementById('e4hint').textContent='Tačan broj: '+e4phone.join(' ');}
+  fb.textContent=`${ok} / ${e4phone.length} cifara tačno`;fb.className=ok===e4phone.length?'feedback-msg ok':'feedback-msg bad';
+}
+e4init();
+
+// ===== EX 5 =====
+let e5targets=[],e5pool=[];
+function e5init(){
+  e5targets=pick(allNums.filter(n=>n<=60),5);
+  const extra=pick(allNums.filter(n=>!e5targets.includes(n)&&n<=60),7);
+  e5pool=pick([...e5targets,...extra],12);
+  document.getElementById('e5fb').textContent='';
+  document.getElementById('e5grid').innerHTML=e5pool.map(n=>`<div class="seq-box" id="sb-${n}" onclick="e5toggle(${n})">${n}</div>`).join('');
+}
+function e5play(){let i=0;function next(){if(i>=e5targets.length)return;speakNum(e5targets[i],()=>{i++;setTimeout(next,600);});}next();}
+function e5toggle(n){document.getElementById(`sb-${n}`).classList.toggle('selected');}
+function e5check(){
+  let ok=0;
+  e5pool.forEach(n=>{const el=document.getElementById(`sb-${n}`);const sel=el.classList.contains('selected');const isTgt=e5targets.includes(n);el.className='seq-box';if(isTgt&&sel){el.classList.add('correct');ok++;}else if(isTgt&&!sel)el.classList.add('missed');else if(!isTgt&&sel)el.classList.add('wrong');});
+  const fb=document.getElementById('e5fb');fb.textContent=`${ok} / ${e5targets.length} tačno`;fb.className=ok===e5targets.length?'feedback-msg ok':'feedback-msg bad';
+}
+e5init();
+
+// ===== EX 6 =====
+let e6items=[];
+function e6init(){
+  e6items=[];
+  for(let i=0;i<8;i++){
+    const a=rnd(1,50),b=rnd(1,50);
+    const ops=['+','-'];const op=ops[rnd(0,1)];
+    const res=op==='+'?a+b:a-b;
+    if(res<0||res>100){i--;continue;}
+    e6items.push({q:`${nums[a]} ${op} ${nums[b]} =`,ans:nums[res],resNum:res});
+  }
+  document.getElementById('e6list').innerHTML=e6items.map((it,i)=>`<div class="math-item"><span>${it.q}</span><input class="math-input" id="m6-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"></div>`).join('');
+  document.getElementById('e6fb').textContent='';
+}
+function e6check(){let ok=0;e6items.forEach((it,i)=>{const inp=document.getElementById(`m6-${i}`);const v=inp.value.trim().toLowerCase().replace(/\s+/g,' ');if(v===it.ans||v===String(it.resNum)){inp.className='math-input correct';ok++;}else{inp.className='math-input wrong';inp.placeholder=it.ans+' ('+it.resNum+')';}});const fb=document.getElementById('e6fb');fb.textContent=`${ok} / ${e6items.length} tačno`;fb.className=ok===e6items.length?'feedback-msg ok':'feedback-msg bad';}
+e6init();
+
+// ===== EX 7 =====
+const e7sentences=[
+  {pre:"La semana tiene",n:7,post:"días."},
+  {pre:"El año tiene",n:12,post:"meses."},
+  {pre:"Hay",n:60,post:"minutos en una hora."},
+  {pre:"En España hay",n:50,post:"provincias."},
+  {pre:"El balonmano tiene",n:7,post:"jugadores por equipo."},
+  {pre:"Un día tiene",n:24,post:"horas."},
+  {pre:"Hay",n:100,post:"céntimos en un euro."},
+  {pre:"El fútbol tiene",n:11,post:"jugadores por equipo."},
+  {pre:"Hay",n:30,post:"días en abril."},
+  {pre:"El siglo",n:21,post:"se llama siglo veintiuno."},
+];
+function e7init(){document.getElementById('e7list').innerHTML=e7sentences.map((s,i)=>`<li class="blank-item"><span>${s.pre}</span><input class="blank-input" id="b7-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>${s.post}</span></li>`).join('');document.getElementById('e7fb').textContent='';}
+function e7check(){let ok=0;e7sentences.forEach((s,i)=>{const inp=document.getElementById(`b7-${i}`);const v=inp.value.trim().toLowerCase().replace(/\s+/g,' ');const ans=s.ans||nums[s.n];if(v===ans){inp.className='blank-input correct';ok++;}else{inp.className='blank-input wrong';inp.placeholder=ans;}});const fb=document.getElementById('e7fb');fb.textContent=`${ok} / ${e7sentences.length} tačno`;fb.className=ok===e7sentences.length?'feedback-msg ok':'feedback-msg bad';}
+e7init();
+
+// ===== EX 8 =====
+let e8data=[];
+function e8init(){
+  e8data=[];
+  for(let s=0;s<3;s++){
+    const sorted=pick(allNums.filter(n=>n<=100),5).sort((a,b)=>a-b);
+    e8data.push({sorted,shuffled:pick(sorted,5),placed:[]});
+  }
+  renderE8();
+}
+function renderE8(){
+  document.getElementById('e8sets').innerHTML=e8data.map((d,si)=>`
+    <div style="margin-bottom:1.2rem;">
+      <div class="order-bank">${d.shuffled.map((n,i)=>`<div class="order-chip${d.placed.find(p=>p.n===n&&p.i===i)?' placed':''}" onclick="e8place(${si},${n},${i})">${nums[n]}</div>`).join('')}</div>
+      <div class="order-slots">${d.placed.map((p,pi)=>`<div class="order-placed" onclick="e8remove(${si},${pi})">${nums[p.n]}</div>`).join('')}</div>
+      <div class="order-result" id="or-${si}"></div>
+    </div>`).join('');
+}
+function e8place(si,n,i){const d=e8data[si];if(d.placed.find(p=>p.n===n&&p.i===i))return;d.placed.push({n,i});renderE8();if(d.placed.length===d.sorted.length){const ok=d.placed.map(p=>p.n).every((v,j)=>v===d.sorted[j]);const el=document.getElementById(`or-${si}`);el.textContent=ok?'✓ Tačno!':'✗ Tačan redosljed: '+d.sorted.map(n=>nums[n]).join(' · ');el.className='order-result '+(ok?'ok':'bad');}}
+function e8remove(si,pi){e8data[si].placed.splice(pi,1);renderE8();}
+e8init();
+
+// ===== EX 9 =====
+let e9items=[];
+function e9init(){
+  e9items=[];
+  const steps=[1,2,5,10];
+  for(let i=0;i<6;i++){
+    const step=steps[rnd(0,steps.length-1)];
+    const start=rnd(0,Math.floor(90/step))*step;
+    const seq=[start,start+step,start+2*step,start+3*step,start+4*step].filter(n=>n<=100);
+    if(seq.length<4){i--;continue;}
+    const hideIdx=rnd(1,seq.length-2);
+    e9items.push({seq,hideIdx,ans:seq[hideIdx]});
+  }
+  document.getElementById('e9list').innerHTML=e9items.map((it,i)=>{
+    const parts=it.seq.map((n,j)=>j===it.hideIdx?`<input class="blank-input" id="n9-${i}" style="min-width:90px;" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false">`:`<span style="font-weight:600;color:#1a1a1a;">${nums[n]}</span>`);
+    return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${parts.join('<span style="color:#bbb;margin:0 2px;">·</span>')}</div>`;
+  }).join('');
+  document.getElementById('e9fb').textContent='';
+}
+function e9check(){let ok=0;e9items.forEach((it,i)=>{const inp=document.getElementById(`n9-${i}`);const v=inp.value.trim().toLowerCase().replace(/\s+/g,' ');if(v===nums[it.ans]){inp.className='blank-input correct';ok++;}else{inp.className='blank-input wrong';inp.placeholder=nums[it.ans];}});const fb=document.getElementById('e9fb');fb.textContent=`${ok} / ${e9items.length} tačno`;fb.className=ok===e9items.length?'feedback-msg ok':'feedback-msg bad';}
+e9init();
+
+// ===== EX 10 =====
+let e10cur=-1,e10done=false;
+function e10next(){
+  e10cur=rnd(0,100);e10done=false;
+  document.getElementById('e10hint').textContent='';
+  document.getElementById('e10fb').textContent='';
+  const opts=pick([e10cur,...pick(allNums.filter(x=>x!==e10cur),3)],4);
+  document.getElementById('e10opts').innerHTML=opts.map(o=>`<button class="mc-btn" onclick="e10pick(${o})">${o}</button>`).join('');
+}
+function e10play(){if(e10cur>=0)speakNum(e10cur);}
+function e10pick(chosen){
+  if(e10done)return;e10done=true;
+  document.querySelectorAll('#e10opts .mc-btn').forEach(b=>{b.disabled=true;if(parseInt(b.textContent)===e10cur)b.className='mc-btn reveal';});
+  const btn=[...document.querySelectorAll('#e10opts .mc-btn')].find(b=>parseInt(b.textContent)===chosen);
+  btn.className='mc-btn '+(chosen===e10cur?'correct':'wrong');
+  document.getElementById('e10hint').textContent=chosen===e10cur?'✓ ¡Correcto!':'Tačno: '+e10cur;
+}
+e10next();
+
+speechSynthesis.onvoiceschanged=()=>{voice=null;};
+</script>
+</body>
+</html>
