@@ -82,29 +82,29 @@
 <div class="container">
   <div class="header">
     <h1>🇪🇸 Los Números 0–100</h1>
-    <p>10 vježbi interaktivnih</p>
+    <p>10 interaktivnih vežbi</p>
   </div>
 
   <!-- 1 -->
   <div class="section">
     <div class="ex-title">1 — Cifra → Español</div>
-    <div class="ex-desc">Vidiš broj, upiši kako se kaže na španskom.</div>
+    <div class="ex-desc">Za svaki broj, napiši kako se kaže na španskom.</div>
     <div style="text-align:center;">
       <div class="big-num" id="e1num"></div>
       <input class="main-input" id="e1inp" type="text" placeholder="escribe en español..." autocomplete="off" autocorrect="off" spellcheck="false">
       <div class="ans-hint" id="e1hint"></div>
     </div>
     <div class="row-btns">
-      <button class="sound-btn" onclick="e1speak()">Escuchar</button>
-      <button class="check-btn" style="margin:0;" onclick="e1check()">Provjeri</button>
-      <button class="next-btn" style="margin:0;" onclick="e1next()">Sljedeći →</button>
+      <button class="sound-btn" onclick="e1speak()">Slušaj</button>
+      <button class="check-btn" style="margin:0;" onclick="e1check()">Proveri</button>
+      <button class="next-btn" style="margin:0;" onclick="e1next()">Sledeći →</button>
     </div>
   </div>
 
   <!-- 2 -->
   <div class="section">
     <div class="ex-title">2 — Español → Cifra</div>
-    <div class="ex-desc">Vidiš napisani broj, klikni na tačnu cifru.</div>
+    <div class="ex-desc">Za svaki dat broj, klikni na tačnu cifru.</div>
     <div style="text-align:center;">
       <div class="big-word" id="e2word"></div>
       <div class="mc-grid" id="e2opts"></div>
@@ -112,18 +112,18 @@
     </div>
     <div class="row-btns">
       <button class="sound-btn" onclick="e2speak()">Escuchar</button>
-      <button class="next-btn" style="margin:0;" onclick="e2next()">Sljedeći →</button>
+      <button class="next-btn" style="margin:0;" onclick="e2next()">Sledeći →</button>
     </div>
   </div>
 
   <!-- 3 -->
   <div class="section">
-    <div class="ex-title">3 — Diktat: čuj i upiši cifru</div>
+    <div class="ex-title">3 — Diktat: poslušaj i upiši cifru</div>
     <div class="ex-desc">Klikni na dugme pored broja da ga čuješ, zatim upiši cifru.</div>
     <div id="e3area"></div>
     <div class="row-btns">
       <button class="sound-btn" onclick="e3playAll()">Reprodukuj sve</button>
-      <button class="check-btn" style="margin:0;" onclick="e3check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e3check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e3init()">Reset</button>
     </div>
     <div class="feedback-msg" id="e3fb"></div>
@@ -139,7 +139,7 @@
     </div>
     <div class="row-btns">
       <button class="sound-btn" onclick="e4play()">Reprodukuj broj</button>
-      <button class="check-btn" style="margin:0;" onclick="e4check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e4check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e4init()">Novi broj</button>
     </div>
     <div class="feedback-msg" id="e4fb"></div>
@@ -154,7 +154,7 @@
     </div>
     <div class="seq-grid" id="e5grid"></div>
     <div class="row-btns">
-      <button class="check-btn" style="margin:0;" onclick="e5check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e5check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e5init()">Novi set</button>
     </div>
     <div class="feedback-msg" id="e5fb"></div>
@@ -166,7 +166,7 @@
     <div class="ex-desc">Izrazi su na španskom. Upiši rezultat brojevima ili slovima.</div>
     <div id="e6list"></div>
     <div class="row-btns">
-      <button class="check-btn" style="margin:0;" onclick="e6check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e6check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e6init()">Novi set</button>
     </div>
     <div class="feedback-msg" id="e6fb"></div>
@@ -178,7 +178,7 @@
     <div class="ex-desc">Upiši broj slovima na španskom.</div>
     <ul class="blank-list" id="e7list"></ul>
     <div class="row-btns">
-      <button class="check-btn" style="margin:0;" onclick="e7check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e7check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e7init()">Reset</button>
     </div>
     <div class="feedback-msg" id="e7fb"></div>
@@ -186,8 +186,8 @@
 
   <!-- 8 -->
   <div class="section">
-    <div class="ex-title">8 — Poredaj od najmanjeg</div>
-    <div class="ex-desc">Klikni na španske nazive redom od najmanjeg do najvećeg. Klikni na složeni da ga vratiš.</div>
+    <div class="ex-title">8 — Poreðaj od najmanjeg</div>
+    <div class="ex-desc">Klikni na španske nazive redom od najmanjeg do najvećeg. Klikni na već složeni da ga vratiš.</div>
     <div id="e8sets"></div>
     <div class="row-btns">
       <button class="reset-btn" style="margin:0;" onclick="e8init()">Novi set</button>
@@ -200,7 +200,7 @@
     <div class="ex-desc">Upiši španski naziv broja koji nedostaje u nizu.</div>
     <div id="e9list" style="display:flex;flex-direction:column;gap:14px;"></div>
     <div class="row-btns">
-      <button class="check-btn" style="margin:0;" onclick="e9check()">Provjeri</button>
+      <button class="check-btn" style="margin:0;" onclick="e9check()">Proveri</button>
       <button class="reset-btn" style="margin:0;" onclick="e9init()">Novi set</button>
     </div>
     <div class="feedback-msg" id="e9fb"></div>
@@ -208,7 +208,7 @@
 
   <!-- 10 -->
   <div class="section">
-    <div class="ex-title">10 — Čuj i odaberi</div>
+    <div class="ex-title">10 — Poslušaj i odaberi</div>
     <div class="ex-desc">Klikni "Reprodukuj" da čuješ broj, zatim klikni na tačnu cifru.</div>
     <div style="text-align:center;">
       <button class="sound-btn" onclick="e10play()">Reprodukuj</button>
@@ -216,7 +216,7 @@
       <div class="ans-hint" id="e10hint"></div>
     </div>
     <div class="row-btns">
-      <button class="next-btn" style="margin:0;" onclick="e10next()">Sljedeći →</button>
+      <button class="next-btn" style="margin:0;" onclick="e10next()">Sledeći →</button>
     </div>
     <div class="feedback-msg" id="e10fb"></div>
   </div>
