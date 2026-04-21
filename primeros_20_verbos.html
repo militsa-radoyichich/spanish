@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbos – Presente</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 540px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.2rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .mode-tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.2rem; }
+  .mode-tab { padding: 8px 14px; border-radius: 10px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; background: rgba(255,255,255,0.2); color: #fff; transition: all 0.15s; }
+  .mode-tab.active { background: #fff; color: #c8102e; }
+  .section { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); display: none; }
+  .section.visible { display: block; }
+  .ex-title { font-size: 13px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: #f5f5f3; }
+  .next-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #555; border: 1.5px solid #ccc; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .next-btn:hover { background: #f5f5f3; }
+  .feedback-msg { margin-top: 0.7rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+  .row-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+
+  /* FLIP CARD */
+  .progress-wrap { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+  .progress { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .score-disp { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .dots { display: flex; gap: 4px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+  .dot.seen { background: rgba(255,255,255,0.55); }
+  .dot.active { background: #fff; }
+  .card-wrap { perspective: 1000px; width: 100%; height: 300px; margin-bottom: 1rem; cursor: pointer; }
+  .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s ease; }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; gap: 0.5rem; }
+  .back { transform: rotateY(180deg); }
+  .card-emoji { font-size: 52px; line-height: 1; }
+  .card-verb { font-size: 28px; font-weight: 800; color: #c8102e; }
+  .card-tr { font-size: 14px; color: #aaa; }
+  .card-group { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .ar { background: #dbeafe; color: #1e40af; }
+  .er { background: #dcfce7; color: #166534; }
+  .ir { background: #fce7f3; color: #9d174d; }
+  .ref { background: #fef3c7; color: #92400e; }
+  .flip-hint { font-size: 12px; color: #ccc; }
+  .conj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 20px; width: 100%; }
+  .conj-row { display: flex; flex-direction: column; }
+  .conj-pro { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+  .conj-form { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .back-verb { font-size: 18px; font-weight: 800; color: #c8102e; text-align: center; margin-bottom: 0.6rem; }
+  .flip-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 0.8rem; }
+  #s-flip .nav-btn, #s-flip .shuffle-btn { background: rgba(255,255,255,0.2); color: #fff; }
+  #s-flip .nav-btn:hover { background: rgba(255,255,255,0.35); }
+  #s-quiz .nav-btn { background: #f0f0f0; color: #333; border: 1.5px solid #ddd; }
+  #s-quiz .nav-btn:hover { background: #e0e0e0; }
+  #s-quiz .shuffle-btn { color: #888; }
+  .nav-btn { font-size: 13px; padding: 8px 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.3); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .shuffle-btn { font-size: 12px; color: rgba(255,255,255,0.6); background: transparent; border: none; text-decoration: underline; cursor: pointer; }
+
+  /* QUIZ */
+  .pro-selector { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 0.8rem; }
+  .pro-btn { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .pro-btn.active { background: #fff; color: #c8102e; font-weight: 700; }
+  .quiz-card { background: #fff; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.8rem; }
+  .quiz-emoji { font-size: 48px; }
+  .quiz-q { font-size: 15px; color: #555; text-align: center; line-height: 1.6; }
+  .quiz-q strong { color: #c8102e; font-size: 20px; }
+  .quiz-input { font-size: 20px; text-align: center; border: 2px solid #e0e0e0; border-radius: 12px; padding: 10px 16px; width: 100%; max-width: 260px; outline: none; color: #1a1a1a; }
+  .quiz-input:focus { border-color: #c8102e; }
+  .quiz-input.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+  .quiz-input.wrong { border-color: #ef4444; background: #fee2e2; color: #dc2626; }
+  .quiz-hint { font-size: 13px; color: #c8102e; font-weight: 500; min-height: 18px; text-align: center; }
+
+  /* EX: fill blank */
+  .blank-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .blank-item { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: #333; flex-wrap: wrap; line-height: 1.8; }
+  .blank-input { min-width: 110px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; text-align: center; }
+  .blank-input.correct { border-color: #22c55e; color: #16a34a; }
+  .blank-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .blank-hint { font-size: 11px; color: #bbb; font-style: italic; }
+
+  /* EX: MC */
+  .mc-list { display: flex; flex-direction: column; gap: 14px; }
+  .mc-item .mc-q { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 6px; line-height: 1.5; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mc-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+
+  /* EX: match */
+  .match-wrap { display: flex; gap: 12px; }
+  .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .match-item { border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 12px; font-size: 14px; cursor: pointer; text-align: center; background: #f9f9f9; transition: all 0.15s; font-weight: 500; }
+  .match-item:hover { border-color: #c8102e; background: #fff5f5; }
+  .match-item.selected { background: #c8102e; border-color: #c8102e; color: #fff; }
+  .match-item.matched-ok { background: #dcfce7; border-color: #22c55e; color: #15803d; pointer-events: none; }
+  .match-item.matched-wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+
+  /* EX: odd one out */
+  .odd-list { display: flex; flex-direction: column; gap: 14px; }
+  .odd-item .odd-q { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .odd-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .odd-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+  .odd-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .odd-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .odd-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .odd-btn:disabled { cursor: default; }
+
+  /* EX: sentence builder */
+  .sb-list { display: flex; flex-direction: column; gap: 16px; }
+  .sb-item { font-size: 14px; }
+  .sb-q { font-size: 12px; color: #888; margin-bottom: 6px; font-style: italic; }
+  .sb-bank { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .sb-word { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 12px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .sb-word:hover { border-color: #c8102e; background: #fff5f5; }
+  .sb-word.used { opacity: 0.3; pointer-events: none; }
+  .sb-answer { min-height: 36px; border-bottom: 2px solid #e0e0e0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-bottom: 4px; }
+  .sb-placed { border: 1.5px solid #ccc; background: #fff; border-radius: 8px; padding: 4px 10px; font-size: 13px; cursor: pointer; }
+  .sb-placed:hover { background: #fee2e2; border-color: #ef4444; }
+  .sb-result { font-size: 12px; margin-top: 4px; font-weight: 500; }
+  .sb-result.ok { color: #16a34a; }
+  .sb-result.bad { color: #dc2626; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🇪🇸 Verbos en Presente</h1>
+    <p>20 verbs · 6 exercises</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="showSection('s-flip')">📖 Flashcards</button>
+    <button class="mode-tab" onclick="showSection('s-quiz')">✏️ Conjugate</button>
+    <button class="mode-tab" onclick="showSection('s-fill')">📝 Fill in</button>
+    <button class="mode-tab" onclick="showSection('s-mc')">🔘 Multiple choice</button>
+    <button class="mode-tab" onclick="showSection('s-match')">🔗 Match</button>
+    <button class="mode-tab" onclick="showSection('s-sb')">🔀 Build sentence</button>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div class="section visible" id="s-flip">
+    <div class="progress-wrap"><div class="progress" id="flipProg"></div><div class="score-disp" id="flipScore"></div></div>
+    <div class="dots" id="flipDots"></div>
+    <div class="card-wrap" onclick="flipCard()">
+      <div class="card-inner" id="cardInner">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flip-controls" id="flipNav" style="margin-bottom:1rem;">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Back</button>
+    <button class="shuffle-btn" onclick="shuffleCards()">shuffle</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next →</button>
+  </div>
+
+  <!-- CONJUGATE -->
+  <div class="section" id="s-quiz">
+    <div class="ex-title">Conjugate the verb</div>
+    <div class="ex-desc">Select a pronoun, then type the correct form.</div>
+    <div class="quiz-card" id="quizCard" style="min-height:260px;"></div>
+    <div class="flip-controls" style="margin-top:0.5rem;">
+      <button class="nav-btn" id="qPrevBtn" onclick="navigate(-1)">← Back</button>
+      <button class="shuffle-btn" onclick="shuffleCards()">shuffle</button>
+      <button class="nav-btn" id="qNextBtn" onclick="navigate(1)">Next →</button>
+    </div>
+  </div>
+
+  <!-- FILL IN -->
+  <div class="section" id="s-fill">
+    <div class="ex-title">Fill in the blank</div>
+    <div class="ex-desc">Write the correct form of the verb in brackets.</div>
+    <ul class="blank-list" id="fillList"></ul>
+    <div class="row-btns">
+      <button class="check-btn" style="margin:0;" onclick="checkFill()">Check</button>
+      <button class="reset-btn" style="margin:0;" onclick="initFill()">Reset</button>
+    </div>
+    <div class="feedback-msg" id="fillFb"></div>
+  </div>
+
+  <!-- MULTIPLE CHOICE -->
+  <div class="section" id="s-mc">
+    <div class="ex-title">Multiple choice</div>
+    <div class="ex-desc">Choose the correct form for each sentence.</div>
+    <div class="mc-list" id="mcList"></div>
+    <div class="feedback-msg" id="mcFb" style="margin-top:0.8rem;"></div>
+  </div>
+
+  <!-- MATCH -->
+  <div class="section" id="s-match">
+    <div class="ex-title">Match verb to translation</div>
+    <div class="ex-desc">Click a verb on the left, then its English translation on the right.</div>
+    <div class="match-wrap">
+      <div class="match-col" id="matchLeft"></div>
+      <div class="match-col" id="matchRight"></div>
+    </div>
+    <div class="row-btns">
+      <button class="reset-btn" style="margin:0;" onclick="initMatch()">New set</button>
+    </div>
+    <div class="feedback-msg" id="matchFb"></div>
+  </div>
+
+  <!-- SENTENCE BUILDER -->
+  <div class="section" id="s-sb">
+    <div class="ex-title">Build the sentence</div>
+    <div class="ex-desc">Click words in the correct order. Click a placed word to return it.</div>
+    <div class="sb-list" id="sbList"></div>
+    <div class="row-btns">
+      <button class="reset-btn" style="margin:0;" onclick="initSb()">New set</button>
+    </div>
+  </div>
+
+</div>
+<script>
+const pronouns=["yo","tú","él/ella","nosotros","vosotros","ellos/ellas"];
+const verbs=[
+  {inf:"pensar",   emoji:"🤔",tr:"to think",          group:"ar", forms:["pienso","piensas","piensa","pensamos","pensáis","piensan"]},
+  {inf:"desayunar",emoji:"☕",tr:"to have breakfast",  group:"ar", forms:["desayuno","desayunas","desayuna","desayunamos","desayunáis","desayunan"]},
+  {inf:"leer",     emoji:"📚",tr:"to read",            group:"er", forms:["leo","lees","lee","leemos","leéis","leen"]},
+  {inf:"nadar",    emoji:"🏊",tr:"to swim",            group:"ar", forms:["nado","nadas","nada","nadamos","nadáis","nadan"]},
+  {inf:"dormir",   emoji:"😴",tr:"to sleep",           group:"ir", forms:["duermo","duermes","duerme","dormimos","dormís","duermen"]},
+  {inf:"abrazar",  emoji:"🤗",tr:"to hug",             group:"ar", forms:["abrazo","abrazas","abraza","abrazamos","abrazáis","abrazan"]},
+  {inf:"amar",     emoji:"❤️",tr:"to love",             group:"ar", forms:["amo","amas","ama","amamos","amáis","aman"]},
+  {inf:"bailar",   emoji:"💃",tr:"to dance",           group:"ar", forms:["bailo","bailas","baila","bailamos","bailáis","bailan"]},
+  {inf:"cantar",   emoji:"🎤",tr:"to sing",            group:"ar", forms:["canto","cantas","canta","cantamos","cantáis","cantan"]},
+  {inf:"cenar",    emoji:"🌙",tr:"to have dinner",     group:"ar", forms:["ceno","cenas","cena","cenamos","cenáis","cenan"]},
+  {inf:"cocinar",  emoji:"👨‍🍳",tr:"to cook",            group:"ar", forms:["cocino","cocinas","cocina","cocinamos","cocináis","cocinan"]},
+  {inf:"ducharse", emoji:"🚿",tr:"to take a shower",   group:"ref",forms:["me ducho","te duchas","se ducha","nos duchamos","os ducháis","se duchan"]},
+  {inf:"hacer deporte",emoji:"🏋️",tr:"to do sport",   group:"er", forms:["hago","haces","hace","hacemos","hacéis","hacen"]},
+  {inf:"descansar",emoji:"🛋️",tr:"to rest",            group:"ar", forms:["descanso","descansas","descansa","descansamos","descansáis","descansan"]},
+  {inf:"comer",    emoji:"🍔",tr:"to eat",             group:"er", forms:["como","comes","come","comemos","coméis","comen"]},
+  {inf:"desvestirse",emoji:"👕",tr:"to undress",       group:"ref",forms:["me desvisto","te desvistes","se desviste","nos desvestimos","os desvestís","se desvisten"]},
+  {inf:"pagar",    emoji:"💰",tr:"to pay",             group:"ar", forms:["pago","pagas","paga","pagamos","pagáis","pagan"]},
+  {inf:"bañarse",  emoji:"🛁",tr:"to take a bath",     group:"ref",forms:["me baño","te bañas","se baña","nos bañamos","os bañáis","se bañan"]},
+  {inf:"estudiar", emoji:"📖",tr:"to study",           group:"ar", forms:["estudio","estudias","estudia","estudiamos","estudiáis","estudian"]},
+  {inf:"regalar",  emoji:"🎁",tr:"to give a gift",     group:"ar", forms:["regalo","regalas","regala","regalamos","regaláis","regalan"]},
+];
+
+function shuf(a){const s=[...a];for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}return s;}
+function pick(a,n){return shuf(a).slice(0,n);}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+
+// section nav
+const sections=['s-flip','s-quiz','s-fill','s-mc','s-match','s-sb'];
+function showSection(id){
+  sections.forEach(s=>{document.getElementById(s).className='section'+(s===id?' visible':'');});
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>{t.className='mode-tab'+(sections[i]===id?' active':'');});
+}
+
+// shared state
+let order=[...Array(verbs.length).keys()];
+let cur=0,seen=new Set(),isFlipped=false,quizPro=0;
+let qCorrect=0,qTotal=0;
+
+function shuffleCards(){order=shuf([...Array(verbs.length).keys()]);cur=0;seen=new Set();isFlipped=false;qCorrect=0;qTotal=0;document.getElementById('cardInner').classList.remove('flipped');renderFlip();renderQuiz();}
+function navigate(dir){
+  cur=Math.max(0,Math.min(verbs.length-1,cur+dir));
+  isFlipped=false;
+  const ci=document.getElementById('cardInner');
+  if(ci)ci.classList.remove('flipped');
+  renderFlip();
+  renderQuiz();
+  document.getElementById('qPrevBtn').disabled=cur===0;
+  document.getElementById('qNextBtn').disabled=cur===verbs.length-1;
+}
+
+function renderDots(){
+  ['flipDots'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=order.map((_,i)=>`<div class="dot${i===cur?' active':seen.has(i)?' seen':''}"></div>`).join('');});
+}
+
+function renderFlip(){
+  seen.add(cur);
+  const v=verbs[order[cur]];
+  document.getElementById('flipProg').textContent=`${cur+1} / ${verbs.length}`;
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===verbs.length-1;
+  document.getElementById('front').innerHTML=`
+    <div class="card-emoji">${v.emoji}</div>
+    <div class="card-verb">${v.inf}</div>
+    <div class="card-tr">${v.tr}</div>
+    <span class="card-group ${v.group}">-${v.group.toUpperCase()}</span>
+    <div class="flip-hint">tap to see conjugation</div>`;
+  document.getElementById('back').innerHTML=`
+    <div class="back-verb">${v.emoji} ${v.inf}</div>
+    <div class="conj-grid">${pronouns.map((p,i)=>`<div class="conj-row"><span class="conj-pro">${p}</span><span class="conj-form">${v.forms[i]}</span></div>`).join('')}</div>`;
+  renderDots();
+}
+
+function flipCard(){isFlipped=!isFlipped;document.getElementById('cardInner').classList.toggle('flipped',isFlipped);}
+
+// QUIZ
+function renderProSelector(){
+  document.getElementById('proSelector').innerHTML=pronouns.map((p,i)=>`<button class="pro-btn${i===quizPro?' active':''}" onclick="setQuizPro(${i})">${p}</button>`).join('');
+}
+function setQuizPro(i){quizPro=i;renderProSelector();renderQuiz();}
+function renderQuiz(){
+  seen.add(cur);
+  quizPro=Math.floor(Math.random()*6);
+  const v=verbs[order[cur]];
+  document.getElementById('qPrevBtn').disabled=cur===0;
+  document.getElementById('qNextBtn').disabled=cur===verbs.length-1;
+  document.getElementById('flipScore').textContent=qTotal>0?`✓ ${qCorrect}/${qTotal}`:'';
+  document.getElementById('quizCard').innerHTML=`
+    <div class="quiz-emoji">${v.emoji}</div>
+    <div class="quiz-q">Conjugate: <strong>${v.inf}</strong><br><span style="font-size:19px;color:#1a1a1a;font-weight:700;">${pronouns[quizPro]} ___</span></div>
+    <input class="quiz-input" id="qinp" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="quiz-hint" id="qhint"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="check-btn" style="margin:0;" onclick="checkQuiz()">Check</button>
+      <button class="next-btn" style="margin:0;" onclick="showQuizAns()">Show answer</button>
+    </div>`;
+  setTimeout(()=>{const inp=document.getElementById('qinp');if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkQuiz();});}},50);
+}
+function checkQuiz(){
+  const v=verbs[order[cur]];const ans=v.forms[quizPro];
+  const inp=document.getElementById('qinp');const val=inp.value.trim().toLowerCase();
+  qTotal++;
+  if(val===ans){inp.className='quiz-input correct';document.getElementById('qhint').textContent='✓ Correct!';qCorrect++;}
+  else{inp.className='quiz-input wrong';document.getElementById('qhint').textContent='Correct form: '+ans;}
+  document.getElementById('flipScore').textContent=`✓ ${qCorrect}/${qTotal}`;
+}
+function showQuizAns(){document.getElementById('qhint').textContent=verbs[order[cur]].forms[quizPro];}
+
+// FILL IN
+const fillSentences=[
+  {pre:"Ella",post:"todos los días en la piscina. (nadar)",ans:"nada"},
+  {pre:"Nosotros",post:"juntos por las noches. (cenar)",ans:"cenamos"},
+  {pre:"Yo",post:"español en la universidad. (estudiar)",ans:"estudio"},
+  {pre:"¿Tú",post:"bien por las noches? (dormir)",ans:"duermes"},
+  {pre:"Ellos",post:"mucho cuando están nerviosos. (comer)",ans:"comen"},
+  {pre:"Vosotros",post:"muy bien el flamenco. (bailar)",ans:"bailáis"},
+  {pre:"Él",post:"por las mañanas antes de trabajar. (desayunar)",ans:"desayuna"},
+  {pre:"Yo me",post:"antes de ir al trabajo. (duchar)",ans:"ducho"},
+  {pre:"Ella",post:"canciones muy bonitas. (cantar)",ans:"canta"},
+  {pre:"Nosotros",post:"los libros antes del examen. (leer)",ans:"leemos"},
+  {pre:"¿Vosotros",post:"deporte todos los días? (hacer)",ans:"hacéis"},
+  {pre:"Ellas se",post:"después de hacer deporte. (bañar)",ans:"bañan"},
+  {pre:"Yo",post:"mucho cuando estoy cansado. (descansar)",ans:"descanso"},
+  {pre:"Él",post:"la cena para toda la familia. (cocinar)",ans:"cocina"},
+  {pre:"Tú",post:"a tus amigos en el aeropuerto. (abrazar)",ans:"abrazas"},
+];
+function initFill(){
+  document.getElementById('fillList').innerHTML=fillSentences.map((s,i)=>`
+    <li class="blank-item">
+      <span>${s.pre}</span>
+      <input class="blank-input" id="fi-${i}" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false">
+      <span>${s.post}</span>
+    </li>`).join('');
+  document.getElementById('fillFb').textContent='';
+}
+function checkFill(){
+  let ok=0;
+  fillSentences.forEach((s,i)=>{const inp=document.getElementById(`fi-${i}`);const v=inp.value.trim().toLowerCase();if(v===s.ans){inp.className='blank-input correct';ok++;}else{inp.className='blank-input wrong';inp.placeholder=s.ans;}});
+  const fb=document.getElementById('fillFb');fb.textContent=`${ok} / ${fillSentences.length} correct`;fb.className=ok===fillSentences.length?'feedback-msg ok':'feedback-msg bad';
+}
+initFill();
+
+// MULTIPLE CHOICE
+const mcItems=[
+  {q:"Yo ___ mucho cuando estoy cansado. (descansar)",opts:["descanso","descansas","descansa","descansamos"],ans:"descanso"},
+  {q:"Ella ___ en la piscina cada mañana. (nadar)",opts:["nado","nadas","nada","nadan"],ans:"nada"},
+  {q:"Nosotros ___ libros en la biblioteca. (leer)",opts:["leo","lees","leemos","leéis"],ans:"leemos"},
+  {q:"¿Vosotros ___ español en casa? (estudiar)",opts:["estudias","estudiamos","estudiáis","estudian"],ans:"estudiáis"},
+  {q:"Ellos ___ juntos en el restaurante. (cenar)",opts:["ceno","cenas","cena","cenan"],ans:"cenan"},
+  {q:"Tú te ___ después del gimnasio. (duchar)",opts:["me ducho","te duchas","se ducha","nos duchamos"],ans:"te duchas"},
+  {q:"Él ___ la guitarra muy bien. (tocar → cantar)",opts:["canto","cantas","canta","cantamos"],ans:"canta"},
+  {q:"Yo ___ deporte tres veces por semana. (hacer)",opts:["hago","haces","hace","hacemos"],ans:"hago"},
+  {q:"Ella ___ a su madre todas las semanas. (abrazar)",opts:["abrazo","abrazas","abraza","abrazan"],ans:"abraza"},
+  {q:"Nosotros ___ la cena juntos. (cocinar)",opts:["cocino","cocinamos","cocináis","cocinan"],ans:"cocinamos"},
+  {q:"Ellos se ___ antes de dormir. (desvestir)",opts:["me desvisto","te desvistes","se desviste","se desvisten"],ans:"se desvisten"},
+  {q:"¿Tú ___ bien por las noches? (dormir)",opts:["duermo","duermes","duerme","dormimos"],ans:"duermes"},
+];
+let mcDone=new Array(mcItems.length).fill(false);
+function initMc(){
+  document.getElementById('mcList').innerHTML=mcItems.map((item,i)=>`
+    <div class="mc-item">
+      <div class="mc-q">${item.q}</div>
+      <div class="mc-opts">${item.opts.map(o=>`<button class="mc-btn" id="mc-${i}-${CSS.escape(o)}" onclick="pickMc(${i},${JSON.stringify(o)})">${o}</button>`).join('')}</div>
+    </div>`).join('');
+  document.getElementById('mcFb').textContent='';
+}
+function pickMc(i,chosen){
+  if(mcDone[i])return;mcDone[i]=true;
+  const item=mcItems[i];
+  item.opts.forEach(o=>{const btn=document.getElementById(`mc-${i}-${CSS.escape(o)}`);btn.disabled=true;if(o===item.ans)btn.className='mc-btn reveal';if(o===chosen&&chosen!==item.ans)btn.className='mc-btn wrong';if(o===chosen&&chosen===item.ans)btn.className='mc-btn correct';});
+  if(mcDone.every(Boolean)){
+    const ok=mcItems.filter((it,idx)=>document.getElementById(`mc-${idx}-${CSS.escape(it.ans)}`).classList.contains('correct')).length;
+    const fb=document.getElementById('mcFb');fb.textContent=`${ok} / ${mcItems.length} correct`;fb.className=ok===mcItems.length?'feedback-msg ok':'feedback-msg bad';
+  }
+}
+initMc();
+
+// MATCH
+let matchLeft=null,matchData=[];
+function initMatch(){
+  const pool=pick(verbs,7);
+  matchData=pool.map(v=>({inf:v.inf,tr:v.tr,matched:false}));
+  const leftOrder=shuf([...matchData]);
+  const rightOrder=shuf([...matchData]);
+  matchLeft=null;
+  document.getElementById('matchLeft').innerHTML=leftOrder.map((d,i)=>`<div class="match-item" id="ml-${d.inf}" onclick="matchClickLeft('${d.inf}')">${d.inf}</div>`).join('');
+  document.getElementById('matchRight').innerHTML=rightOrder.map((d,i)=>`<div class="match-item" id="mr-${d.inf}" onclick="matchClickRight('${d.inf}')">${d.tr}</div>`).join('');
+  document.getElementById('matchFb').textContent='';
+}
+function matchClickLeft(inf){
+  document.querySelectorAll('.match-col:first-child .match-item').forEach(el=>el.classList.remove('selected'));
+  matchLeft=inf;document.getElementById(`ml-${inf}`).classList.add('selected');
+}
+function matchClickRight(inf){
+  if(!matchLeft)return;
+  const lel=document.getElementById(`ml-${matchLeft}`);
+  const rel=document.getElementById(`mr-${inf}`);
+  if(matchLeft===inf){lel.className='match-item matched-ok';rel.className='match-item matched-ok';}
+  else{lel.classList.add('matched-wrong');rel.classList.add('matched-wrong');setTimeout(()=>{lel.className='match-item';rel.className='match-item';},800);}
+  matchLeft=null;
+  const done=document.querySelectorAll('.match-item.matched-ok').length/2;
+  if(done===matchData.length){const fb=document.getElementById('matchFb');fb.textContent='All matched!';fb.className='feedback-msg ok';}
+}
+initMatch();
+
+// SENTENCE BUILDER
+const sbSentences=[
+  {words:["Yo","desayuno","café","y","pan","por","las","mañanas."],hint:"I have coffee and bread for breakfast in the mornings."},
+  {words:["Ella","nada","en","la","piscina","todos","los","días."],hint:"She swims in the pool every day."},
+  {words:["Nosotros","leemos","el","periódico","juntos."],hint:"We read the newspaper together."},
+  {words:["¿Tú","bailas","flamenco","los","fines","de","semana?"],hint:"Do you dance flamenco on weekends?"},
+  {words:["Ellos","cenan","tarde","en","España."],hint:"They have dinner late in Spain."},
+  {words:["Yo","me","ducho","por","las","mañanas."],hint:"I shower in the mornings."},
+  {words:["Vosotros","cocinéis","muy","bien."],hint:"You all cook very well."},
+  {words:["Él","descansa","después","de","hacer","deporte."],hint:"He rests after doing sport."},
+];
+const sbData=sbSentences.map(s=>({shuffled:shuf(s.words.map((w,i)=>({w,i}))),placed:[]}));
+function initSb(){sbData.forEach((d,si)=>{d.placed=[];d.shuffled=shuf(sbSentences[si].words.map((w,i)=>({w,i})));});renderSbAll();}
+function renderSbAll(){
+  document.getElementById('sbList').innerHTML=sbSentences.map((s,si)=>`
+    <div class="sb-item">
+      <div class="sb-q">${s.hint}</div>
+      <div class="sb-bank" id="sbb-${si}"></div>
+      <div class="sb-answer" id="sba-${si}"></div>
+      <div class="sb-result" id="sbr-${si}"></div>
+    </div>`).join('');
+  sbSentences.forEach((_,si)=>renderSb(si));
+}
+function renderSb(si){
+  const d=sbData[si];
+  document.getElementById(`sbb-${si}`).innerHTML=d.shuffled.map(w=>`<div class="sb-word${d.placed.find(p=>p.i===w.i)?' used':''}" onclick="sbPlace(${si},${w.i})">${w.w}</div>`).join('');
+  document.getElementById(`sba-${si}`).innerHTML=d.placed.map(p=>`<div class="sb-placed" onclick="sbRemove(${si},${p.i})">${p.w}</div>`).join('');
+}
+function sbPlace(si,wi){const d=sbData[si];if(d.placed.find(p=>p.i===wi))return;d.placed.push(d.shuffled.find(w=>w.i===wi));document.getElementById(`sbr-${si}`).textContent='';renderSb(si);if(d.placed.length===sbSentences[si].words.length)checkSb(si);}
+function sbRemove(si,wi){sbData[si].placed=sbData[si].placed.filter(p=>p.i!==wi);document.getElementById(`sbr-${si}`).textContent='';renderSb(si);}
+function checkSb(si){const result=sbData[si].placed.map(p=>p.w).join(' ');const correct=sbSentences[si].words.join(' ');const res=document.getElementById(`sbr-${si}`);if(result===correct){res.textContent='✓ Correct!';res.className='sb-result ok';}else{res.textContent='✗ Correct order: '+correct;res.className='sb-result bad';}}
+renderSbAll();
+
+cur=0;seen=new Set();
+renderFlip();
+renderQuiz();
+</script>
+</body>
+</html>
