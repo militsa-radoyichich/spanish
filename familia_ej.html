@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Familia – Ejercicios</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 580px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .card { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .ex-title { font-size: 12px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .feedback-msg { margin-top: 0.7rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+  .blank-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .blank-item { display: flex; align-items: baseline; gap: 6px; font-size: 15px; color: #333; flex-wrap: wrap; line-height: 1.8; }
+  .blank-input { min-width: 100px; border: none; border-bottom: 2px solid #ccc; font-size: 15px; outline: none; background: transparent; color: #1a1a1a; padding: 2px 4px; text-align: center; }
+  .blank-input.correct { border-color: #22c55e; color: #16a34a; }
+  .blank-input.wrong { border-color: #ef4444; color: #dc2626; }
+  .mc-list { display: flex; flex-direction: column; gap: 14px; }
+  .mc-q { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 6px; line-height: 1.5; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mc-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+  .match-wrap { display: flex; gap: 12px; }
+  .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .match-item { border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 12px; font-size: 13px; cursor: pointer; text-align: center; background: #f9f9f9; transition: all 0.15s; }
+  .match-item:hover { border-color: #c8102e; background: #fff5f5; }
+  .match-item.sel { background: #c8102e; border-color: #c8102e; color: #fff; }
+  .match-item.ok { background: #dcfce7; border-color: #22c55e; color: #15803d; pointer-events: none; }
+  .match-item.bad { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-list { display: flex; flex-direction: column; gap: 14px; }
+  .odd-q { font-size: 13px; font-weight: 500; color: #333; margin-bottom: 6px; }
+  .odd-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .odd-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+  .odd-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .odd-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .odd-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .odd-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .odd-btn:disabled { cursor: default; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+  .pill { border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; background: #f9f9f9; transition: all 0.15s; }
+  .pill:hover { border-color: #c8102e; background: #fff5f5; }
+  .pill.placed { opacity: 0.3; pointer-events: none; }
+  .drop-cols { display: flex; gap: 10px; margin-bottom: 0.8rem; }
+  .drop-col { flex: 1; border-radius: 12px; padding: 10px; min-height: 60px; }
+  .drop-col.blue { background: #dbeafe; }
+  .drop-col.green { background: #dcfce7; }
+  .drop-col h3 { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .drop-col.blue h3 { color: #1e40af; }
+  .drop-col.green h3 { color: #166534; }
+  .drop-col .dropped { display: flex; flex-wrap: wrap; gap: 5px; min-height: 28px; }
+  .placed-chip { background: #fff; border: 1.5px solid #ccc; border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .placed-chip.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .placed-chip.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>👨‍👩‍👧 La Familia</h1>
+    <p>ejercicios interactivos</p>
+  </div>
+
+  <!-- 1: Completa -->
+  <div class="card">
+    <div class="ex-title">1 — Completa con la palabra correcta</div>
+    <div class="ex-desc">Upiši tačnog srodnika.</div>
+    <ul class="blank-list" id="fill1"></ul>
+    <button class="check-btn" onclick="checkFill1()">Comprobar</button>
+    <button class="reset-btn" onclick="initFill1()">Reset</button>
+    <div class="feedback-msg" id="fb1"></div>
+  </div>
+
+  <!-- 2: Prisvojni pridevi -->
+  <div class="card">
+    <div class="ex-title">2 — Adjetivos posesivos</div>
+    <div class="ex-desc">Upiši: mi, mis, tu, tus, su, sus, nuestro/a/os/as, vuestro/a/os/as.</div>
+    <ul class="blank-list" id="fill2"></ul>
+    <button class="check-btn" onclick="checkFill2()">Comprobar</button>
+    <button class="reset-btn" onclick="initFill2()">Reset</button>
+    <div class="feedback-msg" id="fb2"></div>
+  </div>
+
+  <!-- 3: Este/Esta -->
+  <div class="card">
+    <div class="ex-title">3 — Este, Esta, Estos o Estas</div>
+    <div class="ex-desc">Upiši tačnu pokaznu zamenicu.</div>
+    <ul class="blank-list" id="fill3"></ul>
+    <button class="check-btn" onclick="checkFill3()">Comprobar</button>
+    <button class="reset-btn" onclick="initFill3()">Reset</button>
+    <div class="feedback-msg" id="fb3"></div>
+  </div>
+
+  <!-- 4: Marcadores de lugar -->
+  <div class="card">
+    <div class="ex-title">4 — Marcadores de lugar</div>
+    <div class="ex-desc">Upiši tačan prostorni predlog: encima de, debajo de, delante de, detrás de, al lado de, a la derecha de, a la izquierda de, entre.</div>
+    <ul class="blank-list" id="fill4"></ul>
+    <button class="check-btn" onclick="checkFill4()">Comprobar</button>
+    <button class="reset-btn" onclick="initFill4()">Reset</button>
+    <div class="feedback-msg" id="fb4"></div>
+  </div>
+
+  <!-- 5: Estar + marcadores MC -->
+  <div class="card">
+    <div class="ex-title">5 — ¿Dónde está?</div>
+    <div class="ex-desc">Izaberi tačan odgovor.</div>
+    <div class="mc-list" id="mc5"></div>
+    <div class="feedback-msg" id="fb5"></div>
+  </div>
+
+  <!-- 6: Ko je ko MC -->
+  <div class="card">
+    <div class="ex-title">6 — ¿Quién es?</div>
+    <div class="ex-desc">Izaberi tačan odgovor.</div>
+    <div class="mc-list" id="mc6"></div>
+    <div class="feedback-msg" id="fb6"></div>
+  </div>
+
+  <!-- 7: Uljez -->
+  <div class="card">
+    <div class="ex-title">7 — El intruso</div>
+    <div class="ex-desc">Koja reč ne pripada grupi?</div>
+    <div class="odd-list" id="odd7"></div>
+    <div class="feedback-msg" id="fb7"></div>
+  </div>
+
+  <!-- 8: Match -->
+  <div class="card">
+    <div class="ex-title">8 — Conecta</div>
+    <div class="ex-desc">Poveži španski i srpski. Klikni levo, pa desno.</div>
+    <div class="match-wrap">
+      <div class="match-col" id="mLeft"></div>
+      <div class="match-col" id="mRight"></div>
+    </div>
+    <button class="reset-btn" style="margin-top:0.5rem;" onclick="initMatch()">Nuevo conjunto</button>
+    <div class="feedback-msg" id="fb8"></div>
+  </div>
+
+  <!-- 9: Razvrstaj marcadores -->
+  <div class="card">
+    <div class="ex-title">9 — Vertical u Horizontal</div>
+    <div class="ex-desc">Razvrstaj prostorne predloge: vertikalni (gore/dole) ili horizontalni (levo/desno/ispred...).</div>
+    <div class="pills" id="pills9"></div>
+    <div class="drop-cols">
+      <div class="drop-col blue"><h3>↕ Vertical</h3><div class="dropped" id="dropV"></div></div>
+      <div class="drop-col green"><h3>↔ Horizontal</h3><div class="dropped" id="dropH"></div></div>
+    </div>
+    <button class="check-btn" onclick="checkClass9()">Comprobar</button>
+    <button class="reset-btn" onclick="initClass9()">Reset</button>
+    <div class="feedback-msg" id="fb9"></div>
+  </div>
+
+</div>
+
+<script>
+// ── helpers ──
+function shuf(a) { var s = a.slice(); for (var i = s.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = s[i]; s[i] = s[j]; s[j] = t; } return s; }
+function pick(a, n) { return shuf(a).slice(0, n); }
+
+// ── EX 1 ──
+var d1 = [
+  {pre:"El padre de mi padre es mi", post:".", ans:"abuelo"},
+  {pre:"La madre de mi madre es mi", post:".", ans:"abuela"},
+  {pre:"El hijo de mi hermano es mi", post:".", ans:"sobrino"},
+  {pre:"La hija de mi tío es mi", post:".", ans:"prima"},
+  {pre:"La hermana de mi padre es mi", post:".", ans:"tía"},
+  {pre:"El marido de mi hija es mi", post:".", ans:"yerno"},
+  {pre:"Los hijos de mis hijos son mis", post:".", ans:"nietos"},
+  {pre:"La mujer de mi hijo es mi", post:".", ans:"nuera"},
+  {pre:"El hermano de mi mujer es mi", post:".", ans:"cuñado"},
+  {pre:"La madre de mi marido es mi", post:".", ans:"suegra"},
+  {pre:"Los hijos de mis hermanos son mis", post:".", ans:"sobrinos"},
+  {pre:"El hermano de mi padre es mi", post:".", ans:"tío"}
+];
+function initFill1() {
+  var h = '';
+  for (var i = 0; i < d1.length; i++) {
+    h += '<li class="blank-item"><span>' + d1[i].pre + '</span><input class="blank-input" id="f1i' + i + '" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>' + d1[i].post + '</span></li>';
+  }
+  document.getElementById('fill1').innerHTML = h;
+  document.getElementById('fb1').textContent = '';
+}
+function checkFill1() {
+  var ok = 0;
+  for (var i = 0; i < d1.length; i++) {
+    var inp = document.getElementById('f1i' + i);
+    if (inp.value.trim().toLowerCase() === d1[i].ans) { inp.className = 'blank-input correct'; ok++; }
+    else { inp.className = 'blank-input wrong'; inp.value = ''; inp.placeholder = '→ ' + d1[i].ans; }
+  }
+  var fb = document.getElementById('fb1');
+  fb.textContent = ok + ' / ' + d1.length + ' tačno';
+  fb.className = ok === d1.length ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initFill1();
+
+// ── EX 2 ──
+var d2 = [
+  {subj:"(yo)", noun:"madre", ans:"mi"},
+  {subj:"(tú)", noun:"hermanos", ans:"tus"},
+  {subj:"(él)", noun:"abuela", ans:"su"},
+  {subj:"(nosotros)", noun:"tío", ans:"nuestro"},
+  {subj:"(vosotros)", noun:"hija", ans:"vuestra"},
+  {subj:"(ellos)", noun:"primos", ans:"sus"},
+  {subj:"(yo)", noun:"abuelos", ans:"mis"},
+  {subj:"(nosotros)", noun:"hermanas", ans:"nuestras"},
+  {subj:"(tú)", noun:"padre", ans:"tu"},
+  {subj:"(vosotros)", noun:"sobrinos", ans:"vuestros"},
+  {subj:"(ella)", noun:"nietos", ans:"sus"},
+  {subj:"(nosotros)", noun:"familia", ans:"nuestra"}
+];
+function initFill2() {
+  var h = '';
+  for (var i = 0; i < d2.length; i++) {
+    h += '<li class="blank-item"><span style="color:#888;font-size:13px;min-width:90px;">' + d2[i].subj + '</span><input class="blank-input" id="f2i' + i + '" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>' + d2[i].noun + '</span></li>';
+  }
+  document.getElementById('fill2').innerHTML = h;
+  document.getElementById('fb2').textContent = '';
+}
+function checkFill2() {
+  var ok = 0;
+  for (var i = 0; i < d2.length; i++) {
+    var inp = document.getElementById('f2i' + i);
+    if (inp.value.trim().toLowerCase() === d2[i].ans) { inp.className = 'blank-input correct'; ok++; }
+    else { inp.className = 'blank-input wrong'; inp.value = ''; inp.placeholder = '→ ' + d2[i].ans; }
+  }
+  var fb = document.getElementById('fb2');
+  fb.textContent = ok + ' / ' + d2.length + ' tačno';
+  fb.className = ok === d2.length ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initFill2();
+
+// ── EX 3 ──
+var d3 = [
+  {post:"es mi padre.", ans:"Este"},
+  {post:"es mi abuela.", ans:"Esta"},
+  {post:"son mis hermanos.", ans:"Estos"},
+  {post:"son mis primas.", ans:"Estas"},
+  {post:"es el marido de mi hermana.", ans:"Este"},
+  {post:"son los hijos de mi tío.", ans:"Estos"},
+  {post:"es la mujer de mi hermano.", ans:"Esta"},
+  {post:"son las hijas de mi prima.", ans:"Estas"},
+  {post:"es mi sobrino favorito.", ans:"Este"},
+  {post:"son mis abuelas.", ans:"Estas"},
+  {post:"es la madre de Carlos.", ans:"Esta"},
+  {post:"son los nietos de don Fernando.", ans:"Estos"}
+];
+function initFill3() {
+  var h = '';
+  for (var i = 0; i < d3.length; i++) {
+    h += '<li class="blank-item"><input class="blank-input" id="f3i' + i + '" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>' + d3[i].post + '</span></li>';
+  }
+  document.getElementById('fill3').innerHTML = h;
+  document.getElementById('fb3').textContent = '';
+}
+function checkFill3() {
+  var ok = 0;
+  for (var i = 0; i < d3.length; i++) {
+    var inp = document.getElementById('f3i' + i);
+    if (inp.value.trim().toLowerCase() === d3[i].ans.toLowerCase()) { inp.className = 'blank-input correct'; ok++; }
+    else { inp.className = 'blank-input wrong'; inp.value = ''; inp.placeholder = '→ ' + d3[i].ans; }
+  }
+  var fb = document.getElementById('fb3');
+  fb.textContent = ok + ' / ' + d3.length + ' tačno';
+  fb.className = ok === d3.length ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initFill3();
+
+// ── EX 4: Marcadores ──
+var d4 = [
+  {pre:"El gato está", post:"la mesa. (ispod)", ans:"debajo de"},
+  {pre:"El libro está", post:"la silla. (iznad)", ans:"encima de"},
+  {pre:"María está", post:"la puerta. (ispred)", ans:"delante de"},
+  {pre:"El perro está", post:"el sofá. (iza)", ans:"detrás de"},
+  {pre:"El banco está", post:"la farmacia. (pored)", ans:"al lado de"},
+  {pre:"La panadería está", post:"el banco. (desno od)", ans:"a la derecha de"},
+  {pre:"El parque está", post:"la escuela. (levo od)", ans:"a la izquierda de"},
+  {pre:"El niño está", post:"sus padres. (između)", ans:"entre"},
+  {pre:"Las llaves están", post:"la mesa. (na vrhu)", ans:"encima de"},
+  {pre:"La farmacia está", post:"el supermercado y el banco. (između)", ans:"entre"}
+];
+function initFill4() {
+  var h = '';
+  for (var i = 0; i < d4.length; i++) {
+    h += '<li class="blank-item"><span>' + d4[i].pre + '</span><input class="blank-input" id="f4i' + i + '" style="min-width:130px;" type="text" placeholder="?" autocomplete="off" autocorrect="off" spellcheck="false"><span>' + d4[i].post + '</span></li>';
+  }
+  document.getElementById('fill4').innerHTML = h;
+  document.getElementById('fb4').textContent = '';
+}
+function checkFill4() {
+  var ok = 0;
+  for (var i = 0; i < d4.length; i++) {
+    var inp = document.getElementById('f4i' + i);
+    if (inp.value.trim().toLowerCase() === d4[i].ans) { inp.className = 'blank-input correct'; ok++; }
+    else { inp.className = 'blank-input wrong'; inp.value = ''; inp.placeholder = '→ ' + d4[i].ans; }
+  }
+  var fb = document.getElementById('fb4');
+  fb.textContent = ok + ' / ' + d4.length + ' tačno';
+  fb.className = ok === d4.length ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initFill4();
+
+// ── EX 5: Estar + marcadores MC ──
+var d5 = [
+  {q:"El libro _____ encima de la mesa.", opts:["es","está","son","están"], ans:"está"},
+  {q:"Las llaves _____ debajo del sofá.", opts:["es","está","son","están"], ans:"están"},
+  {q:"¿Dónde _____ el baño?", opts:["es","está","son","están"], ans:"está"},
+  {q:"Mis padres _____ delante de la iglesia.", opts:["es","está","son","están"], ans:"están"},
+  {q:"El gato _____ detrás de la puerta.", opts:["es","está","son","están"], ans:"está"},
+  {q:"La farmacia _____ al lado del banco.", opts:["es","está","son","están"], ans:"está"},
+  {q:"Los niños _____ entre los padres.", opts:["es","está","son","están"], ans:"están"},
+  {q:"Mi hermana _____ a la derecha de la foto.", opts:["es","está","son","están"], ans:"está"}
+];
+var done5 = d5.map(function() { return false; });
+(function() {
+  var h = '';
+  for (var i = 0; i < d5.length; i++) {
+    h += '<div class="mc-item" id="mc5item' + i + '"><div class="mc-q">' + d5[i].q + '</div><div class="mc-opts">';
+    for (var j = 0; j < d5[i].opts.length; j++) {
+      h += '<button class="mc-btn" id="mc5b' + i + 'j' + j + '" onclick="pickMc5(' + i + ',' + j + ')">' + d5[i].opts[j] + '</button>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById('mc5').innerHTML = h;
+})();
+function pickMc5(i, chosen) {
+  if (done5[i]) return;
+  done5[i] = true;
+  for (var j = 0; j < d5[i].opts.length; j++) {
+    var btn = document.getElementById('mc5b' + i + 'j' + j);
+    btn.disabled = true;
+    if (d5[i].opts[j] === d5[i].ans) btn.className = 'mc-btn reveal';
+    if (j === chosen && d5[i].opts[j] !== d5[i].ans) btn.className = 'mc-btn wrong';
+    if (j === chosen && d5[i].opts[j] === d5[i].ans) btn.className = 'mc-btn correct';
+  }
+  var all = true; for (var k = 0; k < done5.length; k++) { if (!done5[k]) { all = false; break; } }
+  if (all) {
+    var ok = 0;
+    for (var m = 0; m < d5.length; m++) { for (var n = 0; n < d5[m].opts.length; n++) { if (document.getElementById('mc5b' + m + 'j' + n).classList.contains('correct')) ok++; } }
+    var fb = document.getElementById('fb5');
+    fb.textContent = ok + ' / ' + d5.length + ' tačno';
+    fb.className = ok === d5.length ? 'feedback-msg ok' : 'feedback-msg bad';
+  }
+}
+
+// ── EX 6: Ko je ko MC ──
+var d6 = [
+  {q:"La madre de mi madre es mi...", opts:["abuela","tía","prima","hermana"], ans:"abuela"},
+  {q:"El hijo de mi hermana es mi...", opts:["primo","nieto","sobrino","cuñado"], ans:"sobrino"},
+  {q:"La hija de mi tío es mi...", opts:["sobrina","prima","nieta","cuñada"], ans:"prima"},
+  {q:"El marido de mi hija es mi...", opts:["suegro","cuñado","yerno","sobrino"], ans:"yerno"},
+  {q:"Los padres de mis padres son mis...", opts:["tíos","primos","abuelos","suegros"], ans:"abuelos"},
+  {q:"La hermana de mi marido es mi...", opts:["cuñada","suegra","prima","sobrina"], ans:"cuñada"},
+  {q:"Los hijos de mis hijos son mis...", opts:["sobrinos","nietos","primos","cuñados"], ans:"nietos"},
+  {q:"El padre de mi mujer es mi...", opts:["abuelo","tío","suegro","cuñado"], ans:"suegro"}
+];
+var done6 = d6.map(function() { return false; });
+(function() {
+  var h = '';
+  for (var i = 0; i < d6.length; i++) {
+    h += '<div class="mc-item"><div class="mc-q">' + d6[i].q + '</div><div class="mc-opts">';
+    for (var j = 0; j < d6[i].opts.length; j++) {
+      h += '<button class="mc-btn" id="mc6b' + i + 'j' + j + '" onclick="pickMc6(' + i + ',' + j + ')">' + d6[i].opts[j] + '</button>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById('mc6').innerHTML = h;
+})();
+function pickMc6(i, chosen) {
+  if (done6[i]) return;
+  done6[i] = true;
+  for (var j = 0; j < d6[i].opts.length; j++) {
+    var btn = document.getElementById('mc6b' + i + 'j' + j);
+    btn.disabled = true;
+    if (d6[i].opts[j] === d6[i].ans) btn.className = 'mc-btn reveal';
+    if (j === chosen && d6[i].opts[j] !== d6[i].ans) btn.className = 'mc-btn wrong';
+    if (j === chosen && d6[i].opts[j] === d6[i].ans) btn.className = 'mc-btn correct';
+  }
+  var all = true; for (var k = 0; k < done6.length; k++) { if (!done6[k]) { all = false; break; } }
+  if (all) {
+    var ok = 0;
+    for (var m = 0; m < d6.length; m++) { for (var n = 0; n < d6[m].opts.length; n++) { if (document.getElementById('mc6b' + m + 'j' + n).classList.contains('correct')) ok++; } }
+    var fb = document.getElementById('fb6');
+    fb.textContent = ok + ' / ' + d6.length + ' tačno';
+    fb.className = ok === d6.length ? 'feedback-msg ok' : 'feedback-msg bad';
+  }
+}
+
+// ── EX 7: Uljez ──
+var d7 = [
+  {q:"Ko ne pripada direktnim srodnicima?", words:["padre","hijo","nieto","primo"], odd:"primo"},
+  {q:"Ko nije familia política?", words:["suegra","cuñado","yerno","hermano"], odd:"hermano"},
+  {q:"Ko nije ženskog roda?", words:["abuela","prima","sobrino","nuera"], odd:"sobrino"},
+  {q:"Ko nije muškog roda?", words:["abuelo","tío","primo","sobrina"], odd:"sobrina"},
+  {q:"Koji pridev se menja po rodu?", words:["mi","tu","su","nuestro"], odd:"nuestro"},
+  {q:"Koji predlog ne opisuje horizontalni položaj?", words:["delante de","al lado de","encima de","detrás de"], odd:"encima de"},
+  {q:"Koja reč nije član porodice?", words:["hermano","primo","vecino","sobrino"], odd:"vecino"},
+  {q:"Koji predlog ne traži 'de' posle sebe?", words:["encima de","debajo de","entre","al lado de"], odd:"entre"}
+];
+var done7 = d7.map(function() { return false; });
+(function() {
+  var h = '';
+  for (var i = 0; i < d7.length; i++) {
+    h += '<div class="odd-item"><div class="odd-q">' + d7[i].q + '</div><div class="odd-opts">';
+    for (var j = 0; j < d7[i].words.length; j++) {
+      h += '<button class="odd-btn" id="odd7b' + i + 'j' + j + '" onclick="pickOdd7(' + i + ',' + j + ')">' + d7[i].words[j] + '</button>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById('odd7').innerHTML = h;
+})();
+function pickOdd7(i, chosen) {
+  if (done7[i]) return;
+  done7[i] = true;
+  for (var j = 0; j < d7[i].words.length; j++) {
+    var btn = document.getElementById('odd7b' + i + 'j' + j);
+    btn.disabled = true;
+    if (d7[i].words[j] === d7[i].odd) btn.className = 'odd-btn reveal';
+    if (j === chosen && d7[i].words[j] !== d7[i].odd) btn.className = 'odd-btn wrong';
+    if (j === chosen && d7[i].words[j] === d7[i].odd) btn.className = 'odd-btn correct';
+  }
+  var all = true; for (var k = 0; k < done7.length; k++) { if (!done7[k]) { all = false; break; } }
+  if (all) {
+    var ok = 0;
+    for (var m = 0; m < d7.length; m++) { for (var n = 0; n < d7[m].words.length; n++) { if (document.getElementById('odd7b' + m + 'j' + n).classList.contains('correct')) ok++; } }
+    var fb = document.getElementById('fb7');
+    fb.textContent = ok + ' / ' + d7.length + ' tačno';
+    fb.className = ok === d7.length ? 'feedback-msg ok' : 'feedback-msg bad';
+  }
+}
+
+// ── EX 8: Match ──
+var matchAll = [
+  {es:"el abuelo", sr:"deda"}, {es:"la abuela", sr:"baka"}, {es:"el padre", sr:"otac"},
+  {es:"la madre", sr:"majka"}, {es:"el hermano", sr:"brat"}, {es:"la hermana", sr:"sestra"},
+  {es:"el hijo", sr:"sin"}, {es:"la hija", sr:"ćerka"}, {es:"el tío", sr:"ujak"},
+  {es:"la tía", sr:"tetka"}, {es:"el primo", sr:"bratić"}, {es:"la prima", sr:"bratičina"},
+  {es:"el sobrino", sr:"nećak"}, {es:"la sobrina", sr:"nećakinja"}, {es:"el nieto", sr:"unuk"},
+  {es:"la nieta", sr:"unuka"}, {es:"el yerno", sr:"zet"}, {es:"la nuera", sr:"snaha"},
+  {es:"el suegro", sr:"svekar"}, {es:"la suegra", sr:"svekrva"},
+  {es:"encima de", sr:"iznad"}, {es:"debajo de", sr:"ispod"}, {es:"delante de", sr:"ispred"},
+  {es:"detrás de", sr:"iza"}, {es:"al lado de", sr:"pored"}, {es:"entre", sr:"između"}
+];
+var matchSel = null, matchPool = [];
+function initMatch() {
+  matchPool = pick(matchAll, 7);
+  var lr = shuf(matchPool.slice()); var rr = shuf(matchPool.slice());
+  matchSel = null;
+  var lh = '', rh = '';
+  for (var i = 0; i < lr.length; i++) {
+    var key = lr[i].es.replace(/ /g,'_');
+    lh += '<div class="match-item" id="ml_' + key + '" onclick="mLeft(\'' + key + '\')">' + lr[i].es + '</div>';
+  }
+  for (var i = 0; i < rr.length; i++) {
+    var key = rr[i].es.replace(/ /g,'_');
+    rh += '<div class="match-item" id="mr_' + key + '" onclick="mRight(\'' + key + '\')">' + rr[i].sr + '</div>';
+  }
+  document.getElementById('mLeft').innerHTML = lh;
+  document.getElementById('mRight').innerHTML = rh;
+  document.getElementById('fb8').textContent = '';
+}
+function mLeft(key) {
+  var els = document.querySelectorAll('#mLeft .match-item');
+  for (var i = 0; i < els.length; i++) els[i].classList.remove('sel');
+  matchSel = key;
+  document.getElementById('ml_' + key).classList.add('sel');
+}
+function mRight(key) {
+  if (!matchSel) return;
+  var lel = document.getElementById('ml_' + matchSel);
+  var rel = document.getElementById('mr_' + key);
+  if (matchSel === key) {
+    lel.className = 'match-item ok'; rel.className = 'match-item ok';
+  } else {
+    lel.classList.add('bad'); rel.classList.add('bad');
+    setTimeout(function() { lel.className = 'match-item'; rel.className = 'match-item'; }, 700);
+  }
+  matchSel = null;
+  var done = document.querySelectorAll('.match-item.ok').length / 2;
+  if (done === matchPool.length) {
+    var fb = document.getElementById('fb8');
+    fb.textContent = 'Sve spojeno! ✓';
+    fb.className = 'feedback-msg ok';
+  }
+}
+initMatch();
+
+// ── EX 9: Razvrstaj marcadores ──
+var marc9 = [
+  {w:"encima de", g:"V"}, {w:"debajo de", g:"V"},
+  {w:"delante de", g:"H"}, {w:"detrás de", g:"H"},
+  {w:"al lado de", g:"H"}, {w:"a la derecha de", g:"H"},
+  {w:"a la izquierda de", g:"H"}, {w:"entre", g:"H"}
+];
+var placed9 = {};
+function initClass9() {
+  placed9 = {};
+  document.getElementById('fb9').textContent = '';
+  renderClass9();
+}
+function renderClass9() {
+  var bh = '';
+  for (var i = 0; i < marc9.length; i++) {
+    bh += '<div class="pill' + (placed9[marc9[i].w] ? ' placed' : '') + '" onclick="place9(\'' + marc9[i].w.replace(/'/g,"\\'") + '\')">' + marc9[i].w + '</div>';
+  }
+  document.getElementById('pills9').innerHTML = bh;
+  var vh = '', hh = '';
+  for (var i = 0; i < marc9.length; i++) {
+    if (placed9[marc9[i].w] === 'V') vh += '<div class="placed-chip" id="pc9_' + i + '" onclick="unplace9(\'' + marc9[i].w.replace(/'/g,"\\'") + '\')">' + marc9[i].w + '</div>';
+    if (placed9[marc9[i].w] === 'H') hh += '<div class="placed-chip" id="pc9_' + i + '" onclick="unplace9(\'' + marc9[i].w.replace(/'/g,"\\'") + '\')">' + marc9[i].w + '</div>';
+  }
+  document.getElementById('dropV').innerHTML = vh;
+  document.getElementById('dropH').innerHTML = hh;
+}
+var nextDrop9 = 'V';
+function place9(word) {
+  if (placed9[word]) return;
+  placed9[word] = nextDrop9;
+  nextDrop9 = nextDrop9 === 'V' ? 'H' : 'V';
+  document.getElementById('fb9').textContent = '';
+  renderClass9();
+}
+function unplace9(word) { placed9[word] = null; renderClass9(); }
+function checkClass9() {
+  var ok = 0, total = 0;
+  for (var i = 0; i < marc9.length; i++) {
+    if (!placed9[marc9[i].w]) continue;
+    total++;
+    var chips = document.querySelectorAll('#dropV .placed-chip, #dropH .placed-chip');
+    if (placed9[marc9[i].w] === marc9[i].g) ok++;
+  }
+  if (total < marc9.length) {
+    var fb = document.getElementById('fb9');
+    fb.textContent = 'Rasporedi sve! (' + total + '/' + marc9.length + ')';
+    fb.className = 'feedback-msg bad';
+    return;
+  }
+  var allChips = document.querySelectorAll('#dropV .placed-chip, #dropH .placed-chip');
+  for (var i = 0; i < marc9.length; i++) {
+    var g = placed9[marc9[i].w];
+    var container = g === 'V' ? document.getElementById('dropV') : document.getElementById('dropH');
+    var chips2 = container.querySelectorAll('.placed-chip');
+    for (var j = 0; j < chips2.length; j++) {
+      if (chips2[j].textContent === marc9[i].w) {
+        chips2[j].className = g === marc9[i].g ? 'placed-chip correct' : 'placed-chip wrong';
+      }
+    }
+  }
+  var fb = document.getElementById('fb9');
+  fb.textContent = ok + ' / ' + marc9.length + ' tačno';
+  fb.className = ok === marc9.length ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initClass9();
+</script>
+</body>
+</html>
