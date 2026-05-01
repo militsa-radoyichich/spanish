@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Familia – Lectura</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 580px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .card { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .card h2 { font-size: 15px; font-weight: 700; color: #c8102e; margin-bottom: 1rem; }
+  .reading-text { font-size: 15px; color: #1a1a1a; line-height: 1.9; }
+  .reading-text p { margin-bottom: 0.9rem; }
+  .reading-text p:last-child { margin-bottom: 0; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .feedback-msg { margin-top: 0.7rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+  .mc-list { display: flex; flex-direction: column; gap: 14px; }
+  .mc-item .mc-q { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 6px; line-height: 1.5; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .mc-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+  .tf-list { display: flex; flex-direction: column; gap: 10px; }
+  .tf-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #333; flex-wrap: wrap; }
+  .tf-stmt { flex: 1; }
+  .tf-btns { display: flex; gap: 6px; }
+  .tf-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 4px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .tf-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .tf-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .tf-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .tf-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .tf-btn:disabled { cursor: default; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>👨‍👩‍👧 La Familia</h1>
+    <p>lectura y comprensión</p>
+  </div>
+
+  <div class="card">
+    <h2>📜 La familia de los García</h2>
+    <div class="reading-text">
+      <p>Los García son una familia numerosa de Madrid. El abuelo, don Fernando, tiene setenta y ocho años y vive con su mujer, doña Pilar, en el barrio de Salamanca. Sus dos hijos, Carlos y Marta, ya tienen sus propias familias.</p>
+      <p>Carlos, el mayor, está casado con Elena, una arquitecta italiana. Tienen tres hijos: Alejandro, de dieciséis años, que estudia bachillerato; Lucía, de trece, que es muy aficionada a la música; y el pequeño Pablo, de ocho años. Carlos trabaja como abogado en una empresa internacional y viaja mucho por trabajo.</p>
+      <p>Marta, la hija menor de don Fernando, está divorciada y vive con su hijo Iván, de once años. Marta es médica en un hospital público y trabaja muchas horas. Su ex marido, Roberto, también vive en Madrid y ve a su hijo los fines de semana.</p>
+      <p>El tío favorito de todos los niños es el hermano de Elena, Marco, que vive en Roma. Cuando viene a Madrid, siempre trae regalos para sus sobrinos. Los niños lo adoran porque es muy divertido y los lleva al parque y al cine.</p>
+      <p>Dos veces al año, toda la familia se reúne en casa de los abuelos para celebrar las fiestas. Son momentos especiales para don Fernando y doña Pilar, que disfrutan mucho de ver a sus nietos crecer.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>❓ Preguntas de comprensión</h2>
+    <div class="ex-desc">Pročitaj tekst i odgovori na pitanja.</div>
+    <div class="mc-list" id="mcList"></div>
+    <div class="feedback-msg" id="mcFb"></div>
+  </div>
+
+  <div class="card">
+    <h2>✓ Verdadero o Falso</h2>
+    <div class="ex-desc">Tačno ili netačno?</div>
+    <div class="tf-list" id="tfList"></div>
+    <div class="feedback-msg" id="tfFb"></div>
+  </div>
+</div>
+
+<script>
+var mcData = [
+  {q:"¿Cuántos años tiene don Fernando?", opts:["Setenta y dos","Setenta y ocho","Ochenta","Sesenta y ocho"], ans:"Setenta y ocho"},
+  {q:"¿Cuál es la profesión de Elena?", opts:["Médica","Abogada","Arquitecta","Profesora"], ans:"Arquitecta"},
+  {q:"¿Cuántos hijos tiene Carlos?", opts:["Uno","Dos","Tres","Cuatro"], ans:"Tres"},
+  {q:"¿Con quién vive Marta?", opts:["Con sus padres","Con su marido","Con su hijo Iván","Con Marco"], ans:"Con su hijo Iván"},
+  {q:"¿Dónde vive Marco?", opts:["En Madrid","En Barcelona","En Roma","En Milano"], ans:"En Roma"},
+  {q:"¿Cuántas veces al año se reúne la familia?", opts:["Una vez","Dos veces","Tres veces","Cada mes"], ans:"Dos veces"},
+  {q:"¿Qué hace Roberto los fines de semana?", opts:["Trabaja","Ve a su hijo Iván","Viaja a Roma","Visita a los abuelos"], ans:"Ve a su hijo Iván"}
+];
+
+var mcDone = mcData.map(function() { return false; });
+
+var mcHtml = '';
+for (var i = 0; i < mcData.length; i++) {
+  mcHtml += '<div class="mc-item"><div class="mc-q">' + mcData[i].q + '</div><div class="mc-opts">';
+  for (var j = 0; j < mcData[i].opts.length; j++) {
+    var o = mcData[i].opts[j];
+    mcHtml += '<button class="mc-btn" id="mc' + i + 'o' + j + '" onclick="pickMc(' + i + ',' + j + ')">' + o + '</button>';
+  }
+  mcHtml += '</div></div>';
+}
+document.getElementById('mcList').innerHTML = mcHtml;
+
+function pickMc(i, chosen) {
+  if (mcDone[i]) return;
+  mcDone[i] = true;
+  var ans = mcData[i].ans;
+  for (var j = 0; j < mcData[i].opts.length; j++) {
+    var btn = document.getElementById('mc' + i + 'o' + j);
+    btn.disabled = true;
+    if (mcData[i].opts[j] === ans) btn.className = 'mc-btn reveal';
+    if (j === chosen && mcData[i].opts[j] !== ans) btn.className = 'mc-btn wrong';
+    if (j === chosen && mcData[i].opts[j] === ans) btn.className = 'mc-btn correct';
+  }
+  var allDone = true;
+  for (var k = 0; k < mcDone.length; k++) { if (!mcDone[k]) { allDone = false; break; } }
+  if (allDone) {
+    var ok = 0;
+    for (var m = 0; m < mcData.length; m++) {
+      for (var n = 0; n < mcData[m].opts.length; n++) {
+        var b = document.getElementById('mc' + m + 'o' + n);
+        if (b.classList.contains('correct')) ok++;
+      }
+    }
+    var fb = document.getElementById('mcFb');
+    fb.textContent = ok + ' / ' + mcData.length + ' tačno';
+    fb.className = ok === mcData.length ? 'feedback-msg ok' : 'feedback-msg bad';
+  }
+}
+
+var tfData = [
+  {s:"Don Fernando y doña Pilar viven solos en un piso.", ans:false},
+  {s:"Carlos viaja mucho por su trabajo.", ans:true},
+  {s:"Lucía tiene dieciséis años.", ans:false},
+  {s:"Marta está casada con Roberto.", ans:false},
+  {s:"Marco es el hermano de Elena.", ans:true},
+  {s:"La familia se reúne en casa de Carlos.", ans:false},
+  {s:"Iván ve a su padre los fines de semana.", ans:true}
+];
+
+var tfDone = tfData.map(function() { return false; });
+var tfHtml = '';
+for (var i = 0; i < tfData.length; i++) {
+  tfHtml += '<div class="tf-item"><span class="tf-stmt">' + tfData[i].s + '</span><div class="tf-btns"><button class="tf-btn" id="tfV' + i + '" onclick="pickTf(' + i + ',true)">V</button><button class="tf-btn" id="tfF' + i + '" onclick="pickTf(' + i + ',false)">F</button></div></div>';
+}
+document.getElementById('tfList').innerHTML = tfHtml;
+
+function pickTf(i, chosen) {
+  if (tfDone[i]) return;
+  tfDone[i] = true;
+  var ans = tfData[i].ans;
+  var vBtn = document.getElementById('tfV' + i);
+  var fBtn = document.getElementById('tfF' + i);
+  vBtn.disabled = true;
+  fBtn.disabled = true;
+  if (ans) vBtn.className = 'tf-btn reveal'; else fBtn.className = 'tf-btn reveal';
+  if (chosen === ans) {
+    if (chosen) vBtn.className = 'tf-btn correct'; else fBtn.className = 'tf-btn correct';
+  } else {
+    if (chosen) vBtn.className = 'tf-btn wrong'; else fBtn.className = 'tf-btn wrong';
+  }
+  var allDone = true;
+  for (var k = 0; k < tfDone.length; k++) { if (!tfDone[k]) { allDone = false; break; } }
+  if (allDone) {
+    var ok = 0;
+    for (var m = 0; m < tfData.length; m++) {
+      var v = document.getElementById('tfV' + m);
+      var f = document.getElementById('tfF' + m);
+      if ((tfData[m].ans && v.classList.contains('correct')) || (!tfData[m].ans && f.classList.contains('correct'))) ok++;
+    }
+    var fb = document.getElementById('tfFb');
+    fb.textContent = ok + ' / ' + tfData.length + ' tačno';
+    fb.className = ok === tfData.length ? 'feedback-msg ok' : 'feedback-msg bad';
+  }
+}
+</script>
+</body>
+</html>
