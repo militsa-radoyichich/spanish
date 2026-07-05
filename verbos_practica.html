@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Verbos – Práctica A1</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem; }
+  .deck { width: 100%; max-width: 540px; }
+  .header { text-align: center; margin-bottom: 1.2rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+  .modes { display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .mode-btn { font-size: 13px; padding: 7px 14px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.25); background: transparent; color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; }
+  .mode-btn:hover { border-color: #fff; color: #fff; }
+  .mode-btn.active { background: #fff; color: #c8102e; border-color: #fff; font-weight: 700; }
+
+  .progress { font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 0.5rem; }
+  .dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.2s; }
+  .dot.seen { background: rgba(255,255,255,0.55); }
+  .dot.active { background: #fff; }
+
+  .card { background: #fff; border-radius: 16px; padding: 2rem 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; transition: transform 0.2s; }
+  .card.shake { animation: shake 0.35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+  .card.pop { animation: pop 0.35s; }
+  @keyframes pop { 0%{transform:scale(1);} 50%{transform:scale(1.04);} 100%{transform:scale(1);} }
+
+  .emoji { font-size: 64px; line-height: 1; }
+  .en-hint { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; text-align: center; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 0.5rem; }
+  .opt-btn { font-size: 16px; font-weight: 600; padding: 12px 10px; border-radius: 10px; border: 2px solid #e0e0e0; background: #f9f9f9; color: #333; cursor: pointer; transition: all 0.15s; }
+  .opt-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .opt-btn.selected-wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .opt-btn.selected-correct { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+  .opt-btn.reveal-correct { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+  .opt-btn:disabled { cursor: default; }
+
+  .flash-face { font-size: 30px; font-weight: 700; color: #1a1a1a; text-align: center; cursor: pointer; user-select: none; }
+  .flash-hint { font-size: 12px; color: #bbb; text-align: center; }
+
+  .sentence { font-size: 19px; font-weight: 600; color: #1a1a1a; text-align: center; line-height: 1.5; }
+  .sentence .verb-hint { font-size: 12px; color: #c8102e; font-weight: 500; }
+  .blank-input { width: 140px; padding: 6px 10px; font-size: 18px; font-weight: 700; border-radius: 8px; border: 2px solid #e0e0e0; text-align: center; }
+  .blank-input:focus { outline: none; border-color: #c8102e; }
+  .blank-input.ok { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+  .blank-input.bad { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+  .type-tip { font-size: 11px; color: #bbb; text-align: center; }
+  .check-btn { background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+
+  .feedback { font-size: 14px; font-weight: 500; min-height: 20px; text-align: center; }
+  .feedback.correct { color: #16a34a; }
+  .feedback.wrong { color: #dc2626; }
+
+  .sound-btn { background: transparent; color: #888; border: 1.5px solid #ddd; border-radius: 10px; padding: 7px 16px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .sound-btn:hover { border-color: #c8102e; color: #c8102e; }
+
+  .controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 0.5rem; }
+  .nav-btn { font-size: 13px; padding: 8px 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.3); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .shuffle-btn { font-size: 12px; color: rgba(255,255,255,0.6); background: transparent; border: none; text-decoration: underline; cursor: pointer; }
+  .score { font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 0.5rem; }
+
+  .confetti { position: fixed; top: -10px; font-size: 20px; pointer-events: none; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="header">
+    <h1>🇪🇸 Los Verbos</h1>
+    <p>Practica los verbos en español – nivel A1</p>
+  </div>
+
+  <div class="modes">
+    <button class="mode-btn active" data-mode="quiz" onclick="setMode('quiz')">🎯 Adivina</button>
+    <button class="mode-btn" data-mode="flash" onclick="setMode('flash')">🃏 Memoria</button>
+    <button class="mode-btn" data-mode="sentences" onclick="setMode('sentences')">📝 Frases</button>
+  </div>
+
+  <div class="dots" id="dots"></div>
+  <div class="progress" id="progress"></div>
+
+  <div class="card" id="card"></div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Anterior</button>
+    <button class="shuffle-btn" onclick="shuffleCards()">barajar</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Siguiente →</button>
+  </div>
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+const verbs = [
+  { inf: "pensar", en: "to think", emoji: "🤔" },
+  { inf: "abrazar", en: "to hug", emoji: "🤗" },
+  { inf: "cocinar", en: "to cook", emoji: "🍳" },
+  { inf: "desvestirse", en: "to undress", emoji: "👕" },
+  { inf: "desayunar", en: "to have breakfast", emoji: "🥐" },
+  { inf: "amar", en: "to love", emoji: "❤️" },
+  { inf: "ducharse", en: "to shower", emoji: "🚿" },
+  { inf: "pagar", en: "to pay", emoji: "💳" },
+  { inf: "leer", en: "to read", emoji: "📖" },
+  { inf: "bailar", en: "to dance", emoji: "💃" },
+  { inf: "hacer deporte", en: "to do sport", emoji: "⚽" },
+  { inf: "bañarse", en: "to take a bath", emoji: "🛁" },
+  { inf: "nadar", en: "to swim", emoji: "🏊" },
+  { inf: "cantar", en: "to sing", emoji: "🎤" },
+  { inf: "descansar", en: "to rest", emoji: "😌" },
+  { inf: "estudiar", en: "to study", emoji: "📚" },
+  { inf: "dormir", en: "to sleep", emoji: "😴" },
+  { inf: "cenar", en: "to have dinner", emoji: "🍽️" },
+  { inf: "comer", en: "to eat", emoji: "🍔" },
+  { inf: "regalar", en: "to give a present", emoji: "🎁" },
+  { inf: "aprobar", en: "to pass (exam)", emoji: "✅" },
+  { inf: "beber", en: "to drink", emoji: "🥤" },
+  { inf: "compartir", en: "to share", emoji: "🤝" },
+  { inf: "conducir", en: "to drive", emoji: "🚗" },
+  { inf: "correr", en: "to run", emoji: "🏃" },
+  { inf: "despertarse", en: "to wake up", emoji: "⏰" },
+  { inf: "enamorarse", en: "to fall in love", emoji: "😍" },
+  { inf: "enfadarse", en: "to get angry", emoji: "😠" },
+  { inf: "pesarse", en: "to weigh oneself", emoji: "⚖️" },
+  { inf: "robar", en: "to steal", emoji: "🥷" },
+  { inf: "saludar", en: "to greet", emoji: "👋" },
+  { inf: "secar", en: "to dry", emoji: "🧺" },
+  { inf: "servir", en: "to serve", emoji: "🍵" },
+  { inf: "soñar", en: "to dream", emoji: "💭" },
+  { inf: "sonreír", en: "to smile", emoji: "😊" },
+  { inf: "unir", en: "to unite / to join", emoji: "🧩" },
+  { inf: "valer", en: "to cost / be worth", emoji: "💰" },
+  { inf: "vestirse", en: "to get dressed", emoji: "👗" },
+  { inf: "viajar", en: "to travel", emoji: "✈️" },
+  { inf: "volar", en: "to fly", emoji: "🕊️" },
+  { inf: "cortar", en: "to cut", emoji: "✂️" },
+  { inf: "enviar", en: "to send", emoji: "✉️" },
+  { inf: "freír", en: "to fry", emoji: "🍳" },
+  { inf: "ganar", en: "to win", emoji: "🏆" },
+  { inf: "elegir", en: "to choose", emoji: "🎯" },
+  { inf: "impedir", en: "to prevent", emoji: "🚫" },
+  { inf: "lavar", en: "to wash", emoji: "🧼" },
+  { inf: "llamar", en: "to call", emoji: "📞" },
+  { inf: "llorar", en: "to cry", emoji: "😢" },
+  { inf: "llover", en: "to rain", emoji: "🌧️" },
+  { inf: "oler", en: "to smell", emoji: "🌸" },
+  { inf: "peinarse", en: "to comb oneself", emoji: "💇" },
+  { inf: "parar", en: "to stop", emoji: "✋" },
+  { inf: "pelearse", en: "to fight", emoji: "🥊" },
+  { inf: "pintar", en: "to paint", emoji: "🎨" },
+  { inf: "preguntar", en: "to ask", emoji: "❓" },
+  { inf: "reír", en: "to laugh", emoji: "😂" },
+  { inf: "rezar", en: "to pray", emoji: "🙏" },
+  { inf: "romper", en: "to break", emoji: "💔" },
+  { inf: "sentirse mal", en: "to feel bad", emoji: "🤒" },
+  { inf: "temer", en: "to be afraid", emoji: "🕷️" },
+];
+
+const sentences = [
+  { before: "Yo", after: "pan con mantequilla por la mañana.", inf: "desayunar", answer: "desayuno" },
+  { before: "Tú", after: "muchos libros en tu tiempo libre.", inf: "leer", answer: "lees" },
+  { before: "Ella", after: "mucho todos los fines de semana.", inf: "dormir", answer: "duerme" },
+  { before: "Nosotros", after: "a Italia todos los veranos.", inf: "viajar", answer: "viajamos" },
+  { before: "Ellos", after: "pizza todos los viernes por la noche.", inf: "comer", answer: "comen" },
+  { before: "Vosotros", after: "español en la escuela.", inf: "estudiar", answer: "estudiáis" },
+  { before: "Él siempre", after: "cuando está feliz.", inf: "sonreír", answer: "sonríe" },
+  { before: "Yo", after: "los platos después de cenar.", inf: "lavar", answer: "lavo" },
+  { before: "Tú", after: "todas las mañanas antes de ir al trabajo.", inf: "ducharse", answer: "te duchas" },
+  { before: "Nosotros", after: "rápido antes de salir de casa.", inf: "vestirse", answer: "nos vestimos" },
+  { before: "Ella", after: "muy temprano todos los días.", inf: "despertarse", answer: "se despierta" },
+  { before: "Yo", after: "delante del espejo cada mañana.", inf: "peinarse", answer: "me peino" },
+  { before: "Los niños", after: "por los juguetes todo el tiempo.", inf: "pelearse", answer: "se pelean" },
+  { before: "Yo", after: "cada semana para controlar mi salud.", inf: "pesarse", answer: "me peso" },
+  { before: "Tú", after: "muy bien en la fiesta.", inf: "cantar", answer: "cantas" },
+  { before: "Nosotros", after: "salsa todos los sábados.", inf: "bailar", answer: "bailamos" },
+  { before: "Ella", after: "cuadros muy bonitos en su tiempo libre.", inf: "pintar", answer: "pinta" },
+  { before: "Yo", after: "un mensaje a mi amiga todos los días.", inf: "enviar", answer: "envío" },
+  { before: "Tú", after: "muy rápido por la autopista.", inf: "conducir", answer: "conduces" },
+  { before: "Nosotros", after: "siempre los partidos de fútbol.", inf: "ganar", answer: "ganamos" },
+  { before: "Ella", after: "la ropa para la fiesta con cuidado.", inf: "elegir", answer: "elige" },
+  { before: "Yo", after: "un huevo para el desayuno.", inf: "freír", answer: "frío" },
+  { before: "Tú", after: "mucho en clase de español.", inf: "preguntar", answer: "preguntas" },
+  { before: "Ellos", after: "antes de comer cada noche.", inf: "rezar", answer: "rezan" },
+  { before: "Ella", after: "el papel sin querer.", inf: "romper", answer: "rompe" },
+  { before: "Yo", after: "muy mal hoy, creo que estoy enfermo.", inf: "sentirse mal", answer: "me siento mal" },
+  { before: "Él", after: "mucho a las arañas.", inf: "temer", answer: "teme" },
+  { before: "Nosotros", after: "la comida con nuestros amigos.", inf: "compartir", answer: "compartimos" },
+  { before: "Tú", after: "la cuenta del restaurante siempre.", inf: "pagar", answer: "pagas" },
+  { before: "El ladrón", after: "el banco en la película.", inf: "robar", answer: "roba" },
+  { before: "", after: "mucho en invierno en esta ciudad.", inf: "llover", answer: "llueve" },
+  { before: "La sopa", after: "muy bien, tengo hambre.", inf: "oler", answer: "huele" },
+  { before: "Nosotros", after: "el coche en el semáforo en rojo.", inf: "parar", answer: "paramos" },
+  { before: "Ellos", after: "mucho a sus hijos.", inf: "amar", answer: "aman" },
+  { before: "Yo", after: "a mi madre cada vez que la veo.", inf: "abrazar", answer: "abrazo" },
+  { before: "Tú", after: "a tus vecinos todos los días.", inf: "saludar", answer: "saludas" },
+  { before: "Ella", after: "la ropa al sol después de lavarla.", inf: "secar", answer: "seca" },
+  { before: "El camarero", after: "la comida a los clientes.", inf: "servir", answer: "sirve" },
+  { before: "Yo", after: "con viajar por todo el mundo.", inf: "soñar", answer: "sueño" },
+  { before: "Vosotros", after: "las dos piezas del rompecabezas.", inf: "unir", answer: "unís" },
+  { before: "Este coche", after: "mucho dinero, es muy caro.", inf: "valer", answer: "vale" },
+  { before: "El pájaro", after: "muy alto en el cielo.", inf: "volar", answer: "vuela" },
+];
+
+let mode = "quiz";
+let order = [...Array(verbs.length).keys()];
+let sentOrder = [...Array(sentences.length).keys()];
+let cur = 0, seen = new Set();
+let correct = 0, total = 0;
+let answered = false;
+
+function activeLen() {
+  return mode === "sentences" ? sentences.length : verbs.length;
+}
+function activeOrder() {
+  return mode === "sentences" ? sentOrder : order;
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  correct = 0; total = 0; cur = 0; seen = new Set();
+  render();
+}
+
+function navigate(dir) {
+  cur = Math.max(0, Math.min(activeLen() - 1, cur + dir));
+  answered = false;
+  render();
+}
+
+function shuffleCards() {
+  const arr = activeOrder();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  cur = 0; seen = new Set(); correct = 0; total = 0;
+  render();
+}
+
+function buildOptions(correctIdx) {
+  const pool = order.filter(i => i !== correctIdx);
+  const wrong = [];
+  while (wrong.length < 3 && pool.length) {
+    const pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    wrong.push(pick);
+  }
+  const opts = [correctIdx, ...wrong];
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  return opts;
+}
+
+function render() {
+  seen.add(cur);
+  answered = false;
+  const arr = activeOrder();
+  const idx = arr[cur];
+
+  document.getElementById('progress').textContent = `${cur + 1} / ${activeLen()}`;
+  const dots = document.getElementById('dots');
+  dots.innerHTML = arr.map((_, i) => `<div class="dot${i === cur ? ' active' : seen.has(i) ? ' seen' : ''}"></div>`).join('');
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === activeLen() - 1;
+
+  const card = document.getElementById('card');
+
+  if (mode === 'quiz') {
+    const v = verbs[idx];
+    const currentOptions = buildOptions(idx);
+    card.innerHTML = `
+      <div class="emoji">${v.emoji}</div>
+      <div class="en-hint">${v.en}</div>
+      <div class="options" id="options">
+        ${currentOptions.map(oi => `<button class="opt-btn" onclick="checkQuiz(${oi}, ${idx})">${verbs[oi].inf}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    `;
+  } else if (mode === 'flash') {
+    const v = verbs[idx];
+    card.innerHTML = `
+      <div class="flash-hint">Toca la tarjeta para voltear</div>
+      <div class="flash-face" id="flashFace" onclick="flipFlash()">${v.emoji}<br><span style="font-size:14px;color:#bbb;">${v.en}</span></div>
+      <button class="sound-btn" onclick="speak('${v.inf.replace(/'/g, "\\'")}')">🔊 Escuchar</button>
+    `;
+  } else if (mode === 'sentences') {
+    const s = sentences[idx];
+    card.innerHTML = `
+      <div class="sentence">${s.before} <input type="text" id="blankInput" class="blank-input" autocomplete="off" /> ${s.after}</div>
+      <div class="verb-hint">verbo: <strong>${s.inf}</strong></div>
+      <div class="type-tip">escribe la forma correcta (usa tildes si hace falta)</div>
+      <button class="check-btn" onclick="checkSentenceType()">Comprobar</button>
+      <div class="feedback" id="feedback"></div>
+    `;
+    setTimeout(() => {
+      const inp = document.getElementById('blankInput');
+      if (inp) inp.focus();
+    }, 0);
+  }
+
+  updateScore();
+}
+
+function flipFlash() {
+  const idx = activeOrder()[cur];
+  const v = verbs[idx];
+  const face = document.getElementById('flashFace');
+  const flipped = face.dataset.flipped === '1';
+  if (!flipped) {
+    face.innerHTML = `<span style="color:#c8102e;">${v.inf}</span>`;
+    face.dataset.flipped = '1';
+  } else {
+    face.innerHTML = `${v.emoji}<br><span style="font-size:14px;color:#bbb;">${v.en}</span>`;
+    face.dataset.flipped = '0';
+  }
+}
+
+function checkQuiz(chosenIdx, correctIdx) {
+  if (answered) return;
+  answered = true;
+  total++;
+  const btns = document.querySelectorAll('#options .opt-btn');
+  btns.forEach(b => b.disabled = true);
+  const chosenBtn = [...btns].find(b => b.textContent === verbs[chosenIdx].inf);
+  const correctBtn = [...btns].find(b => b.textContent === verbs[correctIdx].inf);
+  const fb = document.getElementById('feedback');
+  const card = document.getElementById('card');
+
+  if (chosenIdx === correctIdx) {
+    correct++;
+    chosenBtn.classList.add('selected-correct');
+    fb.textContent = '✓ ¡Correcto!';
+    fb.className = 'feedback correct';
+    card.classList.remove('shake'); card.classList.add('pop');
+    launchConfetti();
+  } else {
+    chosenBtn.classList.add('selected-wrong');
+    correctBtn.classList.add('reveal-correct');
+    fb.textContent = `✗ Era "${verbs[correctIdx].inf}"`;
+    fb.className = 'feedback wrong';
+    card.classList.remove('pop'); card.classList.add('shake');
+  }
+  updateScore();
+}
+
+function checkSentenceType() {
+  if (answered) return;
+  const idx = activeOrder()[cur];
+  const s = sentences[idx];
+  const inp = document.getElementById('blankInput');
+  const fb = document.getElementById('feedback');
+  const card = document.getElementById('card');
+
+  const val = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const target = s.answer.toLowerCase().replace(/\s+/g, ' ');
+
+  answered = true;
+  total++;
+  inp.disabled = true;
+
+  if (val === target) {
+    correct++;
+    inp.classList.remove('bad'); inp.classList.add('ok');
+    fb.textContent = '✓ ¡Correcto!';
+    fb.className = 'feedback correct';
+    card.classList.remove('shake'); card.classList.add('pop');
+    launchConfetti();
+  } else {
+    inp.classList.remove('ok'); inp.classList.add('bad');
+    fb.textContent = `✗ La respuesta correcta es "${s.answer}"`;
+    fb.className = 'feedback wrong';
+    card.classList.remove('pop'); card.classList.add('shake');
+  }
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById('score').textContent = total > 0 ? `Tačno: ${correct} / ${total}` : '';
+}
+
+function speak(word) {
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'es-US';
+  u.rate = 0.85;
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(x => x.lang === 'es-US') || voices.find(x => x.lang.startsWith('es'));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+speechSynthesis.onvoiceschanged = () => {};
+
+function launchConfetti() {
+  const emojis = ['🎉','⭐','✨','🎊'];
+  for (let i = 0; i < 10; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (1.2 + Math.random()) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2200);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
