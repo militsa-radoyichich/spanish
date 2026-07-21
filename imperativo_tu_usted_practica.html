@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Imperativo – Práctica</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem; }
+  .deck { width: 100%; max-width: 540px; }
+  .header { text-align: center; margin-bottom: 1.2rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+  .modes { display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .mode-btn { font-size: 13px; padding: 7px 14px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.25); background: transparent; color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; }
+  .mode-btn:hover { border-color: #fff; color: #fff; }
+  .mode-btn.active { background: #fff; color: #c8102e; border-color: #fff; font-weight: 700; }
+
+  .progress { font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 0.5rem; }
+  .dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.2s; }
+  .dot.seen { background: rgba(255,255,255,0.55); }
+  .dot.active { background: #fff; }
+
+  .card { background: #fff; border-radius: 16px; padding: 2rem 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; transition: transform 0.2s; }
+  .card.shake { animation: shake 0.35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+  .card.pop { animation: pop 0.35s; }
+  @keyframes pop { 0%{transform:scale(1);} 50%{transform:scale(1.04);} 100%{transform:scale(1);} }
+
+  .person-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 20px; }
+  .person-badge.tu { background: #fff3cd; color: #a17d00; }
+  .person-badge.usted { background: #dbeafe; color: #1d4ed8; }
+  .type-badge { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .flash-face { font-size: 30px; font-weight: 700; color: #1a1a1a; text-align: center; cursor: pointer; user-select: none; }
+  .flash-hint { font-size: 12px; color: #bbb; text-align: center; }
+  .flash-sub { font-size: 13px; color: #999; margin-top: 4px; }
+
+  .sentence-line { font-size: 18px; font-weight: 600; color: #1a1a1a; text-align: center; line-height: 1.6; }
+  .sentence-line .hint-paren { font-size: 14px; font-weight: 500; color: #c8102e; }
+  .blank-input { width: 130px; padding: 6px 10px; font-size: 17px; font-weight: 700; border-radius: 8px; border: 2px solid #e0e0e0; text-align: center; }
+  .blank-input:focus { outline: none; border-color: #c8102e; }
+  .blank-input.ok { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+  .blank-input.bad { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+  .check-btn { background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+
+  .feedback { font-size: 14px; font-weight: 500; min-height: 20px; text-align: center; }
+  .feedback.correct { color: #16a34a; }
+  .feedback.wrong { color: #dc2626; }
+
+  .sound-btn { background: transparent; color: #888; border: 1.5px solid #ddd; border-radius: 10px; padding: 7px 16px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .sound-btn:hover { border-color: #c8102e; color: #c8102e; }
+
+  .controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 0.5rem; }
+  .nav-btn { font-size: 13px; padding: 8px 20px; border-radius: 10px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.3); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .shuffle-btn { font-size: 12px; color: rgba(255,255,255,0.6); background: transparent; border: none; text-decoration: underline; cursor: pointer; }
+  .score { font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 0.5rem; }
+
+  .confetti { position: fixed; top: -10px; font-size: 20px; pointer-events: none; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; } }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="header">
+    <h1>🇪🇸 El Imperativo</h1>
+    <p>tú &amp; usted · regular e irregular</p>
+  </div>
+
+  <div class="modes">
+    <button class="mode-btn active" data-mode="fichas" onclick="setMode('fichas')">🃏 Fichas</button>
+    <button class="mode-btn" data-mode="ejercicios" onclick="setMode('ejercicios')">🎯 Ejercicios</button>
+    <button class="mode-btn" data-mode="frases" onclick="setMode('frases')">📝 Frases</button>
+  </div>
+
+  <div class="dots" id="dots"></div>
+  <div class="progress" id="progress"></div>
+
+  <div class="card" id="card"></div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Anterior</button>
+    <button class="shuffle-btn" onclick="shuffleCards()">barajar</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Siguiente →</button>
+  </div>
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+
+// Fichas: flip cards, infinitivo -> forma (tú / usted), regular + irregular combined
+const fichas = [
+  // --- REGULARES (-AR, -ER, -IR) ---
+  { inf: "cortar",    person: "tu",    form: "corta",    tr: "seći / iseci",        type: "regular" },
+  { inf: "cortar",    person: "usted", form: "corte",    tr: "seći / iseci",        type: "regular" },
+  { inf: "comer",     person: "tu",    form: "come",     tr: "jesti",               type: "regular" },
+  { inf: "comer",     person: "usted", form: "coma",     tr: "jesti",               type: "regular" },
+  { inf: "abrir",     person: "tu",    form: "abre",     tr: "otvoriti",            type: "regular" },
+  { inf: "abrir",     person: "usted", form: "abra",     tr: "otvoriti",            type: "regular" },
+  { inf: "hablar",    person: "tu",    form: "habla",    tr: "govoriti",            type: "regular" },
+  { inf: "hablar",    person: "usted", form: "hable",    tr: "govoriti",            type: "regular" },
+  { inf: "escuchar",  person: "tu",    form: "escucha",  tr: "slušati",             type: "regular" },
+  { inf: "escuchar",  person: "usted", form: "escuche",  tr: "slušati",             type: "regular" },
+  { inf: "mirar",     person: "tu",    form: "mira",     tr: "gledati",             type: "regular" },
+  { inf: "mirar",     person: "usted", form: "mire",     tr: "gledati",             type: "regular" },
+  { inf: "comprar",   person: "tu",    form: "compra",   tr: "kupiti",              type: "regular" },
+  { inf: "comprar",   person: "usted", form: "compre",   tr: "kupiti",              type: "regular" },
+  { inf: "trabajar",  person: "tu",    form: "trabaja",  tr: "raditi (posao)",      type: "regular" },
+  { inf: "trabajar",  person: "usted", form: "trabaje",  tr: "raditi (posao)",      type: "regular" },
+  { inf: "llamar",    person: "tu",    form: "llama",    tr: "pozvati / zvati",     type: "regular" },
+  { inf: "llamar",    person: "usted", form: "llame",    tr: "pozvati / zvati",     type: "regular" },
+  { inf: "esperar",   person: "tu",    form: "espera",   tr: "čekati",              type: "regular" },
+  { inf: "esperar",   person: "usted", form: "espere",   tr: "čekati",              type: "regular" },
+  { inf: "tomar",     person: "tu",    form: "toma",     tr: "uzeti / popiti",      type: "regular" },
+  { inf: "tomar",     person: "usted", form: "tome",     tr: "uzeti / popiti",      type: "regular" },
+  { inf: "beber",     person: "tu",    form: "bebe",     tr: "piti",                type: "regular" },
+  { inf: "beber",     person: "usted", form: "beba",     tr: "piti",                type: "regular" },
+  { inf: "leer",      person: "tu",    form: "lee",      tr: "čitati",              type: "regular" },
+  { inf: "leer",      person: "usted", form: "lea",      tr: "čitati",              type: "regular" },
+  { inf: "aprender",  person: "tu",    form: "aprende",  tr: "učiti / naučiti",     type: "regular" },
+  { inf: "aprender",  person: "usted", form: "aprenda",  tr: "učiti / naučiti",     type: "regular" },
+  { inf: "escribir",  person: "tu",    form: "escribe",  tr: "pisati",              type: "regular" },
+  { inf: "escribir",  person: "usted", form: "escriba",  tr: "pisati",              type: "regular" },
+  { inf: "vivir",     person: "tu",    form: "vive",     tr: "živeti",              type: "regular" },
+  { inf: "vivir",     person: "usted", form: "viva",     tr: "živeti",              type: "regular" },
+  { inf: "subir",     person: "tu",    form: "sube",     tr: "popeti se / ući",     type: "regular" },
+  { inf: "subir",     person: "usted", form: "suba",     tr: "popeti se / ući",     type: "regular" },
+
+  // --- IRREGULARES (-go, excepciones puras) ---
+  { inf: "hacer",     person: "tu",    form: "haz",      tr: "raditi / praviti",    type: "irregular" },
+  { inf: "hacer",     person: "usted", form: "haga",     tr: "raditi / praviti",    type: "irregular" },
+  { inf: "poner",     person: "tu",    form: "pon",      tr: "staviti",             type: "irregular" },
+  { inf: "poner",     person: "usted", form: "ponga",    tr: "staviti",             type: "irregular" },
+  { inf: "venir",     person: "tu",    form: "ven",      tr: "doći",                type: "irregular" },
+  { inf: "venir",     person: "usted", form: "venga",    tr: "doći",                type: "irregular" },
+  { inf: "seguir",    person: "tu",    form: "sigue",    tr: "nastaviti / pratiti", type: "irregular" },
+  { inf: "seguir",    person: "usted", form: "siga",     tr: "nastaviti / pratiti", type: "irregular" },
+  { inf: "torcer",    person: "tu",    form: "tuerce",   tr: "skrenuti",            type: "irregular" },
+  { inf: "torcer",    person: "usted", form: "tuerza",   tr: "skrenuti",            type: "irregular" },
+  { inf: "cerrar",    person: "tu",    form: "cierra",   tr: "zatvoriti",           type: "irregular" },
+  { inf: "cerrar",    person: "usted", form: "cierre",   tr: "zatvoriti",           type: "irregular" },
+  { inf: "sentarse",  person: "tu",    form: "siéntate", tr: "sesti",               type: "irregular" },
+  { inf: "sentarse",  person: "usted", form: "siéntese", tr: "sesti",               type: "irregular" },
+  { inf: "decir",     person: "tu",    form: "di",       tr: "reći",                type: "irregular" },
+  { inf: "decir",     person: "usted", form: "diga",     tr: "reći",                type: "irregular" },
+  { inf: "salir",     person: "tu",    form: "sal",      tr: "izaći",               type: "irregular" },
+  { inf: "salir",     person: "usted", form: "salga",    tr: "izaći",               type: "irregular" },
+  { inf: "tener",     person: "tu",    form: "ten",      tr: "imati",               type: "irregular" },
+  { inf: "tener",     person: "usted", form: "tenga",    tr: "imati",               type: "irregular" },
+  { inf: "ir",        person: "tu",    form: "ve",       tr: "ići",                 type: "irregular" },
+  { inf: "ir",        person: "usted", form: "vaya",     tr: "ići",                 type: "irregular" },
+  { inf: "ser",       person: "tu",    form: "sé",       tr: "biti",                type: "irregular" },
+  { inf: "ser",       person: "usted", form: "sea",      tr: "biti",                type: "irregular" },
+  { inf: "dar",       person: "tu",    form: "da",       tr: "dati",                type: "irregular" },
+  { inf: "dar",       person: "usted", form: "dé",       tr: "dati",                type: "irregular" },
+  { inf: "oír",       person: "tu",    form: "oye",      tr: "čuti",                type: "irregular" },
+  { inf: "oír",       person: "usted", form: "oiga",     tr: "čuti",                type: "irregular" },
+
+  // --- VERBOS CON CAMBIO VOCÁLICO (e→ie, o→ue, e→i) ---
+  { inf: "pensar",    person: "tu",    form: "piensa",   tr: "misliti (e→ie)",     type: "irregular" },
+  { inf: "pensar",    person: "usted", form: "piense",   tr: "misliti (e→ie)",     type: "irregular" },
+  { inf: "volver",    person: "tu",    form: "vuelve",   tr: "vratiti se (o→ue)",  type: "irregular" },
+  { inf: "volver",    person: "usted", form: "vuelva",   tr: "vratiti se (o→ue)",  type: "irregular" },
+  { inf: "pedir",     person: "tu",    form: "pide",     tr: "tražiti/naručiti (e→i)", type: "irregular" },
+  { inf: "pedir",     person: "usted", form: "pida",     tr: "tražiti/naručiti (e→i)", type: "irregular" },
+  { inf: "jugar",     person: "tu",    form: "juega",    tr: "igrati se (u→ue)",   type: "irregular" },
+  { inf: "jugar",     person: "usted", form: "juegue",   tr: "igrati se (u→ue)",   type: "irregular" },
+];
+
+// Ejercicios: ALL forms combined into one deck, one line per item, hint = (infinitivo, persona)
+const ejercicios = [
+  { verbo: "cortar",   before: "", after: "el papel, por favor.", hint: "cortar, tú", answer: "corta" },
+  { verbo: "cortar",   before: "", after: "el papel, por favor.", hint: "cortar, usted", answer: "corte" },
+  { verbo: "comer",    before: "", after: "más despacio, la comida está caliente.", hint: "comer, tú", answer: "come" },
+  { verbo: "comer",    before: "", after: "despacio, no hay prisa.", hint: "comer, usted", answer: "coma" },
+  { verbo: "abrir",    before: "", after: "la ventana, hace calor.", hint: "abrir, tú", answer: "abre" },
+  { verbo: "abrir",    before: "", after: "la puerta, por favor.", hint: "abrir, usted", answer: "abra" },
+  { verbo: "hacer",    before: "", after: "los deberes ahora mismo.", hint: "hacer, tú", answer: "haz" },
+  { verbo: "hacer",    before: "", after: "el favor de esperar un momento.", hint: "hacer, usted", answer: "haga" },
+  { verbo: "poner",    before: "", after: "la mesa, por favor.", hint: "poner, tú", answer: "pon" },
+  { verbo: "poner",    before: "", after: "los libros aquí, por favor.", hint: "poner, usted", answer: "ponga" },
+  { verbo: "venir",    before: "", after: "aquí un momento.", hint: "venir, tú", answer: "ven" },
+  { verbo: "venir",    before: "", after: "conmigo, por favor.", hint: "venir, usted", answer: "venga" },
+  { verbo: "seguir",   before: "", after: "todo recto y luego a la izquierda.", hint: "seguir, tú", answer: "sigue" },
+  { verbo: "seguir",   before: "", after: "las instrucciones con atención.", hint: "seguir, usted", answer: "siga" },
+  { verbo: "torcer",   before: "", after: "a la derecha en la próxima calle.", hint: "torcer, tú", answer: "tuerce" },
+  { verbo: "torcer",   before: "", after: "a la izquierda en el semáforo.", hint: "torcer, usted", answer: "tuerza" },
+  { verbo: "cerrar",   before: "", after: "la puerta, hace frío.", hint: "cerrar, tú", answer: "cierra" },
+  { verbo: "cerrar",   before: "", after: "la puerta, por favor.", hint: "cerrar, usted", answer: "cierre" },
+  { verbo: "sentarse", before: "", after: "aquí, a mi lado.", hint: "sentarse, tú", answer: "siéntate" },
+  { verbo: "sentarse", before: "", after: ", el médico le atenderá pronto.", hint: "sentarse, usted", answer: "siéntese" },
+  { verbo: "decir",    before: "", after: "la verdad, siempre.", hint: "decir, tú", answer: "di" },
+  { verbo: "decir",    before: "", after: "su nombre completo, por favor.", hint: "decir, usted", answer: "diga" },
+];
+
+// Frases: full context sentences, one line each, hint = (infinitivo, persona)
+const frases = [
+  { verbo: "hacer",    before: "", after: "tu cama antes de salir.", hint: "hacer, tú", answer: "haz" },
+  { verbo: "sentarse", before: "", after: ", el doctor le verá enseguida.", hint: "sentarse, usted", answer: "siéntese" },
+  { verbo: "abrir",    before: "", after: "la mochila y saca los libros.", hint: "abrir, tú", answer: "abre" },
+  { verbo: "seguir",   before: "", after: "todo recto hasta el semáforo.", hint: "seguir, usted", answer: "siga" },
+  { verbo: "decir",    before: "", after: "me qué pasó ayer.", hint: "decir, tú", answer: "di" },
+  { verbo: "poner",    before: "", after: "su firma aquí, por favor.", hint: "poner, usted", answer: "ponga" },
+  { verbo: "cerrar",   before: "", after: "la ventana, por favor, tengo frío.", hint: "cerrar, tú", answer: "cierra" },
+  { verbo: "venir",    before: "", after: "a mi oficina mañana a las nueve.", hint: "venir, usted", answer: "venga" },
+  { verbo: "venir",    before: "", after: "un momento, quiero decirte algo.", hint: "venir, tú", answer: "ven" },
+  { verbo: "poner",    before: "", after: "atención a la señal de tráfico.", hint: "poner, usted", answer: "ponga" },
+];
+
+let mode = "fichas";
+let fichasOrder = [...Array(fichas.length).keys()];
+let ejerciciosOrder = noAdjacentShuffle([...Array(ejercicios.length).keys()], i => ejercicios[i].verbo);
+let frasesOrder = noAdjacentShuffle([...Array(frases.length).keys()], i => frases[i].verbo);
+let cur = 0, seen = new Set();
+let correct = 0, total = 0;
+let answered = false;
+
+function rawShuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Shuffle indices so that consecutive items never share the same "key" (e.g. same verbo)
+function noAdjacentShuffle(indices, keyFn, maxAttempts = 300) {
+  let best = null;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const arr = rawShuffle(indices);
+    let ok = true;
+    for (let i = 1; i < arr.length; i++) {
+      if (keyFn(arr[i]) === keyFn(arr[i - 1])) { ok = false; break; }
+    }
+    if (ok) return arr;
+    best = arr;
+  }
+  // Fallback: fix remaining adjacent duplicates manually
+  for (let i = 1; i < best.length; i++) {
+    if (keyFn(best[i]) === keyFn(best[i - 1])) {
+      for (let j = i + 1; j < best.length; j++) {
+        if (keyFn(best[j]) !== keyFn(best[i - 1])) {
+          [best[i], best[j]] = [best[j], best[i]];
+          break;
+        }
+      }
+    }
+  }
+  return best;
+}
+
+function activeData() {
+  if (mode === "fichas") return fichas;
+  if (mode === "ejercicios") return ejercicios;
+  return frases;
+}
+function activeOrder() {
+  if (mode === "fichas") return fichasOrder;
+  if (mode === "ejercicios") return ejerciciosOrder;
+  return frasesOrder;
+}
+function activeLen() { return activeData().length; }
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  correct = 0; total = 0; cur = 0; seen = new Set();
+  render();
+}
+
+function navigate(dir) {
+  cur = Math.max(0, Math.min(activeLen() - 1, cur + dir));
+  answered = false;
+  render();
+}
+
+function shuffleCards() {
+  if (mode === "fichas") {
+    fichasOrder = rawShuffle(fichasOrder);
+  } else if (mode === "ejercicios") {
+    ejerciciosOrder = noAdjacentShuffle(ejerciciosOrder, i => ejercicios[i].verbo);
+  } else {
+    frasesOrder = noAdjacentShuffle(frasesOrder, i => frases[i].verbo);
+  }
+  cur = 0; seen = new Set(); correct = 0; total = 0;
+  render();
+}
+
+function render() {
+  seen.add(cur);
+  answered = false;
+  const arr = activeOrder();
+  const idx = arr[cur];
+  const data = activeData();
+
+  document.getElementById('progress').textContent = `${cur + 1} / ${activeLen()}`;
+  const dots = document.getElementById('dots');
+  dots.innerHTML = arr.map((_, i) => `<div class="dot${i === cur ? ' active' : seen.has(i) ? ' seen' : ''}"></div>`).join('');
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === activeLen() - 1;
+
+  const card = document.getElementById('card');
+
+  if (mode === 'fichas') {
+    const v = data[idx];
+    card.innerHTML = `
+      <div class="type-badge">${v.type === 'regular' ? 'REGULAR' : 'IRREGULAR'}</div>
+      <span class="person-badge ${v.person}">${v.person === 'tu' ? 'tú' : 'usted'}</span>
+      <div class="flash-hint">Toca la tarjeta para voltear</div>
+      <div class="flash-face" id="flashFace" onclick="flipFlash()">${v.inf}</div>
+      <button class="sound-btn" onclick="speak('${v.form.replace(/'/g, "\\'")}')">🔊 Escuchar</button>
+    `;
+  } else {
+    const s = data[idx];
+    card.innerHTML = `
+      <div class="sentence-line">
+        ${s.before} <input type="text" id="blankInput" class="blank-input" autocomplete="off" /> ${s.after}
+        &nbsp;<span class="hint-paren">(${s.hint})</span>
+      </div>
+      <button class="check-btn" onclick="checkFill()">Comprobar</button>
+      <div class="feedback" id="feedback"></div>
+    `;
+    setTimeout(() => {
+      const inp = document.getElementById('blankInput');
+      if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkFill(); }); }
+    }, 0);
+  }
+
+  updateScore();
+}
+
+function flipFlash() {
+  const idx = activeOrder()[cur];
+  const v = fichas[idx];
+  const face = document.getElementById('flashFace');
+  const flipped = face.dataset.flipped === '1';
+  if (!flipped) {
+    face.innerHTML = `<span style="color:#c8102e;">${v.form}</span><div class="flash-sub">${v.tr}</div>`;
+    face.dataset.flipped = '1';
+  } else {
+    face.innerHTML = v.inf;
+    face.dataset.flipped = '0';
+  }
+}
+
+function checkFill() {
+  if (answered) return;
+  const idx = activeOrder()[cur];
+  const data = activeData();
+  const s = data[idx];
+  const inp = document.getElementById('blankInput');
+  const fb = document.getElementById('feedback');
+  const card = document.getElementById('card');
+
+  const val = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const target = s.answer.toLowerCase().replace(/\s+/g, ' ');
+
+  answered = true;
+  total++;
+  inp.disabled = true;
+
+  if (val === target) {
+    correct++;
+    inp.classList.remove('bad'); inp.classList.add('ok');
+    fb.textContent = '✓ ¡Correcto!';
+    fb.className = 'feedback correct';
+    card.classList.remove('shake'); card.classList.add('pop');
+    launchConfetti();
+  } else {
+    inp.classList.remove('ok'); inp.classList.add('bad');
+    fb.textContent = `✗ La respuesta correcta es "${s.answer}"`;
+    fb.className = 'feedback wrong';
+    card.classList.remove('pop'); card.classList.add('shake');
+  }
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById('score').textContent = total > 0 ? `Tačno: ${correct} / ${total}` : '';
+}
+
+function speak(word) {
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'es-US';
+  u.rate = 0.85;
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(x => x.lang === 'es-US') || voices.find(x => x.lang.startsWith('es'));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+speechSynthesis.onvoiceschanged = () => {};
+
+function launchConfetti() {
+  const emojis = ['🎉','⭐','✨','🎊'];
+  for (let i = 0; i < 10; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (1.2 + Math.random()) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2200);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
