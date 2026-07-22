@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<title>Español de balonmano — Napad i Odbrana</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+
+  :root{
+    --yellow:#ffd500;
+    --blue:#0049dd;
+    --pink:#f40157;
+    --white:#ffffff;
+    --ink:#14141f;
+    --ink-soft:rgba(20,20,31,0.66);
+    --line:rgba(0,73,221,0.18);
+    --blue-tint:rgba(0,73,221,0.10);
+    --pink-tint:rgba(244,1,87,0.10);
+    --yellow-tint:rgba(255,213,0,0.30);
+    --green:#2f9e44;
+    --green-tint:rgba(47,158,68,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:0;
+    background:var(--white);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .page{ max-width:940px; margin:0 auto; background:var(--white); }
+  header{
+    background:var(--blue);
+    color:var(--white);
+    padding:28px 40px 34px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute; right:-60px; top:-60px;
+    width:220px; height:220px;
+    border:3px solid rgba(255,255,255,0.18);
+    border-radius:50%;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--yellow);
+    margin:0 0 6px;
+    position:relative; z-index:1;
+  }
+  h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700; font-size:34px; margin:0;
+    letter-spacing:0.01em; text-transform:uppercase;
+    position:relative; z-index:1;
+  }
+  .sub{ font-size:15px; color:#DCE6FF; margin:8px 0 0; max-width:600px; line-height:1.5; position:relative; z-index:1; }
+
+  .imp-note{
+    margin:20px 40px 0;
+    background:var(--yellow-tint);
+    border:1.5px solid var(--yellow);
+    border-radius:10px;
+    padding:16px 20px;
+    font-size:14px; line-height:1.6;
+    color:var(--ink);
+  }
+  .imp-note b{color:var(--blue);}
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:10px; font-size:12.5px; }
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
+
+  .halfway{ display:flex; align-items:center; gap:14px; margin:0 40px; padding:14px 0 6px; }
+  .halfway .circle{ width:34px; height:34px; border-radius:50%; border:2px solid var(--blue); flex-shrink:0; }
+  .halfway .dashes{ flex:1; height:0; border-top:2px dashed var(--line); }
+
+  section.block{ padding:6px 40px 10px; }
+  .block-head{ display:flex; align-items:baseline; gap:12px; margin:18px 0 14px; }
+  .block-head h2{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:22px;
+    text-transform:uppercase; margin:0;
+  }
+  .ataque .block-head h2{color:var(--pink);}
+  .defensa .block-head h2{color:var(--blue);}
+  .block-head .tag{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); }
+
+  .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:10px; padding:13px 15px;
+    position:relative;
+  }
+  .ataque .card{border-left:4px solid var(--pink);}
+  .defensa .card{border-left:4px solid var(--blue);}
+
+  .inf{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin:0 0 4px; }
+  .es{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:18px;
+    color:var(--ink); margin:0 0 2px;
+  }
+  .pron{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin:0 0 8px; }
+  .sr{ font-size:14.5px; font-weight:500; color:var(--ink); margin:0; }
+  .en{ font-size:12.5px; color:var(--ink-soft); margin:2px 0 0; font-style:italic; }
+  .ex-sentence{
+    font-size:12.5px; color:var(--ink); margin:8px 0 0;
+    padding-top:8px; border-top:1px dashed var(--line);
+    line-height:1.5;
+  }
+  .ex-sentence em{ font-style:normal; font-weight:500; }
+  .ex-sentence .tr{ display:block; color:var(--ink-soft); font-style:italic; margin-top:2px; }
+
+  .badge{
+    position:absolute; top:12px; right:12px;
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:500;
+    padding:3px 8px; border-radius:20px; letter-spacing:0.02em;
+  }
+  .b-regular{background:var(--pink-tint); color:var(--pink);}
+  .b-regular.d{background:var(--blue-tint); color:var(--blue);}
+  .b-irregular{background:var(--yellow-tint); color:var(--blue); border:1px solid var(--yellow);}
+  .b-reflexive{background:var(--blue-tint); color:var(--pink);}
+  .b-fixed{background:rgba(20,20,31,0.06); color:var(--ink-soft);}
+  .b-none{display:none;}
+
+  section.exercises{ padding:10px 40px 20px; }
+  .exercises h2{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:22px;
+    text-transform:uppercase; margin:26px 0 6px; color:var(--ink);
+    border-bottom:3px solid var(--yellow); display:inline-block; padding-bottom:4px;
+  }
+  .exercises .instr{ font-size:13.5px; color:var(--ink-soft); margin:0 0 14px; line-height:1.5; }
+  .ex-card{
+    background:var(--white); border:1px solid var(--line);
+    border-radius:10px; padding:16px 20px; margin-bottom:14px;
+  }
+  .ex-item{ font-size:14.5px; margin:0 0 10px; line-height:2.1; }
+  .ex-item:last-child{margin-bottom:0;}
+  .wordbank{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px;
+    background:var(--yellow-tint); color:var(--ink);
+    border-radius:8px; padding:10px 14px; margin-bottom:14px; line-height:1.8;
+  }
+  .ans{
+    width:190px; padding:7px 10px; margin:0 3px;
+    border:1.5px solid var(--line); border-radius:6px;
+    font-family:'Inter',sans-serif; font-size:13.5px;
+    background:var(--white); color:var(--ink);
+  }
+  .ans.short{ width:44px; text-align:center; }
+  .ans.wide{ width:250px; }
+  .ans:focus{ outline:none; border-color:var(--blue); }
+  .ans.correct{ border-color:var(--green); background:var(--green-tint); }
+  .ans.wrong{ border-color:var(--pink); background:var(--pink-tint); }
+  .fb{ font-size:12.5px; margin-left:6px; color:var(--ink-soft); }
+  .fb.ok{ color:var(--green); font-weight:500; }
+  .fb.no{ color:var(--pink); font-weight:500; }
+  .check-btn{
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:500;
+    padding:9px 18px; border-radius:8px; cursor:pointer;
+    border:1.5px solid var(--blue); background:var(--blue); color:var(--white);
+    margin-top:6px;
+  }
+  .ex-score{ font-size:13px; color:var(--ink-soft); margin-left:10px; }
+
+  .fc-wrap{ margin-bottom:26px; }
+  .fc-title{ font-weight:600; font-size:15px; margin:0 0 4px; color:var(--ink); }
+  .fc-instr{ font-size:13px; color:var(--ink-soft); margin:0 0 12px; }
+  .flashcard{
+    background:var(--white);
+    border:2px solid var(--blue);
+    border-radius:14px;
+    padding:34px 24px;
+    text-align:center;
+    min-height:120px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .flashcard.is-back{ border-color:var(--pink); }
+  .fc-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 8px;
+  }
+  .fc-text{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:24px;
+    color:var(--ink); margin:0;
+  }
+  .fc-sub{ font-size:13px; color:var(--ink-soft); margin:6px 0 0; font-style:italic; }
+  .fc-controls{
+    display:flex; align-items:center; justify-content:center;
+    gap:10px; margin-top:12px; flex-wrap:wrap;
+  }
+  .fc-btn{
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:500;
+    padding:9px 16px; border-radius:8px; cursor:pointer; border:1.5px solid;
+    background:var(--white);
+  }
+  .fc-flip{ border-color:var(--blue); color:var(--blue); }
+  .fc-next{ background:var(--pink); border-color:var(--pink); color:var(--white); }
+  .fc-prev{ border-color:var(--line); color:var(--ink-soft); }
+  .fc-shuffle{ border-color:var(--yellow); color:var(--ink); background:var(--yellow-tint); }
+  .fc-counter{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft);
+    margin-left:6px;
+  }
+
+  footer{
+    padding:20px 40px 34px; font-size:12.5px; color:var(--ink-soft);
+    border-top:1px solid var(--line); margin-top:10px;
+  }
+
+  @media (max-width:600px){
+    .grid{grid-template-columns:1fr;}
+    header,.imp-note,.halfway,section.block,section.exercises,footer{padding-left:18px; padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <p class="eyebrow">BM Caserío Ciudad Real · Adi Omeragić</p>
+    <h1>Napad i odbrana</h1>
+    <p class="sub">Rečnik, primeri rečenica, vežbanja i fleš kartice — infinitiv i imperativ na terenu.</p>
+  </header>
+
+  <div class="imp-note">
+    Skoro sve komande koje čuješ na terenu su <b>imperativ za TÚ</b>. Svaka kartica prvo pokazuje
+    <b>infinitiv</b>, pa <b>imperativ</b>, pa primer rečenice kako bi zvučalo na treningu.
+    <div class="legend">
+      <span><i class="dot" style="background:var(--pink)"></i>napad</span>
+      <span><i class="dot" style="background:var(--blue)"></i>odbrana</span>
+      <span><i class="dot" style="background:var(--yellow); border:1px solid var(--blue)"></i>nepravilan</span>
+      <span><i class="dot" style="background:linear-gradient(90deg,var(--blue),var(--pink))"></i>povratni</span>
+      <span><i class="dot" style="background:#ccc"></i>fiksna fraza (negacija)</span>
+    </div>
+  </div>
+
+  <div class="halfway"><div class="circle"></div><div class="dashes"></div><div class="circle"></div></div>
+
+  <section class="block ataque">
+    <div class="block-head"><h2>Ataque · Napad</h2><span class="tag">str. 3</span></div>
+    <div class="grid">
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">pasar →</p><p class="es">Pasa</p><p class="pron">PÁ-sa</p><p class="sr">Dodaj</p><p class="en">pass</p>
+        <p class="ex-sentence"><em>Pasa el balón al extremo.</em><span class="tr">Dodaj loptu krilnom igraču.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">recibir →</p><p class="es">Recibe</p><p class="pron">re-THÍ-be</p><p class="sr">Primi</p><p class="en">receive</p>
+        <p class="ex-sentence"><em>Recibe el balón cerca de la línea.</em><span class="tr">Primi loptu blizu linije.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">botar →</p><p class="es">Bota</p><p class="pron">BÓ-ta</p><p class="sr">Vodi loptu</p><p class="en">dribble</p>
+        <p class="ex-sentence"><em>Bota el balón y espera.</em><span class="tr">Vodi loptu i sačekaj.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">lanzar →</p><p class="es">Lanza</p><p class="pron">LÁN-tha</p><p class="sr">Šutiraj</p><p class="en">shoot</p>
+        <p class="ex-sentence"><em>Lanza a la portería.</em><span class="tr">Šutiraj na gol.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">fintar →</p><p class="es">Finta</p><p class="pron">FÍN-ta</p><p class="sr">Finta</p><p class="en">feint</p>
+        <p class="ex-sentence"><em>Finta a la derecha y pasa.</em><span class="tr">Napravi fintu udesno pa dodaj.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">penetrar →</p><p class="es">Penetra</p><p class="pron">pe-NÉ-tra</p><p class="sr">Idi u prodor</p><p class="en">drive / penetrate</p>
+        <p class="ex-sentence"><em>Penetra entre los defensores.</em><span class="tr">Uđi u prodor između odbrambenih igrača.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">cruzar →</p><p class="es">Cruza</p><p class="pron">CRÚ-tha</p><p class="sr">Ukrsti</p><p class="en">cross</p>
+        <p class="ex-sentence"><em>Cruza con el central.</em><span class="tr">Ukrsti se sa srednjim bekom.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">bloquear →</p><p class="es">Bloquea</p><p class="pron">blo-KÉ-a</p><p class="sr">Postavi blok</p><p class="en">set a screen</p>
+        <p class="ex-sentence"><em>Bloquea para tu compañero.</em><span class="tr">Postavi blok za saigrača.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">continuar →</p><p class="es">Continúa</p><p class="pron">con-ti-NÚ-a</p><p class="sr">Nastavi akciju</p><p class="en">continue</p>
+        <p class="ex-sentence"><em>Continúa hacia el pivote.</em><span class="tr">Nastavi akciju ka pivotu.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">abrir →</p><p class="es">Abre</p><p class="pron">Á-bre</p><p class="sr">Igraj šire</p><p class="en">play wider</p>
+        <p class="ex-sentence"><em>Abre más hacia la banda.</em><span class="tr">Igraj šire ka strani.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">cerrar →</p><p class="es">Cierra</p><p class="pron">THYÉ-rra</p><p class="sr">Uđi unutra</p><p class="en">move inside</p>
+        <p class="ex-sentence"><em>Cierra hacia el centro.</em><span class="tr">Uđi unutra ka sredini.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">atacar →</p><p class="es">Ataca el intervalo</p><p class="pron">a-TÁ-ka el in-ter-BÁ-lo</p><p class="sr">Napadni prostor</p><p class="en">attack the gap</p>
+        <p class="ex-sentence"><em>Ataca el intervalo entre el dos y el tres.</em><span class="tr">Napadni prostor između drugog i trećeg.</span></p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Dentro / fuera</p><p class="pron">DÉN-tro / FWÉ-ra</p><p class="sr">Unutra / spolja</p><p class="en">inside / outside</p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Izquierda / derecha</p><p class="pron">ith-KYER-da / de-RÉ-cha</p><p class="sr">Levo / desno</p><p class="en">left / right</p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Rápido</p><p class="pron">RÁ-pi-do</p><p class="sr">Brže</p><p class="en">faster</p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">calmar →</p><p class="es">Calma</p><p class="pron">KÁL-ma</p><p class="sr">Smiri igru</p><p class="en">calm down</p>
+        <p class="ex-sentence"><em>Calma, todavía hay tiempo.</em><span class="tr">Smiri igru, još ima vremena.</span></p></div>
+
+      <div class="card"><span class="badge b-none">fraza</span>
+        <p class="inf">&nbsp;</p><p class="es">Uno contra uno</p><p class="pron">Ú-no CÓN-tra Ú-no</p><p class="sr">Jedan na jedan</p><p class="en">one against one</p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ*</span>
+        <p class="inf">jugar →</p><p class="es">Juega con el pivote</p><p class="pron">HWÉ-ga con el pi-BÓ-te</p><p class="sr">Igraj sa pivotom</p><p class="en">play with the pivot</p>
+        <p class="ex-sentence"><em>Si el defensor sale, juega con el pivote.</em><span class="tr">Ako odbrambeni izađe, igraj sa pivotom.</span></p></div>
+
+      <div class="card"><span class="badge b-regular">imperativ</span>
+        <p class="inf">circular →</p><p class="es">Circula el balón</p><p class="pron">thir-KÚ-la el ba-LÓN</p><p class="sr">Pomeraj loptu</p><p class="en">move the ball</p>
+        <p class="ex-sentence"><em>Circula el balón más rápido.</em><span class="tr">Brže pomeraj loptu.</span></p></div>
+
+      <div class="card"><span class="badge b-fixed">negacija</span>
+        <p class="inf">parar →</p><p class="es">No pares el balón</p><p class="pron">no PÁ-res el ba-LÓN</p><p class="sr">Ne zadržavaj loptu</p><p class="en">don't hold the ball</p>
+        <p class="ex-sentence"><em>No pares el balón, sigue moviéndolo.</em><span class="tr">Ne zadržavaj loptu, nastavi da je pomeraš.</span></p></div>
+
+      <div class="card"><span class="badge b-fixed">negacija</span>
+        <p class="inf">perder →</p><p class="es">No pierdas el balón</p><p class="pron">no PYÉR-das el ba-LÓN</p><p class="sr">Ne gubi loptu</p><p class="en">don't lose the ball</p>
+        <p class="ex-sentence"><em>No pierdas el balón en el último pase.</em><span class="tr">Ne gubi loptu na poslednjem dodavanju.</span></p></div>
+
+    </div>
+    <p style="font-size:12px; color:var(--ink-soft); margin-top:10px;">
+      * <i>Juega</i> ima promenu u korenu (o→ue). Negacije (<i>No pares, No pierdas</i>) zapamti kao gotove
+      fraze — pravi oblik negativnog imperativa ide posle subjuntiva.
+    </p>
+  </section>
+
+  <div class="halfway"><div class="circle"></div><div class="dashes"></div><div class="circle"></div></div>
+
+  <section class="block defensa">
+    <div class="block-head"><h2>Defensa · Odbrana</h2><span class="tag">str. 4</span></div>
+    <div class="grid">
+
+      <div class="card"><span class="badge b-irregular">nepravilan</span>
+        <p class="inf">salir →</p><p class="es">Sal</p><p class="pron">SAL</p><p class="sr">Izađi</p><p class="en">step out</p>
+        <p class="ex-sentence"><em>Sal al lateral izquierdo.</em><span class="tr">Izađi na levog beka.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">recuperar →</p><p class="es">Recupera</p><p class="pron">re-ku-PÉ-ra</p><p class="sr">Vrati se</p><p class="en">recover position</p>
+        <p class="ex-sentence"><em>Recupera tu posición rápido.</em><span class="tr">Brzo se vrati na svoju poziciju.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">cerrar →</p><p class="es">Cierra el centro</p><p class="pron">THYÉ-rra el THÉN-tro</p><p class="sr">Zatvori sredinu</p><p class="en">close the middle</p>
+        <p class="ex-sentence"><em>Cierra el centro, viene el pivote.</em><span class="tr">Zatvori sredinu, dolazi pivot.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">ayudar →</p><p class="es">Ayuda</p><p class="pron">a-YÚ-da</p><p class="sr">Pomozi</p><p class="en">help</p>
+        <p class="ex-sentence"><em>Ayuda a tu compañero.</em><span class="tr">Pomozi saigraču.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">cambiar →</p><p class="es">Cambia</p><p class="pron">KÁM-bya</p><p class="sr">Preuzmi</p><p class="en">switch players</p>
+        <p class="ex-sentence"><em>Cambia con el defensor.</em><span class="tr">Preuzmi odbrambenog igrača.</span></p></div>
+
+      <div class="card"><span class="badge b-none">fraza</span>
+        <p class="inf">&nbsp;</p><p class="es">Sin cambio</p><p class="pron">sin KÁM-byo</p><p class="sr">Bez preuzimanja</p><p class="en">no switch</p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">bloquear →</p><p class="es">Bloquea el lanzamiento</p><p class="pron">blo-KÉ-a el lan-tha-MYÉN-to</p><p class="sr">Blokiraj šut</p><p class="en">block the shot</p>
+        <p class="ex-sentence"><em>Bloquea el lanzamiento con los brazos arriba.</em><span class="tr">Blokiraj šut sa podignutim rukama.</span></p></div>
+
+      <div class="card"><span class="badge b-none">fraza</span>
+        <p class="inf">&nbsp;</p><p class="es">Brazos arriba</p><p class="pron">BRÁ-thos a-RRÍ-ba</p><p class="sr">Ruke gore</p><p class="en">arms up</p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Juntos</p><p class="pron">HÚN-tos</p><p class="sr">Skupite se</p><p class="en">stay compact</p></div>
+
+      <div class="card"><span class="badge b-none">fraza</span>
+        <p class="inf">&nbsp;</p><p class="es">Un paso adelante</p><p class="pron">un PÁ-so a-de-LÁN-te</p><p class="sr">Iskorak napred</p><p class="en">one step forward</p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">controlar →</p><p class="es">Controla al pivote</p><p class="pron">con-TRÓ-la al pi-BÓ-te</p><p class="sr">Drži pivota</p><p class="en">hold the pivot</p>
+        <p class="ex-sentence"><em>Controla al pivote todo el tiempo.</em><span class="tr">Drži pivota celo vreme.</span></p></div>
+
+      <div class="card"><span class="badge b-irregular">nepravilan</span>
+        <p class="inf">hacer →</p><p class="es">Haz falta</p><p class="pron">ath FÁL-ta</p><p class="sr">Napravi faul</p><p class="en">make a foul</p>
+        <p class="ex-sentence"><em>Haz falta si no hay otra opción.</em><span class="tr">Napravi faul ako nema druge opcije.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">cortar →</p><p class="es">Corta el pase</p><p class="pron">KÓR-ta el PÁ-se</p><p class="sr">Preseci dodavanje</p><p class="en">intercept the pass</p>
+        <p class="ex-sentence"><em>Corta el pase al pivote.</em><span class="tr">Preseci dodavanje ka pivotu.</span></p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Rebote</p><p class="pron">re-BÓ-te</p><p class="sr">Odbijena lopta</p><p class="en">rebound / loose ball</p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ*</span>
+        <p class="inf">replegar →</p><p class="es">Repliega</p><p class="pron">re-PLYÉ-ga</p><p class="sr">Vrati se u odbranu</p><p class="en">retreat</p>
+        <p class="ex-sentence"><em>Repliega rápido a defensa.</em><span class="tr">Brzo se vrati u odbranu.</span></p></div>
+
+      <div class="card"><span class="badge b-none">reč</span>
+        <p class="inf">&nbsp;</p><p class="es">Contraataque</p><p class="pron">con-tra-a-TÁ-ke</p><p class="sr">Kontra</p><p class="en">fast break</p></div>
+
+      <div class="card"><span class="badge b-none">fraza</span>
+        <p class="inf">&nbsp;</p><p class="es">Segunda oleada</p><p class="pron">se-GÚN-da o-le-Á-da</p><p class="sr">Drugi talas</p><p class="en">second wave</p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">hablar →</p><p class="es">Habla</p><p class="pron">Á-bla</p><p class="sr">Pričaj</p><p class="en">communicate</p>
+        <p class="ex-sentence"><em>Habla con tus compañeros.</em><span class="tr">Pričaj sa saigračima.</span></p></div>
+
+      <div class="card"><span class="badge b-regular d">imperativ</span>
+        <p class="inf">marcar →</p><p class="es">Marca a tu jugador</p><p class="pron">MÁR-ka a tu hu-ga-DOR</p><p class="sr">Čuvaj svog igrača</p><p class="en">mark your player</p>
+        <p class="ex-sentence"><em>Marca a tu jugador de cerca.</em><span class="tr">Čuvaj svog igrača izbliza.</span></p></div>
+
+      <div class="card"><span class="badge b-reflexive">povratni</span>
+        <p class="inf">quedarse →</p><p class="es">Quédate cerca</p><p class="pron">KÉ-da-te THÉR-ka</p><p class="sr">Ostani blizu</p><p class="en">stay close</p>
+        <p class="ex-sentence"><em>Quédate cerca del pivote.</em><span class="tr">Ostani blizu pivota.</span></p></div>
+
+    </div>
+    <p style="font-size:12px; color:var(--ink-soft); margin-top:10px;">
+      * <i>Repliega</i> ima promenu u korenu (e→ie). <i>Quédate</i> je povratni glagol — zamenica -te se
+      lepi na kraj imperativa. <i>Sal</i> i <i>Haz</i> su nepravilni oblici koje već znaš.
+    </p>
+  </section>
+
+  <div class="halfway"><div class="circle"></div><div class="dashes"></div><div class="circle"></div></div>
+
+  <section class="exercises">
+    <h2>Vežbanja</h2>
+    <p class="instr">Piši direktno u polja, pa klikni "Proveri" da vidiš rezultat.</p>
+
+    <div class="ex-card" data-ex="1">
+      <p style="font-weight:600; margin:0 0 8px;">1 · Infinitiv → Imperativo</p>
+      <p class="instr" style="margin-bottom:12px;">Napiši imperativ (TÚ) za dati infinitiv.</p>
+      <p class="ex-item">1. Atacar → <input class="ans" data-answer="ataca"></p>
+      <p class="ex-item">2. Pasar → <input class="ans" data-answer="pasa"></p>
+      <p class="ex-item">3. Recibir → <input class="ans" data-answer="recibe"></p>
+      <p class="ex-item">4. Botar → <input class="ans" data-answer="bota"></p>
+      <p class="ex-item">5. Lanzar → <input class="ans" data-answer="lanza"></p>
+      <p class="ex-item">6. Fintar → <input class="ans" data-answer="finta"></p>
+      <p class="ex-item">7. Penetrar → <input class="ans" data-answer="penetra"></p>
+      <p class="ex-item">8. Cruzar → <input class="ans" data-answer="cruza"></p>
+      <p class="ex-item">9. Bloquear → <input class="ans" data-answer="bloquea"></p>
+      <p class="ex-item">10. Continuar → <input class="ans" data-answer="continua"></p>
+      <p class="ex-item">11. Abrir → <input class="ans" data-answer="abre"></p>
+      <p class="ex-item">12. Cerrar → <input class="ans" data-answer="cierra"></p>
+      <p class="ex-item">13. Salir → <input class="ans" data-answer="sal"></p>
+      <p class="ex-item">14. Recuperar → <input class="ans" data-answer="recupera"></p>
+      <p class="ex-item">15. Ayudar → <input class="ans" data-answer="ayuda"></p>
+      <p class="ex-item">16. Cambiar → <input class="ans" data-answer="cambia"></p>
+      <p class="ex-item">17. Controlar → <input class="ans" data-answer="controla"></p>
+      <p class="ex-item">18. Hacer → <input class="ans" data-answer="haz"></p>
+      <p class="ex-item">19. Cortar → <input class="ans" data-answer="corta"></p>
+      <p class="ex-item">20. Rebotar → <input class="ans" data-answer="rebota"></p>
+      <p class="ex-item">21. Replegar → <input class="ans" data-answer="repliega"></p>
+      <p class="ex-item">22. Hablar → <input class="ans" data-answer="habla"></p>
+      <p class="ex-item">23. Marcar → <input class="ans" data-answer="marca"></p>
+      <p class="ex-item">24. Quedarse → <input class="ans" data-answer="quedate"></p>
+      <button class="check-btn" data-check="1">Proveri</button><span class="ex-score" data-score="1"></span>
+    </div>
+
+    <div class="ex-card" data-ex="2">
+      <p style="font-weight:600; margin:0 0 8px;">2 · Spoji španski imperativ sa srpskim značenjem</p>
+      <p class="instr" style="margin-bottom:12px;">Napiši ceo španski izraz iz spiska koji odgovara srpskom značenju.</p>
+      <div class="wordbank">Ayuda &nbsp;·&nbsp; Bloquea &nbsp;·&nbsp; Marca a tu jugador &nbsp;·&nbsp; Continúa &nbsp;·&nbsp; Corta el pase &nbsp;·&nbsp; Repliega</div>
+      <p class="ex-item"><input class="ans wide" data-answer="corta el pase"> — Preseci dodavanje</p>
+      <p class="ex-item"><input class="ans wide" data-answer="repliega"> — Vrati se u odbranu</p>
+      <p class="ex-item"><input class="ans wide" data-answer="marca a tu jugador"> — Čuvaj svog igrača</p>
+      <p class="ex-item"><input class="ans wide" data-answer="bloquea"> — Postavi blok</p>
+      <p class="ex-item"><input class="ans wide" data-answer="continua"> — Nastavi akciju</p>
+      <p class="ex-item"><input class="ans wide" data-answer="ayuda"> — Pomozi</p>
+      <button class="check-btn" data-check="2">Proveri</button><span class="ex-score" data-score="2"></span>
+    </div>
+
+    <div class="ex-card" data-ex="3">
+      <p style="font-weight:600; margin:0 0 8px;">3 · Popuni rečenicu — situacija na terenu</p>
+      <div class="wordbank">Pasa &middot; Sal &middot; Ayuda &middot; Habla &middot; Cambia &middot; Cierra</div>
+      <p class="ex-item">1. Tvoj protivnik ide ka golu: "¡<input class="ans" data-answer="sal">!" (izađi na njega)</p>
+      <p class="ex-item">2. Saigrač je slobodan, imaš loptu: "¡<input class="ans" data-answer="pasa"> el balón!"</p>
+      <p class="ex-item">3. Saigrač brani sam dva igrača: "¡<input class="ans" data-answer="ayuda">!"</p>
+      <p class="ex-item">4. Pivot je ušao u sredinu: "¡<input class="ans" data-answer="cierra"> el centro!"</p>
+      <p class="ex-item">5. Dva napadača se ukrštaju, treba da preuzmeš protivnika: "¡<input class="ans" data-answer="cambia">!"</p>
+      <p class="ex-item">6. Ne vidiš saigrača iza sebe: "¡<input class="ans" data-answer="habla">!"</p>
+      <button class="check-btn" data-check="3">Proveri</button><span class="ex-score" data-score="3"></span>
+    </div>
+
+    <div class="ex-card" data-ex="4">
+      <p style="font-weight:600; margin:0 0 8px;">4 · Prevedi (srpski → španski)</p>
+      <p class="instr" style="margin-bottom:12px;">Napiši španski imperativ za dati srpski izraz.</p>
+      <p class="ex-item">1. Napravi faul → <input class="ans" data-answer="haz falta"></p>
+      <p class="ex-item">2. Preseci dodavanje → <input class="ans" data-answer="corta el pase"></p>
+      <p class="ex-item">3. Vodi loptu → <input class="ans" data-answer="bota"></p>
+      <p class="ex-item">4. Postavi blok → <input class="ans" data-answer="bloquea"></p>
+      <p class="ex-item">5. Igraj šire → <input class="ans" data-answer="abre"></p>
+      <p class="ex-item">6. Vrati se u odbranu → <input class="ans" data-answer="repliega"></p>
+      <button class="check-btn" data-check="4">Proveri</button><span class="ex-score" data-score="4"></span>
+    </div>
+
+    <div class="ex-card" data-ex="5">
+      <p style="font-weight:600; margin:0 0 8px;">5 · Scenario — napad pa odbrana</p>
+      <p class="instr" style="margin-bottom:12px;">Popuni ceo tok akcije, od napada do povratka u odbranu.</p>
+      <div class="wordbank">Pasa &middot; Cruza &middot; Lanza &middot; Corta el pase &middot; Repliega &middot; Marca a tu jugador</div>
+      <p class="ex-item">Tvoj tim napada. Trener viče: "¡<input class="ans" data-answer="cruza"> con el central!" (ukrsti se)
+      Dobijaš loptu i praznu liniju devet metara: "¡<input class="ans" data-answer="lanza">!" (šutiraj)</p>
+      <p class="ex-item">Šut je odbranjen, protivnik kreće u kontru. Trener viče braniocima:
+      "¡<input class="ans" data-answer="repliega"> rápido!" (vrati se u odbranu) i
+      "¡<input class="ans" data-answer="marca a tu jugador">!" (čuvaj svog igrača)</p>
+      <p class="ex-item">Vidiš da protivnik hoće da doda pivotu: "¡<input class="ans" data-answer="corta el pase">!" (preseci)
+      Kad dobiješ loptu opet napadaš: "¡<input class="ans" data-answer="pasa"> al extremo!" (dodaj)</p>
+      <button class="check-btn" data-check="5">Proveri</button><span class="ex-score" data-score="5"></span>
+    </div>
+  </section>
+
+  <div class="halfway"><div class="circle"></div><div class="dashes"></div><div class="circle"></div></div>
+
+  <section class="exercises">
+    <h2>Fleš kartice</h2>
+    <p class="instr">Klikni na karticu da vidiš odgovor. "Sledeća" ide dalje, "Nasumično" promeša redosled — svaki set je već drugačije izmešan.</p>
+
+    <div class="fc-wrap">
+      <p class="fc-title">A · Infinitiv → Imperativo</p>
+      <p class="fc-instr">Vidiš infinitiv — naglas kaži imperativ pre nego što okreneš karticu.</p>
+      <div class="flashcard" data-deck="verbs">
+        <p class="fc-label" data-role="label">infinitiv</p>
+        <p class="fc-text" data-role="text"></p>
+        <p class="fc-sub" data-role="sub"></p>
+      </div>
+      <div class="fc-controls">
+        <button class="fc-btn fc-prev" data-deck="verbs" data-action="prev">‹ Prethodna</button>
+        <button class="fc-btn fc-flip" data-deck="verbs" data-action="flip">Okreni</button>
+        <button class="fc-btn fc-next" data-deck="verbs" data-action="next">Sledeća ›</button>
+        <button class="fc-btn fc-shuffle" data-deck="verbs" data-action="shuffle">Nasumično</button>
+        <span class="fc-counter" data-deck="verbs" data-role="counter"></span>
+      </div>
+    </div>
+
+    <div class="fc-wrap">
+      <p class="fc-title">B · Español → Srpski</p>
+      <p class="fc-instr">Vidiš špansku reč ili frazu — kaži značenje na srpskom, pa proveri.</p>
+      <div class="flashcard" data-deck="essr">
+        <p class="fc-label" data-role="label">español</p>
+        <p class="fc-text" data-role="text"></p>
+        <p class="fc-sub" data-role="sub"></p>
+      </div>
+      <div class="fc-controls">
+        <button class="fc-btn fc-prev" data-deck="essr" data-action="prev">‹ Prethodna</button>
+        <button class="fc-btn fc-flip" data-deck="essr" data-action="flip">Okreni</button>
+        <button class="fc-btn fc-next" data-deck="essr" data-action="next">Sledeća ›</button>
+        <button class="fc-btn fc-shuffle" data-deck="essr" data-action="shuffle">Nasumično</button>
+        <span class="fc-counter" data-deck="essr" data-role="counter"></span>
+      </div>
+    </div>
+
+    <div class="fc-wrap">
+      <p class="fc-title">C · Srpski → Español</p>
+      <p class="fc-instr">Vidiš srpsko značenje — kaži špansku reč, pa proveri.</p>
+      <div class="flashcard" data-deck="sres">
+        <p class="fc-label" data-role="label">srpski</p>
+        <p class="fc-text" data-role="text"></p>
+        <p class="fc-sub" data-role="sub"></p>
+      </div>
+      <div class="fc-controls">
+        <button class="fc-btn fc-prev" data-deck="sres" data-action="prev">‹ Prethodna</button>
+        <button class="fc-btn fc-flip" data-deck="sres" data-action="flip">Okreni</button>
+        <button class="fc-btn fc-next" data-deck="sres" data-action="next">Sledeća ›</button>
+        <button class="fc-btn fc-shuffle" data-deck="sres" data-action="shuffle">Nasumično</button>
+        <span class="fc-counter" data-deck="sres" data-role="counter"></span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    BM Caserío Ciudad Real · Adi Omeragić — priprema za odlazak u Španiju · A1 nivo
+  </footer>
+
+</div>
+
+<script>
+  function normalize(s){
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+  }
+
+  document.querySelectorAll('.check-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var card = btn.closest('.ex-card');
+      var inputs = card.querySelectorAll('.ans');
+      var correctCount = 0;
+      inputs.forEach(function(inp){
+        var isCorrect = normalize(inp.value) === normalize(inp.dataset.answer);
+        inp.classList.remove('correct','wrong');
+        inp.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) correctCount++;
+      });
+      var scoreEl = card.querySelector('.ex-score');
+      scoreEl.textContent = correctCount + ' / ' + inputs.length + ' tačno';
+    });
+  });
+
+  document.querySelectorAll('.ans').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      inp.classList.remove('correct','wrong');
+    });
+  });
+
+  var verbCards = [
+    {front:"pasar", back:"Pasa", sub:"Dodaj"},
+    {front:"recibir", back:"Recibe", sub:"Primi"},
+    {front:"botar", back:"Bota", sub:"Vodi loptu"},
+    {front:"lanzar", back:"Lanza", sub:"Šutiraj"},
+    {front:"fintar", back:"Finta", sub:"Finta"},
+    {front:"penetrar", back:"Penetra", sub:"Idi u prodor"},
+    {front:"cruzar", back:"Cruza", sub:"Ukrsti"},
+    {front:"bloquear", back:"Bloquea", sub:"Postavi blok"},
+    {front:"continuar", back:"Continúa", sub:"Nastavi akciju"},
+    {front:"abrir", back:"Abre", sub:"Igraj šire"},
+    {front:"cerrar", back:"Cierra", sub:"Uđi unutra / Zatvori sredinu"},
+    {front:"atacar", back:"Ataca (el intervalo)", sub:"Napadni prostor"},
+    {front:"calmar", back:"Calma", sub:"Smiri igru"},
+    {front:"jugar", back:"Juega (con el pivote)", sub:"nepravilan koren o→ue"},
+    {front:"circular", back:"Circula (el balón)", sub:"Pomeraj loptu"},
+    {front:"parar", back:"Para  /  No pares", sub:"pozitiv / negacija (fiksno)"},
+    {front:"perder", back:"Pierde  /  No pierdas", sub:"pozitiv / negacija (fiksno)"},
+    {front:"salir", back:"Sal", sub:"nepravilan — Izađi"},
+    {front:"recuperar", back:"Recupera", sub:"Vrati se"},
+    {front:"ayudar", back:"Ayuda", sub:"Pomozi"},
+    {front:"cambiar", back:"Cambia", sub:"Preuzmi"},
+    {front:"controlar", back:"Controla (al pivote)", sub:"Drži pivota"},
+    {front:"hacer", back:"Haz (falta)", sub:"nepravilan — Napravi faul"},
+    {front:"cortar", back:"Corta (el pase)", sub:"Preseci dodavanje"},
+    {front:"replegar", back:"Repliega", sub:"nepravilan koren e→ie"},
+    {front:"hablar", back:"Habla", sub:"Pričaj"},
+    {front:"marcar", back:"Marca (a tu jugador)", sub:"Čuvaj svog igrača"},
+    {front:"quedarse", back:"Quédate (cerca)", sub:"povratni — Ostani blizu"}
+  ];
+
+  var vocabCards = [
+    {es:"Pasa", sr:"Dodaj", pron:"PÁ-sa"},
+    {es:"Recibe", sr:"Primi", pron:"re-THÍ-be"},
+    {es:"Bota", sr:"Vodi loptu", pron:"BÓ-ta"},
+    {es:"Lanza", sr:"Šutiraj", pron:"LÁN-tha"},
+    {es:"Finta", sr:"Finta", pron:"FÍN-ta"},
+    {es:"Penetra", sr:"Idi u prodor", pron:"pe-NÉ-tra"},
+    {es:"Cruza", sr:"Ukrsti", pron:"CRÚ-tha"},
+    {es:"Bloquea", sr:"Postavi blok", pron:"blo-KÉ-a"},
+    {es:"Continúa", sr:"Nastavi akciju", pron:"con-ti-NÚ-a"},
+    {es:"Abre", sr:"Igraj šire", pron:"Á-bre"},
+    {es:"Cierra", sr:"Uđi unutra", pron:"THYÉ-rra"},
+    {es:"Ataca el intervalo", sr:"Napadni prostor", pron:"a-TÁ-ka el in-ter-BÁ-lo"},
+    {es:"Dentro / fuera", sr:"Unutra / spolja", pron:"DÉN-tro / FWÉ-ra"},
+    {es:"Izquierda / derecha", sr:"Levo / desno", pron:"ith-KYER-da / de-RÉ-cha"},
+    {es:"Rápido", sr:"Brže", pron:"RÁ-pi-do"},
+    {es:"Calma", sr:"Smiri igru", pron:"KÁL-ma"},
+    {es:"Uno contra uno", sr:"Jedan na jedan", pron:"Ú-no CÓN-tra Ú-no"},
+    {es:"Juega con el pivote", sr:"Igraj sa pivotom", pron:"HWÉ-ga con el pi-BÓ-te"},
+    {es:"Circula el balón", sr:"Pomeraj loptu", pron:"thir-KÚ-la el ba-LÓN"},
+    {es:"No pares el balón", sr:"Ne zadržavaj loptu", pron:"no PÁ-res el ba-LÓN"},
+    {es:"No pierdas el balón", sr:"Ne gubi loptu", pron:"no PYÉR-das el ba-LÓN"},
+    {es:"Sal", sr:"Izađi", pron:"SAL"},
+    {es:"Recupera", sr:"Vrati se", pron:"re-ku-PÉ-ra"},
+    {es:"Cierra el centro", sr:"Zatvori sredinu", pron:"THYÉ-rra el THÉN-tro"},
+    {es:"Ayuda", sr:"Pomozi", pron:"a-YÚ-da"},
+    {es:"Cambia", sr:"Preuzmi", pron:"KÁM-bya"},
+    {es:"Sin cambio", sr:"Bez preuzimanja", pron:"sin KÁM-byo"},
+    {es:"Bloquea el lanzamiento", sr:"Blokiraj šut", pron:"blo-KÉ-a el lan-tha-MYÉN-to"},
+    {es:"Brazos arriba", sr:"Ruke gore", pron:"BRÁ-thos a-RRÍ-ba"},
+    {es:"Juntos", sr:"Skupite se", pron:"HÚN-tos"},
+    {es:"Un paso adelante", sr:"Iskorak napred", pron:"un PÁ-so a-de-LÁN-te"},
+    {es:"Controla al pivote", sr:"Drži pivota", pron:"con-TRÓ-la al pi-BÓ-te"},
+    {es:"Haz falta", sr:"Napravi faul", pron:"ath FÁL-ta"},
+    {es:"Corta el pase", sr:"Preseci dodavanje", pron:"KÓR-ta el PÁ-se"},
+    {es:"Rebote", sr:"Odbijena lopta", pron:"re-BÓ-te"},
+    {es:"Repliega", sr:"Vrati se u odbranu", pron:"re-PLYÉ-ga"},
+    {es:"Contraataque", sr:"Kontra", pron:"con-tra-a-TÁ-ke"},
+    {es:"Segunda oleada", sr:"Drugi talas", pron:"se-GÚN-da o-le-Á-da"},
+    {es:"Habla", sr:"Pričaj", pron:"Á-bla"},
+    {es:"Marca a tu jugador", sr:"Čuvaj svog igrača", pron:"MÁR-ka a tu hu-ga-DOR"},
+    {es:"Quédate cerca", sr:"Ostani blizu", pron:"KÉ-da-te THÉR-ka"}
+  ];
+
+  function shuffleArr(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function makeDeck(deckKey, sourceCards, buildCard){
+    var built = shuffleArr(sourceCards).map(buildCard);
+    var state = { idx: 0, showBack: false, cards: built };
+    var root = document.querySelector('.flashcard[data-deck="' + deckKey + '"]');
+    var labelEl = root.querySelector('[data-role="label"]');
+    var textEl = root.querySelector('[data-role="text"]');
+    var subEl = root.querySelector('[data-role="sub"]');
+    var counterEl = document.querySelector('[data-deck="' + deckKey + '"][data-role="counter"]');
+
+    function render(){
+      var c = state.cards[state.idx];
+      var side = state.showBack ? c.back : c.front;
+      labelEl.textContent = side.label;
+      textEl.textContent = side.text;
+      subEl.textContent = side.sub || "";
+      root.classList.toggle('is-back', state.showBack);
+      counterEl.textContent = (state.idx + 1) + " / " + state.cards.length;
+    }
+    root.addEventListener('click', function(){
+      state.showBack = !state.showBack;
+      render();
+    });
+    document.querySelectorAll('button[data-deck="' + deckKey + '"]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var action = btn.getAttribute('data-action');
+        if (action === 'next'){ state.idx = (state.idx + 1) % state.cards.length; state.showBack = false; }
+        if (action === 'prev'){ state.idx = (state.idx - 1 + state.cards.length) % state.cards.length; state.showBack = false; }
+        if (action === 'flip'){ state.showBack = !state.showBack; }
+        if (action === 'shuffle'){ state.cards = shuffleArr(state.cards); state.idx = 0; state.showBack = false; }
+        render();
+      });
+    });
+    render();
+  }
+
+  makeDeck('verbs', verbCards, function(c){
+    return {
+      front:{label:"infinitiv", text:c.front, sub:""},
+      back:{label:"imperativ", text:c.back, sub:c.sub}
+    };
+  });
+
+  makeDeck('essr', vocabCards, function(c){
+    return {
+      front:{label:"español", text:c.es, sub:c.pron},
+      back:{label:"srpski", text:c.sr, sub:""}
+    };
+  });
+
+  makeDeck('sres', vocabCards, function(c){
+    return {
+      front:{label:"srpski", text:c.sr, sub:""},
+      back:{label:"español", text:c.es, sub:c.pron}
+    };
+  });
+</script>
+
+</body>
+</html>
