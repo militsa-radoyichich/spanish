@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<title>Español de balonmano — Vežbe za pamćenje</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+  :root{
+    --yellow:#ffd500; --blue:#0049dd; --pink:#f40157; --white:#ffffff;
+    --ink:#14141f; --ink-soft:rgba(20,20,31,0.66);
+    --line:rgba(0,73,221,0.18); --blue-tint:rgba(0,73,221,0.10);
+    --pink-tint:rgba(244,1,87,0.10); --yellow-tint:rgba(255,213,0,0.30);
+    --green:#2f9e44; --green-tint:rgba(47,158,68,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; padding:0; background:var(--white); font-family:'Inter',sans-serif; color:var(--ink); }
+  .page{ max-width:900px; margin:0 auto; }
+  header{ background:var(--blue); color:var(--white); padding:28px 40px 32px; position:relative; overflow:hidden; }
+  header::after{ content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px;
+    border:3px solid rgba(255,255,255,0.18); border-radius:50%; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--yellow); margin:0 0 6px; position:relative; z-index:1; }
+  h1{ font-family:'Oswald',sans-serif; font-weight:700; font-size:32px; margin:0; text-transform:uppercase; position:relative; z-index:1; }
+  .sub{ font-size:15px; color:#DCE6FF; margin:8px 0 0; max-width:600px; line-height:1.5; position:relative; z-index:1; }
+
+  section{ padding:24px 40px; }
+  h2{ font-family:'Oswald',sans-serif; font-weight:600; font-size:21px; text-transform:uppercase;
+    color:var(--ink); border-bottom:3px solid var(--yellow); display:inline-block; padding-bottom:4px; margin:0 0 14px; }
+  .instr{ font-size:13.5px; color:var(--ink-soft); line-height:1.55; margin:0 0 16px; }
+
+  .schedule-box{ background:var(--yellow-tint); border:1.5px solid var(--yellow); border-radius:10px;
+    padding:16px 20px; font-size:14px; line-height:1.7; margin-bottom:6px; }
+  .schedule-box b{ color:var(--blue); }
+
+  .session-picker{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .session-btn{ font-family:'JetBrains Mono',monospace; font-size:13px; padding:8px 14px; border-radius:20px;
+    border:1.5px solid var(--blue); color:var(--blue); background:var(--white); cursor:pointer; }
+  .session-btn.active{ background:var(--blue); color:var(--white); }
+
+  .dir-toggle{ display:flex; gap:8px; margin-bottom:18px; }
+  .dir-btn{ font-family:'Inter',sans-serif; font-size:13px; font-weight:500; padding:8px 16px; border-radius:8px;
+    border:1.5px solid var(--pink); color:var(--pink); background:var(--white); cursor:pointer; }
+  .dir-btn.active{ background:var(--pink); color:var(--white); }
+
+  .drill-card{ background:var(--white); border:2px solid var(--blue); border-radius:14px; padding:40px 24px;
+    text-align:center; min-height:130px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; transition:border-color .15s ease; }
+  .drill-card.is-back{ border-color:var(--pink); }
+  .drill-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 8px; }
+  .drill-text{ font-family:'Oswald',sans-serif; font-weight:600; font-size:25px; color:var(--ink); margin:0; }
+  .drill-hint{ font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic; }
+
+  .drill-controls{ display:flex; justify-content:center; gap:12px; margin-top:16px; flex-wrap:wrap; }
+  .drill-btn{ font-family:'Inter',sans-serif; font-size:14px; font-weight:600; padding:11px 22px; border-radius:8px;
+    cursor:pointer; border:1.5px solid; }
+  .btn-know{ background:var(--green); border-color:var(--green); color:var(--white); }
+  .btn-dontknow{ background:var(--pink); border-color:var(--pink); color:var(--white); }
+  .btn-reveal{ background:var(--white); border-color:var(--blue); color:var(--blue); }
+
+  .progress{ text-align:center; font-size:13px; color:var(--ink-soft); margin-top:12px; font-family:'JetBrains Mono',monospace; }
+  .done-msg{ text-align:center; background:var(--green-tint); border:1.5px solid var(--green); border-radius:10px;
+    padding:20px; font-size:15px; color:var(--ink); }
+
+  .match-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+  .match-card{ background:var(--white); border:2px solid var(--line); border-radius:10px; padding:16px 8px;
+    text-align:center; min-height:64px; display:flex; align-items:center; justify-content:center;
+    font-size:13.5px; font-weight:500; cursor:pointer; transition:all .12s ease; }
+  .match-card.hidden-text{ color:transparent; background:var(--blue-tint); border-color:var(--blue); }
+  .match-card.flipped{ color:var(--ink); background:var(--white); border-color:var(--pink); }
+  .match-card.matched{ color:var(--green); background:var(--green-tint); border-color:var(--green); cursor:default; }
+  .match-controls{ display:flex; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
+  .match-btn{ font-family:'Inter',sans-serif; font-size:13px; font-weight:500; padding:9px 16px; border-radius:8px;
+    cursor:pointer; border:1.5px solid var(--blue); color:var(--blue); background:var(--white); }
+  .match-status{ font-size:13px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+
+  .quiz-card{ background:var(--white); border:2px solid var(--blue); border-radius:14px; padding:30px 24px;
+    text-align:center; margin-bottom:14px; }
+  .quiz-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 8px; }
+  .quiz-text{ font-family:'Oswald',sans-serif; font-weight:600; font-size:24px; color:var(--ink); margin:0 0 20px; }
+  .quiz-options{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .quiz-opt{ font-family:'Inter',sans-serif; font-size:14px; font-weight:500; padding:12px 14px; border-radius:8px;
+    border:1.5px solid var(--line); background:var(--white); color:var(--ink); cursor:pointer; text-align:left; }
+  .quiz-opt.correct{ border-color:var(--green); background:var(--green-tint); color:var(--green); }
+  .quiz-opt.wrong{ border-color:var(--pink); background:var(--pink-tint); color:var(--pink); }
+  .quiz-next{ margin-top:14px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; padding:10px 20px;
+    border-radius:8px; cursor:pointer; border:1.5px solid var(--pink); background:var(--pink); color:var(--white); }
+  .quiz-score{ font-size:13px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; margin-bottom:10px; }
+
+  footer{ padding:20px 40px 34px; font-size:12.5px; color:var(--ink-soft); border-top:1px solid var(--line); }
+
+  @media (max-width:600px){
+    .mnem-grid{grid-template-columns:1fr;}
+    header,section,footer{padding-left:18px; padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <p class="eyebrow">BM Caserío Ciudad Real · Adi Omeragić</p>
+    <h1>Vežbe za pamćenje</h1>
+    <p class="sub">Asocijacije za reči koje se lako mešaju, i adaptivan dril koji pamti šta ti ide teže.</p>
+  </header>
+
+  <section>
+    <h2>Kako vežbati kod kuće</h2>
+    <div class="schedule-box">
+      <b>Dan 1:</b> nauči jednu sesiju (8–10 reči) dole i uradi dril.<br>
+      <b>Dan 3:</b> ponovi istu sesiju — ako je lakše, dodaj sledeću.<br>
+      <b>Dan 7:</b> ponovi opet — do tad bi trebalo da bude u dugoročnom pamćenju.<br>
+      Bolje je 10 minuta svaki dan nego sat vremena jednom nedeljno.
+    </div>
+  </section>
+
+  <section>
+    <h2>Adaptivni dril</h2>
+    <p class="instr">Izaberi sesiju i pravac. Kad okreneš karticu, oceni sebe — "Ne znam" vraća karticu nazad u red za ponavljanje
+    u istoj sesiji, "Znam" je izbacuje. Sesija je gotova kad nestanu sve kartice.</p>
+
+    <div class="session-picker" id="sessionPicker"></div>
+    <div class="dir-toggle">
+      <button class="dir-btn active" data-dir="essr">Español → Srpski</button>
+      <button class="dir-btn" data-dir="sres">Srpski → Español</button>
+    </div>
+
+    <div id="drillArea"></div>
+  </section>
+
+  <section>
+    <h2>Igra memorije</h2>
+    <p class="instr">Klikni dve kartice da vidiš da li se poklapaju (španska reč + srpski prevod). Koristi trenutno izabranu sesiju od gore.</p>
+    <div class="match-controls">
+      <button class="match-btn" id="newMatchBtn">Nova igra</button>
+      <span class="match-status" id="matchStatus"></span>
+    </div>
+    <div class="match-grid" id="matchGrid"></div>
+  </section>
+
+  <section>
+    <h2>Brzi kviz</h2>
+    <p class="instr">Izaberi tačan prevod od ponuđena 4. Radi na celom rečniku, u pravcu koji si izabrao/la gore.</p>
+    <p class="quiz-score" id="quizScore"></p>
+    <div id="quizArea"></div>
+  </section>
+
+  <footer>
+    BM Caserío Ciudad Real · Adi Omeragić — priprema za odlazak u Španiju · A1 nivo
+  </footer>
+</div>
+
+<script>
+  var allVocab = [
+    {es:"Pasa", sr:"Dodaj"}, {es:"Recibe", sr:"Primi"}, {es:"Bota", sr:"Vodi loptu"}, {es:"Lanza", sr:"Šutiraj"},
+    {es:"Finta", sr:"Finta"}, {es:"Penetra", sr:"Idi u prodor"}, {es:"Cruza", sr:"Ukrsti"}, {es:"Bloquea", sr:"Postavi blok"},
+    {es:"Continúa", sr:"Nastavi akciju"}, {es:"Abre", sr:"Igraj šire"}, {es:"Cierra", sr:"Uđi unutra"},
+    {es:"Ataca el intervalo", sr:"Napadni prostor"}, {es:"Calma", sr:"Smiri igru"}, {es:"Juega con el pivote", sr:"Igraj sa pivotom"},
+    {es:"Circula el balón", sr:"Pomeraj loptu"}, {es:"No pares el balón", sr:"Ne zadržavaj loptu"},
+    {es:"No pierdas el balón", sr:"Ne gubi loptu"}, {es:"Sal", sr:"Izađi"}, {es:"Recupera", sr:"Vrati se"},
+    {es:"Cierra el centro", sr:"Zatvori sredinu"}, {es:"Ayuda", sr:"Pomozi"}, {es:"Cambia", sr:"Preuzmi"},
+    {es:"Bloquea el lanzamiento", sr:"Blokiraj šut"}, {es:"Controla al pivote", sr:"Drži pivota"}, {es:"Haz falta", sr:"Napravi faul"},
+    {es:"Corta el pase", sr:"Preseci dodavanje"}, {es:"Repliega", sr:"Vrati se u odbranu"}, {es:"Habla", sr:"Pričaj"},
+    {es:"Marca a tu jugador", sr:"Čuvaj svog igrača"}, {es:"Quédate cerca", sr:"Ostani blizu"},
+    {es:"Otra vez", sr:"Ponovo"}, {es:"Para", sr:"Stani"}, {es:"Desde el principio", sr:"Od početka"}, {es:"Empieza", sr:"Počni"},
+    {es:"Escucha", sr:"Slušaj"}, {es:"Mira", sr:"Gledaj"}, {es:"Espera", sr:"Sačekaj"}, {es:"Tranquilo", sr:"Smiri se"},
+    {es:"Sigue", sr:"Nastavi"}, {es:"Descansa", sr:"Odmori"}, {es:"Portero", sr:"Golman"}, {es:"Pivote", sr:"Pivot"},
+    {es:"Extremo izquierdo", sr:"Levo krilo"}, {es:"Extremo derecho", sr:"Desno krilo"}, {es:"Lateral izquierdo", sr:"Levi bek"},
+    {es:"Central", sr:"Srednji bek"}, {es:"Lateral derecho", sr:"Desni bek"}, {es:"Portería", sr:"Gol"}, {es:"Banquillo", sr:"Klupa"},
+    {es:"Pista", sr:"Teren"}, {es:"Silbato", sr:"Pištaljka"}, {es:"Juega más abierto", sr:"Igraj šire"},
+    {es:"Recibe en movimiento", sr:"Primi loptu u kretanju"}, {es:"Cruza por delante", sr:"Ukrsti ispred"},
+    {es:"Cruza por detrás", sr:"Ukrsti iza"}, {es:"Mueve el balón más rápido", sr:"Brže pomeraj loptu"},
+    {es:"Mira al lado contrario", sr:"Pogledaj suprotnu stranu"}, {es:"Vuelve rápido al centro de la defensa", sr:"Brzo se vrati u sredinu odbrane"},
+    {es:"Protege el centro", sr:"Zatvori sredinu"}, {es:"Prepara el cambio ataque-defensa", sr:"Pripremi izmenu napad-odbrana"},
+    {es:"Me duele aquí", sr:"Ovde me boli"}, {es:"Me duele la rodilla", sr:"Boli me koleno"}, {es:"Me duele el tobillo", sr:"Boli me skočni zglob"},
+    {es:"Tengo un calambre", sr:"Imam grč"}, {es:"Estoy mareado", sr:"Vrti mi se"}, {es:"No puedo continuar", sr:"Ne mogu da nastavim"},
+    {es:"Necesito hielo", sr:"Treba mi led"}, {es:"Estoy bien", sr:"Dobro sam"}, {es:"Estoy cansado", sr:"Umoran sam"}
+  ];
+
+  var SESSION_SIZE = 9;
+  var sessions = [];
+  for (var i = 0; i < allVocab.length; i += SESSION_SIZE){
+    sessions.push(allVocab.slice(i, i + SESSION_SIZE));
+  }
+
+  var currentSession = 0;
+  var currentDir = 'essr';
+  var queue = [];
+  var currentCard = null;
+  var showBack = false;
+  var attempts = 0;
+
+  var pickerEl = document.getElementById('sessionPicker');
+  sessions.forEach(function(s, idx){
+    var btn = document.createElement('button');
+    btn.className = 'session-btn' + (idx === 0 ? ' active' : '');
+    btn.textContent = 'Sesija ' + (idx + 1);
+    btn.addEventListener('click', function(){
+      currentSession = idx;
+      document.querySelectorAll('.session-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      startSession();
+      startMatchGame();
+    });
+    pickerEl.appendChild(btn);
+  });
+
+  document.querySelectorAll('.dir-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      currentDir = btn.getAttribute('data-dir');
+      document.querySelectorAll('.dir-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      startSession();
+      startMatchGame();
+      nextQuizQuestion();
+    });
+  });
+
+  function shuffleArr(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function startSession(){
+    queue = shuffleArr(sessions[currentSession]);
+    attempts = 0;
+    nextCard();
+  }
+
+  function nextCard(){
+    showBack = false;
+    if (queue.length === 0){
+      renderDone();
+      return;
+    }
+    currentCard = queue.shift();
+    render();
+  }
+
+  function render(){
+    var area = document.getElementById('drillArea');
+    var front = currentDir === 'essr' ? currentCard.es : currentCard.sr;
+    var back = currentDir === 'essr' ? currentCard.sr : currentCard.es;
+    var frontLabel = currentDir === 'essr' ? 'español' : 'srpski';
+    var backLabel = currentDir === 'essr' ? 'srpski' : 'español';
+
+    area.innerHTML =
+      '<div class="drill-card ' + (showBack ? 'is-back' : '') + '" id="drillCard">' +
+        '<p class="drill-label">' + (showBack ? backLabel : frontLabel) + '</p>' +
+        '<p class="drill-text">' + (showBack ? back : front) + '</p>' +
+        (!showBack ? '<p class="drill-hint">klikni da vidiš odgovor</p>' : '') +
+      '</div>' +
+      '<div class="drill-controls">' +
+        (!showBack
+          ? '<button class="drill-btn btn-reveal" id="revealBtn">Pokaži odgovor</button>'
+          : '<button class="drill-btn btn-dontknow" id="dontKnowBtn">Ne znam</button>' +
+            '<button class="drill-btn btn-know" id="knowBtn">Znam</button>') +
+      '</div>' +
+      '<p class="progress">Preostalo u sesiji: ' + (queue.length + 1) + '</p>';
+
+    document.getElementById('drillCard').addEventListener('click', flip);
+    if (!showBack){
+      document.getElementById('revealBtn').addEventListener('click', function(e){ e.stopPropagation(); flip(); });
+    } else {
+      document.getElementById('knowBtn').addEventListener('click', function(e){ e.stopPropagation(); markKnow(); });
+      document.getElementById('dontKnowBtn').addEventListener('click', function(e){ e.stopPropagation(); markDontKnow(); });
+    }
+  }
+
+  function flip(){ showBack = !showBack; render(); }
+
+  function markKnow(){ nextCard(); }
+
+  function markDontKnow(){
+    attempts++;
+    var reinsertAt = Math.min(3, queue.length);
+    queue.splice(reinsertAt, 0, currentCard);
+    nextCard();
+  }
+
+  function renderDone(){
+    var area = document.getElementById('drillArea');
+    area.innerHTML = '<div class="done-msg">🎉 Sesija gotova! Sve kartice su odrađene.<br>' +
+      'Probaj sledeću sesiju ili promeni pravac (Español → Srpski / Srpski → Español).</div>';
+  }
+
+  // ---- Igra memorije ----
+  var matchFlipped = [];
+  var matchLock = false;
+  var matchFound = 0;
+  var matchTotalPairs = 0;
+
+  document.getElementById('newMatchBtn').addEventListener('click', startMatchGame);
+
+  function startMatchGame(){
+    var pool = sessions[currentSession].slice(0, 6);
+    matchTotalPairs = pool.length;
+    matchFound = 0;
+    matchFlipped = [];
+    matchLock = false;
+
+    var cards = [];
+    pool.forEach(function(pair, i){
+      cards.push({pairId:i, text:pair.es, type:'es'});
+      cards.push({pairId:i, text:pair.sr, type:'sr'});
+    });
+    cards = shuffleArr(cards);
+
+    var grid = document.getElementById('matchGrid');
+    grid.innerHTML = '';
+    cards.forEach(function(card, idx){
+      var el = document.createElement('div');
+      el.className = 'match-card hidden-text';
+      el.textContent = card.text;
+      el.dataset.pairId = card.pairId;
+      el.dataset.idx = idx;
+      el.addEventListener('click', function(){ onMatchCardClick(el, card); });
+      grid.appendChild(el);
+    });
+    updateMatchStatus();
+  }
+
+  function onMatchCardClick(el, card){
+    if (matchLock || el.classList.contains('matched') || el.classList.contains('flipped')) return;
+    el.classList.remove('hidden-text');
+    el.classList.add('flipped');
+    matchFlipped.push({el:el, card:card});
+
+    if (matchFlipped.length === 2){
+      matchLock = true;
+      var a = matchFlipped[0], b = matchFlipped[1];
+      if (a.card.pairId === b.card.pairId){
+        setTimeout(function(){
+          a.el.classList.remove('flipped'); a.el.classList.add('matched');
+          b.el.classList.remove('flipped'); b.el.classList.add('matched');
+          matchFlipped = [];
+          matchLock = false;
+          matchFound++;
+          updateMatchStatus();
+          if (matchFound === matchTotalPairs){
+            document.getElementById('matchStatus').textContent = 'Bravo! Sve upareno 🎉';
+          }
+        }, 400);
+      } else {
+        setTimeout(function(){
+          a.el.classList.remove('flipped'); a.el.classList.add('hidden-text');
+          b.el.classList.remove('flipped'); b.el.classList.add('hidden-text');
+          matchFlipped = [];
+          matchLock = false;
+        }, 800);
+      }
+    }
+  }
+
+  function updateMatchStatus(){
+    document.getElementById('matchStatus').textContent = 'Upareno: ' + matchFound + ' / ' + matchTotalPairs;
+  }
+
+  // ---- Brzi kviz ----
+  var quizCorrect = 0;
+  var quizTotal = 0;
+  var quizAnswered = false;
+
+  function nextQuizQuestion(){
+    quizAnswered = false;
+    var idx = Math.floor(Math.random() * allVocab.length);
+    var item = allVocab[idx];
+    var question = currentDir === 'essr' ? item.es : item.sr;
+    var correctAns = currentDir === 'essr' ? item.sr : item.es;
+
+    var distractors = [];
+    while (distractors.length < 3){
+      var r = allVocab[Math.floor(Math.random() * allVocab.length)];
+      var val = currentDir === 'essr' ? r.sr : r.es;
+      if (val !== correctAns && distractors.indexOf(val) === -1) distractors.push(val);
+    }
+    var options = shuffleArr([correctAns].concat(distractors));
+
+    var area = document.getElementById('quizArea');
+    area.innerHTML =
+      '<div class="quiz-card">' +
+        '<p class="quiz-label">' + (currentDir === 'essr' ? 'español' : 'srpski') + '</p>' +
+        '<p class="quiz-text">' + question + '</p>' +
+        '<div class="quiz-options" id="quizOptions"></div>' +
+      '</div>';
+
+    var optWrap = document.getElementById('quizOptions');
+    options.forEach(function(opt){
+      var b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.textContent = opt;
+      b.addEventListener('click', function(){ onQuizAnswer(b, opt, correctAns, optWrap); });
+      optWrap.appendChild(b);
+    });
+    updateQuizScore();
+  }
+
+  function onQuizAnswer(btn, chosen, correctAns, optWrap){
+    if (quizAnswered) return;
+    quizAnswered = true;
+    quizTotal++;
+    var isCorrect = chosen === correctAns;
+    if (isCorrect) quizCorrect++;
+
+    Array.from(optWrap.children).forEach(function(b){
+      if (b.textContent === correctAns) b.classList.add('correct');
+      else if (b === btn) b.classList.add('wrong');
+    });
+    updateQuizScore();
+
+    var nextBtn = document.createElement('button');
+    nextBtn.className = 'quiz-next';
+    nextBtn.textContent = 'Sledeće pitanje';
+    nextBtn.addEventListener('click', nextQuizQuestion);
+    document.querySelector('.quiz-card').appendChild(nextBtn);
+  }
+
+  function updateQuizScore(){
+    document.getElementById('quizScore').textContent = 'Rezultat: ' + quizCorrect + ' / ' + quizTotal;
+  }
+
+  startSession();
+  startMatchGame();
+  nextQuizQuestion();
+</script>
+</body>
+</html>
