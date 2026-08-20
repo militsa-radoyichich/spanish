@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adverbios de frecuencia – Ejercicios</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #c8102e; background-image: radial-gradient(circle at 15% 20%, rgba(255,200,0,0.18) 0%, transparent 50%), radial-gradient(circle at 85% 75%, rgba(255,200,0,0.13) 0%, transparent 45%); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 580px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .card { background: #fff; border-radius: 16px; padding: 1.4rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .ex-title { font-size: 12px; font-weight: 700; color: #c8102e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .ex-desc { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .check-btn { margin-top: 1rem; background: #c8102e; color: #fff; border: none; border-radius: 10px; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .check-btn:hover { background: #a50d26; }
+  .reset-btn { margin-top: 1rem; margin-left: 8px; background: transparent; color: #aaa; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .feedback-msg { margin-top: 0.7rem; font-size: 13px; font-weight: 500; min-height: 18px; }
+  .feedback-msg.ok { color: #16a34a; }
+  .feedback-msg.bad { color: #dc2626; }
+
+  .mc-list { display: flex; flex-direction: column; gap: 16px; }
+  .mc-q { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 8px; line-height: 1.55; }
+  .mc-q .blank { display:inline-block; min-width:54px; border-bottom:2px solid #c8102e; text-align:center; }
+  .mc-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mc-btn { border: 1.5px solid #ddd; background: #f9f9f9; border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer; transition: all 0.15s; text-align:left; }
+  .mc-btn:hover { border-color: #c8102e; background: #fff5f5; }
+  .mc-btn.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; font-weight: 600; }
+  .mc-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .mc-btn.reveal { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .mc-btn:disabled { cursor: default; }
+  .mc-opts.col { flex-direction: column; }
+  .mc-opts.col .mc-btn { width: 100%; }
+
+  /* ordenar */
+  .order-list { display: flex; flex-direction: column; gap: 8px; }
+  .order-item { position: relative; border: 1.5px solid #e0e0e0; background: #f9f9f9; border-radius: 10px; padding: 10px 12px 10px 40px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .order-item:hover { border-color: #c8102e; background: #fff5f5; }
+  .order-item.sel { border-color: #c8102e; background: #fff5f5; }
+  .order-item.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+  .order-item.wrong { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+  .order-item .rank { position: absolute; top: 50%; left: 9px; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%; background: #c8102e; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+  /* match */
+  .match-wrap { display: flex; gap: 12px; }
+  .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .match-item { border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 9px 12px; font-size: 13px; cursor: pointer; text-align: center; background: #f9f9f9; transition: all 0.15s; }
+  .match-item:hover { border-color: #c8102e; background: #fff5f5; }
+  .match-item.sel { background: #c8102e; border-color: #c8102e; color: #fff; }
+  .match-item.ok { background: #dcfce7; border-color: #22c55e; color: #15803d; pointer-events: none; }
+  .match-item.bad { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🕐 Adverbios de frecuencia</h1>
+    <p>ejercicios interactivos</p>
+  </div>
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="ex-title">1 — Elige según el contexto</div>
+    <div class="ex-desc">Pročitaj celu rečenicu i izaberi tačan prilog.</div>
+    <div class="mc-list" id="mc1"></div>
+    <div class="feedback-msg" id="fb1"></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="ex-title">2 — ¿Con qué frecuencia?</div>
+    <div class="ex-desc">Iz podatka u rečenici zaključi koja je učestalost.</div>
+    <div class="mc-list" id="mc2"></div>
+    <div class="feedback-msg" id="fb2"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="ex-title">3 — Ordena por frecuencia</div>
+    <div class="ex-desc">Klikni rečenice redom — od najčešće (1) do najređe (5).</div>
+    <div class="order-list" id="order3"></div>
+    <button class="check-btn" onclick="checkOrder3()">Comprobar</button>
+    <button class="reset-btn" onclick="initOrder3()">Reset</button>
+    <div class="feedback-msg" id="fb3"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="ex-title">4 — ¿Qué frase es ilógica?</div>
+    <div class="ex-desc">Klikni rečenicu koja nema smisla u stvarnosti.</div>
+    <div class="mc-list" id="mc4"></div>
+    <div class="feedback-msg" id="fb4"></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="ex-title">5 — Sinónimos · Conecta</div>
+    <div class="ex-desc">Poveži izraze istog značenja. Klikni levo, pa desno.</div>
+    <div class="match-wrap">
+      <div class="match-col" id="mLeft"></div>
+      <div class="match-col" id="mRight"></div>
+    </div>
+    <button class="reset-btn" style="margin-top:0.6rem;" onclick="initMatch5()">Reset</button>
+    <div class="feedback-msg" id="fb5"></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="ex-title">6 — Completa el diálogo</div>
+    <div class="ex-desc">Izaberi prilog koji odgovara odgovoru.</div>
+    <div class="mc-list" id="mc6"></div>
+    <div class="feedback-msg" id="fb6"></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <div class="ex-title">7 — ¿Cuál es más frecuente?</div>
+    <div class="ex-desc">Klikni rečenicu koja se dešava češće.</div>
+    <div class="mc-list" id="mc7"></div>
+    <div class="feedback-msg" id="fb7"></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <div class="ex-title">8 — Pregunta y respuesta</div>
+    <div class="ex-desc">Izaberi logičan odgovor na pitanje.</div>
+    <div class="mc-list" id="mc8"></div>
+    <div class="feedback-msg" id="fb8"></div>
+  </div>
+
+  <!-- 9 -->
+  <div class="card">
+    <div class="ex-title">9 — Elige lo contrario</div>
+    <div class="ex-desc">Klikni izraz suprotnog značenja.</div>
+    <div class="mc-list" id="mc9"></div>
+    <div class="feedback-msg" id="fb9"></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <div class="ex-title">10 — Quiz final</div>
+    <div class="ex-desc">Mešavina svega.</div>
+    <div class="mc-list" id="mc10"></div>
+    <div class="feedback-msg" id="fb10"></div>
+  </div>
+
+</div>
+
+<script>
+// ── helpers ──
+function shuf(a){var s=a.slice();for(var i=s.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=s[i];s[i]=s[j];s[j]=t;}return s;}
+function pick(a,n){return shuf(a).slice(0,n);}
+
+// ── generic MC (reveal on click) ──
+function buildMC(containerId, fbId, data, colOpts){
+  var done = data.map(function(){return false;});
+  var h = '';
+  for (var i=0;i<data.length;i++){
+    h += '<div class="mc-item"><div class="mc-q">'+data[i].q+'</div><div class="mc-opts'+(colOpts?' col':'')+'">';
+    for (var j=0;j<data[i].opts.length;j++){
+      h += '<button class="mc-btn" id="'+containerId+'b'+i+'j'+j+'" data-i="'+i+'" data-j="'+j+'">'+data[i].opts[j]+'</button>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById(containerId).innerHTML = h;
+
+  document.querySelectorAll('#'+containerId+' .mc-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var i = +btn.getAttribute('data-i');
+      var chosen = +btn.getAttribute('data-j');
+      if (done[i]) return;
+      done[i] = true;
+      for (var j=0;j<data[i].opts.length;j++){
+        var b = document.getElementById(containerId+'b'+i+'j'+j);
+        b.disabled = true;
+        if (data[i].opts[j] === data[i].ans) b.className = 'mc-btn reveal';
+        if (j===chosen && data[i].opts[j] !== data[i].ans) b.className = 'mc-btn wrong';
+        if (j===chosen && data[i].opts[j] === data[i].ans) b.className = 'mc-btn correct';
+      }
+      var all = done.every(function(x){return x;});
+      if (all){
+        var ok=0;
+        for (var m=0;m<data.length;m++){ for(var n=0;n<data[m].opts.length;n++){ if(document.getElementById(containerId+'b'+m+'j'+n).classList.contains('correct')) ok++; } }
+        var fb = document.getElementById(fbId);
+        fb.textContent = ok+' / '+data.length+' correcto';
+        fb.className = ok===data.length ? 'feedback-msg ok' : 'feedback-msg bad';
+      }
+    });
+  });
+}
+
+// ── EX 1 ──
+buildMC('mc1','fb1',[
+  {q:'Trabajo mucho y <span class="blank">?</span> tengo tiempo para cocinar, por eso como fuera casi todos los días.', opts:['a menudo','casi nunca','siempre'], ans:'casi nunca'},
+  {q:'Me encanta el cine: voy <span class="blank">?</span>, casi cada fin de semana.', opts:['pocas veces','a menudo','nunca'], ans:'a menudo'},
+  {q:'Bebo café por la mañana, pero por la noche <span class="blank">?</span> lo tomo porque no puedo dormir.', opts:['muchas veces','siempre','casi nunca'], ans:'casi nunca'},
+  {q:'Como estudio por las tardes, <span class="blank">?</span> salgo con amigos entre semana.', opts:['siempre','pocas veces','a menudo'], ans:'pocas veces'}
+]);
+
+// ── EX 2 ──
+buildMC('mc2','fb2',[
+  {q:'Voy al dentista una vez al año.', opts:['siempre','a menudo','pocas veces'], ans:'pocas veces'},
+  {q:'Reviso el móvil cada cinco minutos.', opts:['casi siempre','a veces','nunca'], ans:'casi siempre'},
+  {q:'De lunes a viernes desayuno en casa; solo el fin de semana desayuno fuera.', opts:['nunca','casi siempre','a veces'], ans:'casi siempre'},
+  {q:'Odio el pescado, por eso no lo pido en el restaurante.', opts:['a veces','siempre','nunca'], ans:'nunca'}
+]);
+
+// ── EX 3: ordenar ──
+var d3 = [
+  {t:'A veces pido comida a domicilio.', rank:3},
+  {t:'Siempre llego puntual al trabajo.', rank:1},
+  {t:'Nunca llego tarde a una cita.', rank:5},
+  {t:'A menudo salgo a correr por la mañana.', rank:2},
+  {t:'Pocas veces veo la televisión.', rank:4}
+];
+var sel3 = 1;
+function initOrder3(){
+  sel3 = 1;
+  var h = '';
+  for (var i=0;i<d3.length;i++){
+    h += '<div class="order-item" id="o3_'+i+'" data-rank="'+d3[i].rank+'">'+d3[i].t+'</div>';
+  }
+  document.getElementById('order3').innerHTML = h;
+  document.getElementById('fb3').textContent = '';
+  document.querySelectorAll('#order3 .order-item').forEach(function(it){
+    it.addEventListener('click',function(){
+      if (it.classList.contains('sel')) return;
+      if (sel3 > d3.length) return;
+      it.classList.add('sel');
+      var b = document.createElement('span'); b.className='rank'; b.textContent=sel3; it.appendChild(b);
+      it.dataset.izbor = sel3; sel3++;
+    });
+  });
+}
+function checkOrder3(){
+  var items = document.querySelectorAll('#order3 .order-item');
+  var ok=0, svi=true;
+  items.forEach(function(it){
+    if (!it.dataset.izbor){ svi=false; return; }
+    it.style.pointerEvents='none';
+    if (it.dataset.izbor === it.dataset.rank){ it.classList.add('correct'); ok++; }
+    else { it.classList.add('wrong'); }
+  });
+  var fb = document.getElementById('fb3');
+  fb.textContent = svi ? (ok+' / '+d3.length+' correcto') : 'Poređaj sve.';
+  fb.className = (svi && ok===d3.length) ? 'feedback-msg ok' : 'feedback-msg bad';
+}
+initOrder3();
+
+// ── EX 4: ilógica ──
+buildMC('mc4','fb4',[
+  {q:'Grupo A', opts:['El agua siempre moja.','Los gatos a veces duermen de día.','El sol nunca sale por el este.'], ans:'El sol nunca sale por el este.'},
+  {q:'Grupo B', opts:['En invierno casi siempre hace frío.','Los peces a menudo montan en bicicleta.','Muchas veces llueve en otoño.'], ans:'Los peces a menudo montan en bicicleta.'},
+  {q:'Grupo C', opts:['Nunca respiro.','Siempre necesito dormir.','A veces como pizza los viernes.'], ans:'Nunca respiro.'}
+], true);
+
+// ── EX 5: match sinónimos ──
+var pares5 = [
+  {a:'siempre', b:'todos los días'},
+  {a:'a menudo', b:'normalmente'},
+  {a:'a veces', b:'algunas veces'},
+  {a:'casi nunca', b:'muy pocas veces'}
+];
+var sel5 = null;
+function initMatch5(){
+  var lr = shuf(pares5.slice()), rr = shuf(pares5.slice());
+  sel5 = null;
+  var lh='', rh='';
+  for (var i=0;i<lr.length;i++){ var k=lr[i].a.replace(/ /g,'_'); lh += '<div class="match-item" id="ml_'+k+'" data-k="'+k+'" data-side="L">'+lr[i].a+'</div>'; }
+  for (var i=0;i<rr.length;i++){ var k=rr[i].a.replace(/ /g,'_'); rh += '<div class="match-item" id="mr_'+k+'" data-k="'+k+'" data-side="R">'+rr[i].b+'</div>'; }
+  document.getElementById('mLeft').innerHTML = lh;
+  document.getElementById('mRight').innerHTML = rh;
+  document.getElementById('fb5').textContent = '';
+
+  document.querySelectorAll('#mLeft .match-item').forEach(function(el){
+    el.addEventListener('click',function(){
+      document.querySelectorAll('#mLeft .match-item').forEach(function(x){x.classList.remove('sel');});
+      sel5 = el.getAttribute('data-k'); el.classList.add('sel');
+    });
+  });
+  document.querySelectorAll('#mRight .match-item').forEach(function(el){
+    el.addEventListener('click',function(){
+      if (!sel5) return;
+      var key = el.getAttribute('data-k');
+      var lel = document.getElementById('ml_'+sel5);
+      var rel = document.getElementById('mr_'+key);
+      if (sel5 === key){ lel.className='match-item ok'; rel.className='match-item ok'; }
+      else {
+        lel.classList.add('bad'); rel.classList.add('bad');
+        setTimeout(function(){ lel.className='match-item'; rel.className='match-item'; },700);
+      }
+      sel5 = null;
+      var done = document.querySelectorAll('#mLeft .match-item.ok').length;
+      if (done === pares5.length){
+        var fb = document.getElementById('fb5');
+        fb.textContent = '¡Todo conectado! ✓';
+        fb.className = 'feedback-msg ok';
+      }
+    });
+  });
+}
+initMatch5();
+
+// ── EX 6: diálogo ──
+buildMC('mc6','fb6',[
+  {q:'— ¿Con qué frecuencia haces deporte?<br>— <span class="blank">?</span>, casi todos los días.', opts:['Casi siempre','Nunca','Pocas veces'], ans:'Casi siempre'},
+  {q:'— ¿Vas mucho al cine?<br>— <span class="blank">?</span>, solo el día de mi cumpleaños.', opts:['Siempre','Pocas veces','A menudo'], ans:'Pocas veces'},
+  {q:'— ¿Comes verdura?<br>— Sí, <span class="blank">?</span> como ensalada en el almuerzo.', opts:['nunca','casi nunca','muchas veces'], ans:'muchas veces'}
+]);
+
+// ── EX 7: más frecuente ──
+buildMC('mc7','fb7',[
+  {q:'¿Cuál es más frecuente?', opts:['Casi siempre desayuno café.','A veces desayuno café.'], ans:'Casi siempre desayuno café.'},
+  {q:'¿Cuál es más frecuente?', opts:['Pocas veces viajo en avión.','A menudo viajo en avión.'], ans:'A menudo viajo en avión.'},
+  {q:'¿Cuál es más frecuente?', opts:['Nunca fumo.','Casi nunca fumo.'], ans:'Casi nunca fumo.'}
+], true);
+
+// ── EX 8: pregunta y respuesta ──
+buildMC('mc8','fb8',[
+  {q:'¿Con qué frecuencia llueve en el desierto?', opts:['Muy pocas veces, es un desierto.','Siempre, todos los días.','Muchas veces, casi cada hora.'], ans:'Muy pocas veces, es un desierto.'},
+  {q:'¿Sales de fiesta entre semana?', opts:['No, casi nunca, tengo que trabajar.','Sí, siempre estoy en casa.','Nunca como carne.'], ans:'No, casi nunca, tengo que trabajar.'},
+  {q:'¿Duermes ocho horas?', opts:['Casi siempre, si no trabajo por la noche.','Nunca duermo nada.','A veces como en un restaurante.'], ans:'Casi siempre, si no trabajo por la noche.'}
+], true);
+
+// ── EX 9: contrario ──
+buildMC('mc9','fb9',[
+  {q:'Lo contrario de <b>siempre</b>:', opts:['casi siempre','a veces','nunca'], ans:'nunca'},
+  {q:'Lo contrario de <b>muchas veces</b>:', opts:['a menudo','pocas veces','casi siempre'], ans:'pocas veces'},
+  {q:'Lo contrario de <b>casi siempre</b>:', opts:['muchas veces','a veces','casi nunca'], ans:'casi nunca'}
+]);
+
+// ── EX 10: quiz ──
+buildMC('mc10','fb10',[
+  {q:'María es muy responsable: <span class="blank">?</span> olvida sus tareas.', opts:['siempre','nunca','a menudo'], ans:'nunca'},
+  {q:'En esta ciudad <span class="blank">?</span> nieva; el clima es muy cálido.', opts:['siempre','muchas veces','casi nunca'], ans:'casi nunca'},
+  {q:'Mi abuelo tiene 90 años y <span class="blank">?</span> está de buen humor.', opts:['nunca','casi siempre','pocas veces'], ans:'casi siempre'},
+  {q:'Sinónimo de <b>habitualmente</b>:', opts:['nunca','normalmente','a veces'], ans:'normalmente'},
+  {q:'<span class="blank">?</span> como en casa, de lunes a domingo.', opts:['Pocas veces','Nunca','Todos los días'], ans:'Todos los días'}
+]);
+</script>
+</body>
+</html>
